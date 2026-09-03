@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="icon" href="./assets/logo.png">
+  <link rel="stylesheet" href="_ds/modernist-f2ad93fd-ad75-4927-9002-9d4b19946590/styles.css">
+  <script src="_ds/modernist-f2ad93fd-ad75-4927-9002-9d4b19946590/_ds_bundle.js"></script>
+  <script src="./image-slot.js"></script>
+  <title>PontoSeven — Ponto eletrônico completo</title>
+  <style>
+    body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); text-wrap: pretty; }
+    a { color: var(--color-accent-700); text-decoration: none; }
+    a:hover { color: var(--color-accent); text-decoration: underline; }
+  </style>
+</helmet>
+
+<nav class="nav" style="padding-inline:clamp(20px,5vw,72px)">
+  <span class="nav-brand" style="display:flex;align-items:center;gap:10px">
+    <img src="./assets/logo.png" alt="PontoSeven" style="width:28px;height:28px;display:block">
+    PontoSeven
+  </span>
+  <a href="#funcionalidades">Funcionalidades</a>
+  <a href="#seguranca">Segurança</a>
+  <a href="#planos">Planos</a>
+  <a href="#faq">FAQ</a>
+  <button type="button" class="btn btn-primary">Criar conta</button>
+</nav>
+
+<div style="max-width:1200px;margin:0 auto;padding:0 clamp(20px,5vw,72px)">
+
+  <section style="padding:88px 0 64px">
+    <h1 style="font-family:var(--font-heading);font-weight:800;font-size:clamp(38px,5.5vw,72px);line-height:1.05;letter-spacing:-0.02em;margin:0;max-width:16ch">
+      Ponto eletrônico completo, do jeito que a fiscalização exige.
+    </h1>
+    <p style="font-size:18px;line-height:1.6;max-width:56ch;margin:28px 0 0;color:color-mix(in srgb, var(--color-text) 80%, transparent)">
+      O PontoSeven registra, valida e documenta a jornada da sua equipe — com geofence, biometria facial e conformidade REP‑P/LGPD já configuradas. Sem planilha, sem retrabalho, sem risco jurídico.
+    </p>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:32px">
+      <button type="button" class="btn btn-primary">Criar conta agora</button>
+      <a href="#planos" class="btn btn-ghost">Ver planos</a>
+    </div>
+  </section>
+
+  <hr class="hr">
+
+  <sc-if value="{{ showStats }}" hint-placeholder-val="{{ true }}">
+  <section style="padding:48px 0" aria-label="PontoSeven em números">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:32px 24px">
+      <div>
+        <p style="font-family:var(--font-heading);font-weight:800;font-size:clamp(28px,3vw,40px);color:var(--color-accent);margin:0">100%</p>
+        <p style="font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 70%, transparent);margin:8px 0 0">Conforme Portaria 671 e LGPD</p>
+      </div>
+      <div>
+        <p style="font-family:var(--font-heading);font-weight:800;font-size:clamp(28px,3vw,40px);color:var(--color-accent);margin:0">Múltiplos</p>
+        <p style="font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 70%, transparent);margin:8px 0 0">Geofences por empresa</p>
+      </div>
+      <div>
+        <p style="font-family:var(--font-heading);font-weight:800;font-size:clamp(28px,3vw,40px);color:var(--color-accent);margin:0">Automático</p>
+        <p style="font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 70%, transparent);margin:8px 0 0">Espelho de ponto mensal</p>
+      </div>
+      <div>
+        <p style="font-family:var(--font-heading);font-weight:800;font-size:clamp(28px,3vw,40px);color:var(--color-accent);margin:0">24/7</p>
+        <p style="font-size:13px;letter-spacing:0.06em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 70%, transparent);margin:8px 0 0">Notificações e auditoria</p>
+      </div>
+    </div>
+  </section>
+  <hr class="hr">
+  </sc-if>
+
+  <section id="funcionalidades" style="padding:64px 0 48px">
+    <span style="display:block;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);margin:0 0 12px">Funcionalidades</span>
+    <h2 style="font-family:var(--font-heading);font-weight:800;font-size:clamp(28px,3vw,40px);letter-spacing:-0.015em;margin:0 0 40px;max-width:28ch">Tudo que o RH precisa em um só lugar</h2>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+
+      <div class="card">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        <div class="card-title" style="margin-top:14px">Geofence múltiplo</div>
+        <p class="card-body">Configure várias áreas de cerca virtual por unidade ou obra — a batida só é aceita dentro do perímetro autorizado.</p>
+      </div>
+
+      <div class="card">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        <div class="card-title" style="margin-top:14px">Biometria facial</div>
+        <p class="card-body">Reconhecimento facial em cada batida, eliminando fraude e compartilhamento de senha ou cartão.</p>
+      </div>
+
+      <div class="card">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <div class="card-title" style="margin-top:14px">Controle de batidas</div>
+        <p class="card-body">Entradas, saídas e intervalos registrados com hora e local validados automaticamente.</p>
+      </div>
+
+      <div class="card">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="m9 15 2 2 4-4"/></svg>
+        <div class="card-title" style="margin-top:14px">Comprovantes automáticos</div>
+        <p class="card-body">Cada batida gera um comprovante para o funcionário, com data, hora e localização registradas.</p>
+      </div>
+
+      <div class="card">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+        <div class="card-title" style="margin-top:14px">Relatório mensal</div>
+        <p class="card-body">Espelho de ponto consolidado por funcionário, pronto para o fechamento da folha.</p>
+      </div>
+
+      <div class="card">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+        <div class="card-title" style="margin-top:14px">REP‑P &amp; LGPD</div>
+        <p class="card-body">Sistema alinhado à Portaria 671 (REP‑P) e à LGPD, com dados tratados sob as bases legais exigidas.</p>
+      </div>
+
+      <div class="card">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+        <div class="card-title" style="margin-top:14px">Log de auditoria</div>
+        <p class="card-body">Histórico completo e imutável de acessos, ajustes e alterações — respaldo jurídico a qualquer momento.</p>
+      </div>
+
+      <div class="card">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <div class="card-title" style="margin-top:14px">Notificações</div>
+        <p class="card-body">Alertas automáticos para funcionários e gestores sobre atrasos, esquecimentos e pendências.</p>
+      </div>
+
+      <div class="card">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+        <div class="card-title" style="margin-top:14px">Configurações da empresa</div>
+        <p class="card-body">Gerencie unidades, jornadas, escalas e permissões por perfil de usuário em um painel único.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="seguranca" style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px 64px;align-items:center;padding:56px 0">
+    <div>
+      <span style="display:block;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);margin:0 0 12px">Segurança e conformidade</span>
+      <h2 style="font-family:var(--font-heading);font-weight:800;font-size:clamp(26px,2.8vw,36px);letter-spacing:-0.015em;margin:0">Feito para resistir a uma fiscalização</h2>
+      <p style="font-size:15.5px;line-height:1.7;color:color-mix(in srgb, var(--color-text) 78%, transparent);max-width:48ch;margin:20px 0 0">
+        O PontoSeven segue a Portaria 671 do Ministério do Trabalho para o REP‑P e trata todos os dados dos colaboradores de acordo com a LGPD. Cada batida, ajuste e acesso fica registrado em um log de auditoria imutável — pronto para apresentar em uma fiscalização ou reclamação trabalhista.
+      </p>
+      <ul style="list-style:none;margin:24px 0 0;padding:0;display:grid;gap:12px">
+        <li style="display:flex;gap:10px;font-size:15px"><span style="width:8px;height:8px;background:var(--color-accent);margin-top:7px;flex:none"></span>Conformidade com a Portaria 671 (REP‑P)</li>
+        <li style="display:flex;gap:10px;font-size:15px"><span style="width:8px;height:8px;background:var(--color-accent);margin-top:7px;flex:none"></span>Tratamento de dados alinhado à LGPD</li>
+        <li style="display:flex;gap:10px;font-size:15px"><span style="width:8px;height:8px;background:var(--color-accent);margin-top:7px;flex:none"></span>Log de auditoria imutável, com trilha completa</li>
+      </ul>
+    </div>
+    <image-slot id="seguranca-shot" shape="rect" style="aspect-ratio:16/11;width:100%" placeholder="Screenshot do painel de auditoria / conformidade"></image-slot>
+  </section>
+
+  <hr class="hr">
+
+  <section style="padding:56px 0" aria-label="Integrações">
+    <span style="display:block;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);margin:0 0 12px">Integrações</span>
+    <h2 style="font-family:var(--font-heading);font-weight:800;font-size:clamp(26px,2.8vw,36px);letter-spacing:-0.015em;margin:0 0 32px;max-width:28ch">Conecta com a folha de pagamento e o RH que você já usa</h2>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px">
+      <div class="card">
+        <div class="card-title">Folha de pagamento</div>
+        <p class="card-body">Exporte o espelho de ponto e as horas apuradas direto para o sistema de folha, sem digitação manual.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Sistemas de RH</div>
+        <p class="card-body">Sincronize cadastro de funcionários, escalas e jornadas com o seu RH atual.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="hr">
+
+  <section id="planos" style="padding:56px 0">
+    <span style="display:block;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);margin:0 0 12px">Planos</span>
+    <h2 style="font-family:var(--font-heading);font-weight:800;font-size:clamp(26px,2.8vw,36px);letter-spacing:-0.015em;margin:0 0 32px">Escolha o plano do tamanho da sua equipe</h2>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+
+      <div class="card" style="{{ basicoStyle }}">
+        <div class="card-kicker">Básico</div>
+        <p style="font-family:var(--font-heading);font-weight:800;font-size:36px;margin:8px 0 0">R$ 100<span style="font-size:15px;font-weight:400;font-family:var(--font-body)">/mês</span></p>
+        <p class="card-body" style="margin-top:4px">Até 10 funcionários</p>
+        <ul style="list-style:none;margin:16px 0 0;padding:0;display:grid;gap:8px;font-size:14.5px">
+          <li>Geofence e biometria facial</li>
+          <li>Relatório mensal e comprovantes</li>
+          <li>Conformidade REP‑P/LGPD</li>
+        </ul>
+        <button type="button" class="btn btn-secondary btn-block" style="margin-top:20px">Criar conta</button>
+      </div>
+
+      <div class="card" style="{{ standardStyle }}">
+        <div class="card-kicker">Standard</div>
+        <p style="font-family:var(--font-heading);font-weight:800;font-size:36px;margin:8px 0 0">R$ 200<span style="font-size:15px;font-weight:400;font-family:var(--font-body)">/mês</span></p>
+        <p class="card-body" style="margin-top:4px">Até 25 funcionários</p>
+        <ul style="list-style:none;margin:16px 0 0;padding:0;display:grid;gap:8px;font-size:14.5px">
+          <li>Tudo do plano Básico</li>
+          <li>Múltiplos geofences</li>
+          <li>Log de auditoria completo</li>
+        </ul>
+        <button type="button" class="btn btn-primary btn-block" style="margin-top:20px">Criar conta</button>
+      </div>
+
+      <div class="card" style="{{ enterpriseStyle }}">
+        <div class="card-kicker">Enterprise</div>
+        <p style="font-family:var(--font-heading);font-weight:800;font-size:36px;margin:8px 0 0">Sob consulta</p>
+        <p class="card-body" style="margin-top:4px">Mais de 25 funcionários</p>
+        <ul style="list-style:none;margin:16px 0 0;padding:0;display:grid;gap:8px;font-size:14.5px">
+          <li>Tudo do plano Standard</li>
+          <li>Integrações dedicadas de folha/RH</li>
+          <li>Atendimento e SLA dedicados</li>
+        </ul>
+        <button type="button" class="btn btn-secondary btn-block" style="margin-top:20px">Falar com vendas</button>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="hr">
+
+  <section id="faq" style="padding:56px 0 72px">
+    <span style="display:block;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);margin:0 0 12px">Perguntas frequentes</span>
+    <h2 style="font-family:var(--font-heading);font-weight:800;font-size:clamp(26px,2.8vw,36px);letter-spacing:-0.015em;margin:0 0 32px">FAQ</h2>
+    <div>
+      <details style="padding:20px 0;border-top:2px solid var(--color-divider)">
+        <summary style="font-family:var(--font-heading);font-weight:700;font-size:17px;cursor:pointer">O PontoSeven é homologado para uso como REP‑P?</summary>
+        <p style="font-size:15px;line-height:1.7;color:color-mix(in srgb, var(--color-text) 78%, transparent);margin:12px 0 0;max-width:60ch">Sim. O sistema segue as regras da Portaria 671 do Ministério do Trabalho para o Registro Eletrônico de Ponto por Programa (REP‑P).</p>
+      </details>
+      <details style="padding:20px 0;border-top:2px solid var(--color-divider)">
+        <summary style="font-family:var(--font-heading);font-weight:700;font-size:17px;cursor:pointer">Como funciona o geofence?</summary>
+        <p style="font-size:15px;line-height:1.7;color:color-mix(in srgb, var(--color-text) 78%, transparent);margin:12px 0 0;max-width:60ch">Você define uma ou mais áreas geográficas autorizadas para cada unidade ou obra. A batida de ponto só é aceita quando o funcionário está dentro do perímetro configurado.</p>
+      </details>
+      <details style="padding:20px 0;border-top:2px solid var(--color-divider)">
+        <summary style="font-family:var(--font-heading);font-weight:700;font-size:17px;cursor:pointer">A biometria facial é obrigatória para todos os funcionários?</summary>
+        <p style="font-size:15px;line-height:1.7;color:color-mix(in srgb, var(--color-text) 78%, transparent);margin:12px 0 0;max-width:60ch">A biometria pode ser ativada por unidade ou perfil, conforme a política da sua empresa.</p>
+      </details>
+      <details style="padding:20px 0;border-top:2px solid var(--color-divider)">
+        <summary style="font-family:var(--font-heading);font-weight:700;font-size:17px;cursor:pointer">Como o PontoSeven trata os dados pessoais dos colaboradores?</summary>
+        <p style="font-size:15px;line-height:1.7;color:color-mix(in srgb, var(--color-text) 78%, transparent);margin:12px 0 0;max-width:60ch">O tratamento de dados segue a LGPD, com acesso restrito por perfil e trilha de auditoria para qualquer consulta ou alteração.</p>
+      </details>
+      <details style="padding:20px 0;border-top:2px solid var(--color-divider); border-bottom: 2px solid var(--color-divider)">
+        <summary style="font-family:var(--font-heading);font-weight:700;font-size:17px;cursor:pointer">Posso mudar de plano depois?</summary>
+        <p style="font-size:15px;line-height:1.7;color:color-mix(in srgb, var(--color-text) 78%, transparent);margin:12px 0 0;max-width:60ch">Sim, o plano pode ser ajustado conforme o número de funcionários da sua empresa crescer.</p>
+      </details>
+    </div>
+  </section>
+
+</div>
+
+<section style="background:var(--color-accent);color:var(--color-bg)">
+  <div style="max-width:1200px;margin:0 auto;padding:64px clamp(20px,5vw,72px)">
+    <h3 style="font-family:var(--font-heading);font-weight:800;font-size:clamp(30px,3.8vw,48px);letter-spacing:-0.015em;margin:0;max-width:20ch">Comece a usar o PontoSeven hoje.</h3>
+    <div style="margin-top:28px">
+      <button type="button" class="btn btn-ghost" style="color:var(--color-bg);border-color:var(--color-bg)">Criar conta</button>
+    </div>
+  </div>
+</section>
+
+<div style="max-width:1200px;margin:0 auto;padding:32px clamp(20px,5vw,72px);font-size:13px;color:color-mix(in srgb, var(--color-text) 70%, transparent)">
+  PontoSeven — ponto eletrônico digital.
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;highlightedPlan&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;standard&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;basico&quot;, &quot;standard&quot;, &quot;enterprise&quot;], &quot;section&quot;: &quot;Planos&quot;},
+  &quot;showStats&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Layout&quot;}
+}">
+class Component extends DCLogic {
+  planStyle(active) {
+    return active ? 'outline:2px solid var(--color-accent);outline-offset:-2px' : '';
+  }
+  renderVals() {
+    const highlighted = this.props.highlightedPlan ?? 'standard';
+    return {
+      showStats: this.props.showStats ?? true,
+      basicoStyle: this.planStyle(highlighted === 'basico'),
+      standardStyle: this.planStyle(highlighted === 'standard'),
+      enterpriseStyle: this.planStyle(highlighted === 'enterprise'),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="icon" href="./assets/logo.png">
+  <link rel="stylesheet" href="_ds/modernist-f2ad93fd-ad75-4927-9002-9d4b19946590/styles.css">
+  <script src="_ds/modernist-f2ad93fd-ad75-4927-9002-9d4b19946590/_ds_bundle.js"></script>
+  <script src="./image-slot.js"></script>
+  <title>PontoSeven — Identidade, jornada e prova</title>
+  <style>
+    @font-face {
+      font-family: 'Overused Grotesk';
+      src: url('https://cdn.jsdelivr.net/gh/RandomMaerks/Overused-Grotesk@0.5-alpha.2/fonts/variable/OverusedGroteskRoman-VF.woff2') format('woff2-variations');
+      font-weight: 300 900; font-style: normal; font-display: swap;
+    }
+    :root {
+      --font-heading: 'Overused Grotesk', system-ui, sans-serif;
+      --font-body: 'Overused Grotesk', system-ui, sans-serif;
+      --ink: #141110;
+      --paper: #ffffff;
+      --line: rgba(20,17,16,.16);
+      --dim: rgba(20,17,16,.62);
+      --red: #ec3013;
+      --glass: rgba(255,255,255,.52);
+      --glass-strong: rgba(255,255,255,.72);
+      --glass-line: rgba(255,255,255,.7);
+      --glass-blur: blur(26px) saturate(180%);
+      --glass-shadow: 0 18px 50px rgba(20,17,16,.10), inset 0 1px 0 rgba(255,255,255,.85);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font-family: 'Overused Grotesk', system-ui, sans-serif; -webkit-font-smoothing: antialiased; text-wrap: pretty; }
+    button, summary { font-family: inherit; }
+    h1, h2, h3, h4, .btn, .tag, .card-title, .card-kicker, .nav-brand { font-family: 'Overused Grotesk', system-ui, sans-serif; }
+    a { color: var(--red); text-decoration: none; }
+    a:hover { color: #b8250c; }
+    html { scroll-behavior: smooth; }
+    :focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+    summary::-webkit-details-marker { display: none; }
+    @keyframes ps-rise { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+    @keyframes ps-wind-a { 0% { transform: translate3d(-2%,0,0) scale(1.02) skewY(0deg); } 50% { transform: translate3d(2.5%,-1.5%,0) scale(1.06) skewY(-1.2deg); } 100% { transform: translate3d(-2%,0,0) scale(1.02) skewY(0deg); } }
+    @keyframes ps-wind-b { 0% { transform: translate3d(1.5%,1%,0) scale(1.05) skewX(0deg); } 50% { transform: translate3d(-2%,-1%,0) scale(1.01) skewX(1.4deg); } 100% { transform: translate3d(1.5%,1%,0) scale(1.05) skewX(0deg); } }
+    @keyframes ps-scan { 0% { transform: translateY(-40%); opacity: 0; } 15% { opacity: .8; } 85% { opacity: .8; } 100% { transform: translateY(40%); opacity: 0; } }
+    @keyframes ps-spin { to { transform: rotate(360deg); } }
+    @keyframes ps-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+    @keyframes ps-smoke-a { 0% { transform: translate3d(-4%,2%,0) scale(1.05); } 50% { transform: translate3d(5%,-3%,0) scale(1.18); } 100% { transform: translate3d(-4%,2%,0) scale(1.05); } }
+    @keyframes ps-smoke-b { 0% { transform: translate3d(4%,-2%,0) scale(1.12); } 50% { transform: translate3d(-5%,4%,0) scale(1); } 100% { transform: translate3d(4%,-2%,0) scale(1.12); } }
+    @keyframes ps-smoke-c { 0% { transform: translate3d(0,3%,0) scale(1); } 50% { transform: translate3d(-3%,-4%,0) scale(1.14); } 100% { transform: translate3d(0,3%,0) scale(1); } }
+    @keyframes ps-reveal { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+    [data-reveal] { opacity: 0; }
+    [data-reveal].is-in { animation: ps-reveal .8s cubic-bezier(.22,.75,.2,1) both; }
+    ::selection { background: rgba(236,48,19,.18); }
+    summary { position: relative; }
+    summary::after {
+      content: ''; position: absolute; right: 2px; top: 50%; width: 11px; height: 11px;
+      border-right: 2px solid var(--red); border-bottom: 2px solid var(--red);
+      transform: translateY(-70%) rotate(45deg); transition: transform .3s cubic-bezier(.22,.75,.2,1);
+    }
+    details[open] > summary::after { transform: translateY(-20%) rotate(-135deg); }
+    @media (max-width: 1000px) {
+      [data-grid="hero"], [data-grid="split"] { grid-template-columns: minmax(0,1fr) !important; }
+      [data-grid="hero"] { gap: 40px !important; }
+      [data-grid="three"] { grid-template-columns: repeat(2,1fr) !important; }
+      [data-nav-links] { display: none !important; }
+    }
+    @media (max-width: 640px) {
+      [data-grid="three"] { grid-template-columns: minmax(0,1fr) !important; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } [data-reveal] { opacity: 1 !important; } }
+  </style>
+</helmet>
+
+<div style="position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden">
+  <div style="position:absolute;inset:-14%;filter:blur(60px);opacity:.75;will-change:transform;animation:ps-smoke-a 38s ease-in-out infinite;background-image:radial-gradient(42% 38% at 18% 26%, rgba(236,48,19,.16) 0%, rgba(236,48,19,0) 68%),radial-gradient(46% 40% at 76% 20%, rgba(20,17,16,.07) 0%, rgba(20,17,16,0) 70%)"></div>
+  <div style="position:absolute;inset:-14%;filter:blur(70px);opacity:.7;will-change:transform;animation:ps-smoke-b 46s ease-in-out infinite;background-image:radial-gradient(44% 40% at 28% 80%, rgba(236,48,19,.13) 0%, rgba(236,48,19,0) 68%),radial-gradient(40% 36% at 86% 72%, rgba(255,255,255,.9) 0%, rgba(255,255,255,0) 72%)"></div>
+  <div style="position:absolute;inset:-14%;filter:blur(54px);opacity:.6;will-change:transform;animation:ps-smoke-c 32s ease-in-out infinite;background-image:radial-gradient(36% 32% at 56% 48%, rgba(255,255,255,.95) 0%, rgba(255,255,255,0) 70%),radial-gradient(30% 28% at 8% 56%, rgba(236,48,19,.1) 0%, rgba(236,48,19,0) 72%)"></div>
+  <div ref="{{ waveHost }}" style="position:absolute;inset:0">
+    <canvas ref="{{ waveCanvas }}" style="position:absolute;inset:0;display:block;width:100%;height:100%"></canvas>
+  </div>
+</div>
+
+<div style="position:relative;z-index:1">
+
+<nav style="position:sticky;top:12px;z-index:20;margin:12px clamp(12px,3vw,28px) 0;display:flex;align-items:center;gap:16px;padding:12px clamp(16px,2.4vw,26px);border-radius:22px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)">
+  <span style="display:flex;align-items:center;gap:10px;font-size:17px;font-weight:600;letter-spacing:-0.01em">
+    <img src="./assets/logo.png" alt="" style="width:24px;height:24px;display:block">
+    ponto · seven
+  </span>
+  <div data-nav-links style="display:flex;gap:22px;margin:0 auto;font-size:14.5px">
+    <a href="#plataforma" style="color:var(--dim)" style-hover="color:var(--ink)">Plataforma</a>
+    <a href="#recursos" style="color:var(--dim)" style-hover="color:var(--ink)">Recursos</a>
+    <a href="#planos" style="color:var(--dim)" style-hover="color:var(--ink)">Planos</a>
+    <a href="#faq" style="color:var(--dim)" style-hover="color:var(--ink)">FAQ</a>
+  </div>
+  <button type="button" style="border:0;border-radius:999px;background:var(--red);color:#fff;font-size:14px;font-weight:600;white-space:nowrap;padding:11px 22px;cursor:pointer;box-shadow:0 6px 18px rgba(236,48,19,.28)" style-hover="background:#c9260d">Criar conta</button>
+</nav>
+
+<section style="min-height:calc(100svh - 92px);display:flex;flex-direction:column;justify-content:center;padding:clamp(32px,5svh,72px) clamp(18px,4vw,52px)">
+  <div data-grid="hero" style="max-width:1240px;margin:0 auto;width:100%;display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(24px,4vw,64px);align-items:center">
+  <div>
+    <span style="display:inline-block;padding:8px 16px;border-radius:999px;font-size:13px;font-weight:600;letter-spacing:.02em;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);animation:ps-rise .7s ease-out .1s both">REP‑P · Portaria 671 · LGPD</span>
+    <h1 style="font-size:clamp(34px,min(6vw,9svh),84px);line-height:.96;letter-spacing:-0.035em;margin:clamp(16px,3svh,28px) 0 0;max-width:17ch;animation:ps-rise .8s ease-out .25s both">
+      <span style="display:block;font-weight:300">Identidade,</span>
+      <span style="display:block;font-weight:800">jornada</span>
+      <span style="display:block;font-weight:300;color:var(--red)">e prova.</span>
+    </h1>
+    <p style="font-size:clamp(15px,1.5vw,18px);line-height:1.65;color:var(--dim);margin:clamp(16px,2.6svh,26px) 0 0;max-width:56ch;animation:ps-rise .7s ease-out .45s both">
+      Biometria facial, geofence e log de auditoria imutável em um só registro de ponto. Cada batida vira comprovante, cada mês vira espelho de ponto.
+    </p>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:clamp(20px,3svh,34px);animation:ps-rise .7s ease-out .6s both">
+      <button type="button" style="border:0;border-radius:999px;background:var(--red);color:#fff;font-size:15px;font-weight:600;padding:15px 30px;cursor:pointer;box-shadow:0 10px 30px rgba(236,48,19,.3);transition:transform .25s ease" style-hover="transform:translateY(-2px)">Criar conta</button>
+      <a href="#plataforma" style="border-radius:999px;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);color:var(--ink);font-size:15px;font-weight:600;padding:15px 30px;transition:transform .25s ease" style-hover="color:var(--ink);transform:translateY(-2px)">Ver a plataforma</a>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:center;animation:ps-rise 1s ease-out .35s both">
+    <div style="position:relative;width:min(300px,72vw)">
+      <div style="position:absolute;left:6%;right:6%;bottom:-3%;height:14%;filter:blur(26px);background:rgba(20,17,16,.34);border-radius:50%"></div>
+      <div style="border-radius:13.4%/6.8%;padding:2.6%;background:linear-gradient(150deg,#f3f1f0 0%,#b9b4b1 22%,#6f6b69 48%,#c9c5c2 74%,#8c8886 100%);box-shadow:0 30px 70px rgba(20,17,16,.28), inset 0 0 0 1px rgba(255,255,255,.5)">
+        <div style="position:relative;width:100%;aspect-ratio:432/800;border-radius:11.4%/6%;background:#000;padding:1.4%;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)">
+          <img src="./assets/app-screen.png" alt="Tela do app PontoSeven: bater ponto com biometria facial e geofence" style="display:block;width:100%;height:100%;object-fit:cover;object-position:top center;border-radius:10.4%/5.4%;image-rendering:-webkit-optimize-contrast">
+          <div style="position:absolute;top:2.2%;left:50%;transform:translateX(-50%);width:30%;height:2.9%;border-radius:999px;background:#000"></div>
+          <div style="position:absolute;inset:0;border-radius:10.4%/5.4%;pointer-events:none;background:linear-gradient(122deg, rgba(255,255,255,.34) 0%, rgba(255,255,255,.06) 26%, rgba(255,255,255,0) 46%, rgba(255,255,255,.1) 74%, rgba(255,255,255,.03) 100%)"></div>
+        </div>
+      </div>
+      <div style="position:absolute;left:-1.2%;top:22%;width:1.2%;height:7%;border-radius:2px;background:linear-gradient(#cdc9c6,#8c8886)"></div>
+      <div style="position:absolute;left:-1.2%;top:32%;width:1.2%;height:11%;border-radius:2px;background:linear-gradient(#cdc9c6,#8c8886)"></div>
+      <div style="position:absolute;right:-1.2%;top:28%;width:1.2%;height:14%;border-radius:2px;background:linear-gradient(#cdc9c6,#8c8886)"></div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
+
+<section id="plataforma" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(56px,7vw,104px) clamp(18px,4vw,52px)">
+  <div data-grid="split" style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,72px);align-items:start">
+    <div>
+      <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Como funciona</p>
+      <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:18px 0 0">Da configuração ao fechamento da folha.</h2>
+      <div style="margin-top:36px">
+        <sc-for list="{{ steps }}" as="s" hint-placeholder-count="3">
+          <details name="ps4-steps" open="{{ s.open }}" style="margin-bottom:10px;padding:0 20px;border-radius:18px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)">
+            <summary style="display:flex;gap:14px;align-items:baseline;padding:18px 0;font-size:17px;font-weight:600;cursor:pointer;list-style:none">
+              <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--red)">{{ s.num }}</span>
+              {{ s.title }}
+            </summary>
+            <p style="font-size:14.5px;line-height:1.75;color:var(--dim);margin:0 0 20px;padding-left:32px;max-width:46ch">{{ s.text }}</p>
+          </details>
+        </sc-for>
+      </div>
+    </div>
+    <div>
+      <div style="position:relative;border-radius:24px 24px 0 0;overflow:hidden;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);border-bottom:0;box-shadow:var(--glass-shadow)">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="1">
+          <div style="{{ t.panelStyle }}">
+            <image-slot id="{{ t.slotId }}" shape="rect" style="width:100%;aspect-ratio:4/3" placeholder="{{ t.placeholder }}"></image-slot>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;border-radius:0 0 24px 24px;overflow:hidden;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)" role="tablist">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+          <button type="button" role="tab" onClick="{{ t.select }}" style="{{ t.tabStyle }}">{{ t.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
+
+<section id="recursos" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
+  <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Recursos</p>
+  <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 44px;max-width:22ch">Nove funções para uma jornada auditável de ponta a ponta.</h2>
+  <div data-grid="three" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+    <sc-for list="{{ features }}" as="f" hint-placeholder-count="9">
+      <div style="{{ f.cellStyle }}" style-hover="{{ f.cellHover }}">
+        <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--red);margin:0">{{ f.num }}</p>
+        <h3 style="font-size:19px;font-weight:700;letter-spacing:-0.015em;margin:16px 0 0">{{ f.title }}</h3>
+        <p style="font-size:14.5px;line-height:1.7;color:var(--dim);margin:10px 0 0">{{ f.body }}</p>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section id="juridico" data-reveal style="max-width:1240px;margin:0 auto;padding:0 clamp(18px,4vw,52px)">
+  <div data-grid="split" style="border-radius:32px;background:rgba(20,17,16,.78);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border:1px solid rgba(255,255,255,.16);box-shadow:0 30px 80px rgba(20,17,16,.28);color:var(--paper);padding:clamp(36px,5vw,72px);display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(28px,5vw,72px);align-items:center">
+    <div>
+      <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.62);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Segurança e conformidade</p>
+      <h2 style="font-size:clamp(26px,3vw,42px);font-weight:700;line-height:1.03;letter-spacing:-0.03em;margin:18px 0 0">Feito para resistir a uma fiscalização.</h2>
+      <p style="font-size:15.5px;line-height:1.7;color:rgba(255,255,255,.76);margin:20px 0 0;max-width:48ch">O PontoSeven segue a Portaria 671 do Ministério do Trabalho para o REP‑P e trata os dados dos colaboradores conforme a LGPD. Batidas, ajustes e acessos ficam gravados em trilha imutável.</p>
+      <ul style="list-style:none;margin:28px 0 0;padding:0">
+        <sc-for list="{{ compliance }}" as="c" hint-placeholder-count="4">
+          <li style="display:flex;gap:14px;align-items:baseline;font-size:15px;padding:14px 0;border-top:2px solid rgba(255,255,255,.22)">
+            <span style="color:var(--red);font-size:13px">✓</span>{{ c }}
+          </li>
+        </sc-for>
+        <li style="border-top:2px solid rgba(255,255,255,.22)"></li>
+      </ul>
+    </div>
+    <div style="border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.28)">
+      <image-slot id="ps4-auditoria" shape="rect" style="width:100%;aspect-ratio:16/11" placeholder="Screenshot do painel de auditoria"></image-slot>
+    </div>
+  </div>
+</section>
+
+<section id="planos" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(56px,7vw,104px) clamp(18px,4vw,52px)">
+  <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Planos</p>
+  <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 44px;max-width:22ch">Preço por tamanho de equipe. Nada por função.</h2>
+  <div data-grid="three" style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
+
+    <div style="padding:32px;display:flex;flex-direction:column;{{ basicoStyle }}">
+      <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0">Básico</p>
+      <p style="font-size:42px;font-weight:800;letter-spacing:-0.035em;margin:14px 0 0">R$ 100<span style="font-size:15px;font-weight:400;color:var(--dim);letter-spacing:0">/mês</span></p>
+      <p style="font-size:14.5px;color:var(--dim);margin:6px 0 0">Até 10 funcionários</p>
+      <ul style="list-style:none;margin:24px 0 0;padding:0;display:grid;gap:11px;font-size:14.5px;color:var(--dim)">
+        <li>Geofence e biometria facial</li>
+        <li>Comprovantes e relatório mensal</li>
+        <li>Conformidade REP‑P e LGPD</li>
+      </ul>
+      <div style="margin-top:auto;padding-top:32px"><button type="button" style="width:100%;border-radius:999px;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);color:var(--ink);font-size:15px;font-weight:600;padding:13px 20px;cursor:pointer" style-hover="background:#fff">Criar conta</button></div>
+    </div>
+
+    <div style="padding:36px 32px;display:flex;flex-direction:column;position:relative;{{ standardStyle }}">
+      <span style="position:absolute;top:-11px;left:32px;background:var(--red);color:#fff;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 13px;border-radius:999px;box-shadow:0 6px 16px rgba(236,48,19,.3)">Mais escolhido</span>
+      <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--red);margin:0">Standard</p>
+      <p style="font-size:42px;font-weight:800;letter-spacing:-0.035em;margin:14px 0 0">R$ 200<span style="font-size:15px;font-weight:400;color:var(--dim);letter-spacing:0">/mês</span></p>
+      <p style="font-size:14.5px;color:var(--dim);margin:6px 0 0">Até 25 funcionários</p>
+      <ul style="list-style:none;margin:24px 0 0;padding:0;display:grid;gap:11px;font-size:14.5px;color:var(--dim)">
+        <li>Tudo do plano Básico</li>
+        <li>Múltiplos geofences</li>
+        <li>Log de auditoria completo</li>
+      </ul>
+      <div style="margin-top:auto;padding-top:32px"><button type="button" style="width:100%;border:0;border-radius:999px;background:var(--red);color:#fff;font-size:15px;font-weight:600;padding:14px 20px;cursor:pointer;box-shadow:0 10px 28px rgba(236,48,19,.3)" style-hover="background:#c9260d">Criar conta</button></div>
+    </div>
+
+    <div style="padding:32px;display:flex;flex-direction:column;{{ enterpriseStyle }}">
+      <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0">Enterprise</p>
+      <p style="font-size:30px;font-weight:800;letter-spacing:-0.03em;white-space:nowrap;margin:20px 0 4px">Sob consulta</p>
+      <p style="font-size:14.5px;color:var(--dim);margin:6px 0 0">Acima de 25 funcionários</p>
+      <ul style="list-style:none;margin:24px 0 0;padding:0;display:grid;gap:11px;font-size:14.5px;color:var(--dim)">
+        <li>Tudo do plano Standard</li>
+        <li>Integrações dedicadas de folha e RH</li>
+        <li>Atendimento e SLA dedicados</li>
+      </ul>
+      <div style="margin-top:auto;padding-top:32px"><button type="button" style="width:100%;border-radius:999px;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);color:var(--ink);font-size:15px;font-weight:600;padding:13px 20px;cursor:pointer" style-hover="background:#fff">Falar com vendas</button></div>
+    </div>
+
+  </div>
+</section>
+
+<div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
+
+<section id="faq" data-reveal style="max-width:900px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
+  <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>FAQ</p>
+  <h2 style="font-size:clamp(26px,3vw,42px);font-weight:700;line-height:1.03;letter-spacing:-0.03em;margin:0 0 32px">Antes de criar a conta.</h2>
+  <sc-for list="{{ faq }}" as="q" hint-placeholder-count="5">
+    <details style="margin-bottom:10px;padding:0 22px;border-radius:18px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)">
+      <summary style="padding:20px 0;font-size:17px;font-weight:600;cursor:pointer;list-style:none">{{ q.q }}</summary>
+      <p style="font-size:14.5px;line-height:1.75;color:var(--dim);margin:0 0 22px;max-width:62ch">{{ q.a }}</p>
+    </details>
+  </sc-for>
+</section>
+
+<section data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(32px,4vw,56px) clamp(18px,4vw,52px)">
+  <div style="border-radius:32px;background:linear-gradient(140deg, rgba(236,48,19,.9), rgba(184,37,12,.86));backdrop-filter:blur(26px) saturate(160%);-webkit-backdrop-filter:blur(26px) saturate(160%);border:1px solid rgba(255,255,255,.28);box-shadow:0 30px 80px rgba(236,48,19,.28);color:#fff;padding:clamp(40px,6vw,96px)">
+    <h3 style="font-size:clamp(32px,5vw,72px);font-weight:800;line-height:.98;letter-spacing:-0.035em;margin:0;max-width:18ch">Crie a conta hoje. Bata o ponto amanhã.</h3>
+    <p style="font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.7;color:rgba(255,255,255,.86);margin:24px 0 0;max-width:60ch">Sem instalação de relógio, sem contrato longo. Configure a empresa e comece a registrar jornada no mesmo dia.</p>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:32px">
+      <button type="button" style="border:0;border-radius:999px;background:#fff;color:var(--ink);font-size:15px;font-weight:600;padding:15px 30px;cursor:pointer;box-shadow:0 10px 30px rgba(20,17,16,.2)" style-hover="background:rgba(255,255,255,.88)">Criar conta</button>
+      <button type="button" style="border:1px solid rgba(255,255,255,.5);border-radius:999px;background:rgba(255,255,255,.14);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;font-size:15px;font-weight:600;padding:15px 30px;cursor:pointer" style-hover="background:rgba(255,255,255,.26)">Falar com vendas</button>
+    </div>
+  </div>
+</section>
+
+<footer style="max-width:1240px;margin:0 auto;padding:40px clamp(18px,4vw,52px) 56px;border-top:1px solid rgba(20,17,16,.1);display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--dim)">
+  <span>ponto · seven — ponto eletrônico digital</span>
+  <span>REP‑P · Portaria 671 · LGPD</span>
+</footer>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;highlightedPlan&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;standard&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;basico&quot;, &quot;standard&quot;, &quot;enterprise&quot;], &quot;section&quot;: &quot;Planos&quot;}
+}">
+class Component extends DCLogic {
+  state = { tab: 'app', motif: 0 };
+
+  waveHost = React.createRef();
+  waveCanvas = React.createRef();
+  pointer = { x: -2000, y: -2000, targetX: -2000, targetY: -2000 };
+
+  componentDidMount() {
+    const container = this.waveHost.current;
+    const canvas = this.waveCanvas.current;
+    if (!container || !canvas) return;
+    const ctx = canvas.getContext('2d', { alpha: false });
+    if (!ctx) return;
+
+    let time = 0;
+
+    this.ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const rect = entry.contentRect;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.floor(rect.width * dpr);
+        canvas.height = Math.floor(rect.height * dpr);
+        canvas.style.width = rect.width + 'px';
+        canvas.style.height = rect.height + 'px';
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
+      }
+    });
+    this.ro.observe(container);
+
+    this.onMove = (e) => {
+      const rect = container.getBoundingClientRect();
+      this.pointer.targetX = e.clientX - rect.left;
+      this.pointer.targetY = e.clientY - rect.top;
+    };
+    this.onLeave = () => {
+      this.pointer.targetX = -2000;
+      this.pointer.targetY = -2000;
+    };
+    window.addEventListener('mousemove', this.onMove);
+    window.addEventListener('mouseleave', this.onLeave);
+
+    const render = () => {
+      time += 0.015;
+
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      const pointer = this.pointer;
+
+      pointer.x += (pointer.targetX - pointer.x) * 0.1;
+      pointer.y += (pointer.targetY - pointer.y) * 0.1;
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+
+      const lines = 32;
+      const stepY = height / (lines + 1);
+
+      for (let i = 0; i < lines; i++) {
+        const yBase = stepY * (i + 1);
+        ctx.beginPath();
+        const points = 100;
+        const stepX = width / points;
+
+        for (let p = 0; p <= points; p++) {
+          const x = p * stepX;
+          const dx = x - pointer.x;
+          const dy = yBase - pointer.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const influence = dist < 250 ? (1 - dist / 250) * 35 : 0;
+
+          const wave = Math.sin(p * 0.1 + time + i * 0.2) * 18 + Math.cos(p * 0.05 - time * 0.8) * 12;
+          const y = yBase + wave - influence;
+
+          if (p === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+
+        const alpha = 0.12 + (i / lines) * 0.35;
+        ctx.strokeStyle = 'rgba(0, 0, 0, ' + alpha + ')';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      this.animId = requestAnimationFrame(render);
+    };
+    this.animId = requestAnimationFrame(render);
+
+    this.io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) { e.target.classList.add('is-in'); this.io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.05 });
+    document.querySelectorAll('[data-reveal]').forEach((n) => this.io.observe(n));
+  }
+
+  componentWillUnmount() {
+    cancelAnimationFrame(this.animId);
+    if (this.ro) this.ro.disconnect();
+    if (this.io) this.io.disconnect();
+    window.removeEventListener('mousemove', this.onMove);
+    window.removeEventListener('mouseleave', this.onLeave);
+  }
+
+  // desenho de entrada: cada traço se forma na carga
+  draw(i, dur) {
+    return {
+      pathLength: 1,
+      strokeDasharray: 1,
+      strokeDashoffset: 1,
+      style: { animation: 'ps-draw ' + (dur || 2.6) + 's cubic-bezier(.22,.75,.2,1) ' + (0.2 + i * 0.045) + 's forwards' },
+    };
+  }
+
+  // cristas de digital abertas em ondas atravessando a tela
+  fingerprint() {
+    const h = React.createElement;
+    const el = [];
+
+    const N = 42;
+    for (let i = 0; i < N; i++) {
+      const y = 6 + i * 4.7;
+      const amp = 11 + Math.sin(i * 0.42) * 7;
+      const drop = i * 0.5;
+      const d = 'M-30 ' + (y + amp * 0.6) +
+        ' C 20 ' + (y - amp) + ', 60 ' + (y + amp) + ', 100 ' + (y + drop * 0.2) +
+        ' S 170 ' + (y - amp * 0.9) + ', 230 ' + (y + amp * 0.5 + drop * 0.3);
+      const strong = i % 5 === 0;
+      el.push(h('path', Object.assign({
+        key: 'w' + i, d, fill: 'none', stroke: 'currentColor',
+        strokeWidth: strong ? 1.15 : 0.4, strokeLinecap: 'round',
+        opacity: strong ? 0.95 : 0.5,
+      }, this.draw(i, 2.6))));
+    }
+
+    // núcleo em laço, ancorando a leitura de digital
+    for (let i = 0; i < 6; i++) {
+      const r = 5 + i * 4.4;
+      el.push(h('path', Object.assign({
+        key: 'c' + i,
+        d: 'M' + (100 - r) + ' 118 C' + (100 - r) + ' ' + (106 - i * 4) + ' ' + (100 + r) + ' ' + (106 - i * 4) + ' ' + (100 + r) + ' ' + (120 + i * 2.4),
+        fill: 'none', stroke: 'currentColor', strokeWidth: i % 2 ? 0.4 : 1.1, strokeLinecap: 'round', opacity: 0.9,
+      }, this.draw(N + i, 2.2))));
+    }
+
+    return h('svg', { viewBox: '0 0 200 210', preserveAspectRatio: 'xMidYMid slice', width: '100%', height: '100%', 'aria-hidden': 'true' }, el);
+  }
+
+  // malha biométrica facial gigante
+  face() {
+    const h = React.createElement;
+    const mesh = [];
+    for (let i = 0; i < 26; i++) {
+      const y = 56 + i * 4.2;
+      const w = 26 + Math.sin((i / 25) * Math.PI) * 32;
+      mesh.push(h('path', {
+        key: 'm' + i,
+        d: 'M' + (100 - w) + ' ' + y + ' Q100 ' + (y + 8) + ' ' + (100 + w) + ' ' + y,
+        fill: 'none', stroke: 'currentColor', strokeWidth: i % 5 === 0 ? 1.05 : 0.4, opacity: i % 5 === 0 ? 0.9 : 0.5,
+      }));
+    }
+    for (let i = 0; i < 24; i++) {
+      const x = 50 + i * 4.4;
+      mesh.push(h('path', {
+        key: 'v' + i,
+        d: 'M' + x + ' 58 Q' + (x + (x - 100) * 0.14) + ' 112 ' + (x + (x - 100) * 0.34) + ' 164',
+        fill: 'none', stroke: 'currentColor',
+        strokeWidth: i % 6 === 0 ? 0.95 : 0.35, opacity: i % 6 === 0 ? 0.8 : 0.4,
+      }));
+    }
+    return h('svg', { viewBox: '0 0 200 210', preserveAspectRatio: 'xMidYMid slice', width: '100%', height: '100%', 'aria-hidden': 'true' }, [
+      h('path', {
+        key: 'oval',
+        d: 'M100 44 c27 0 42 24 42 54 c0 34 -19 56 -42 56 c-23 0 -42 -22 -42 -56 c0 -30 15 -54 42 -54 z',
+        fill: 'none', stroke: 'currentColor', strokeWidth: 0.85, opacity: 0.6,
+      }),
+      h('g', { key: 'mesh', clipPath: 'none' }, mesh),
+      h('circle', { key: 'e1', cx: 82, cy: 100, r: 2.6, fill: 'none', stroke: 'currentColor', strokeWidth: 0.9 }),
+      h('circle', { key: 'e2', cx: 118, cy: 100, r: 2.6, fill: 'none', stroke: 'currentColor', strokeWidth: 0.9 }),
+      h('path', { key: 'sc', d: 'M48 106 h104', stroke: 'currentColor', strokeWidth: 0.9, opacity: 0.7, style: { animation: 'ps-scan 6s ease-in-out infinite' } }),
+    ]);
+  }
+
+  buildTabs() {
+    const defs = [
+      { value: 'app', label: 'App do funcionário', placeholder: 'Tela do app: batida com biometria facial' },
+      { value: 'painel', label: 'Painel do gestor', placeholder: 'Painel do gestor: batidas do dia e geofences' },
+      { value: 'relatorio', label: 'Espelho de ponto', placeholder: 'Relatório mensal / espelho de ponto' },
+    ];
+    return defs.map((d, i) => {
+      const active = this.state.tab === d.value;
+      return {
+        ...d,
+        slotId: 'ps4-tab-' + d.value,
+        panelStyle: active ? 'display:block' : 'display:none',
+        tabStyle: 'flex:1;margin:6px;padding:12px 10px;border-radius:999px;font-weight:600;font-size:13.5px;white-space:nowrap;cursor:pointer;border:0;transition:background .2s ease;' +
+          (active
+            ? 'background:var(--red);color:#fff;box-shadow:0 8px 22px rgba(236,48,19,.28);'
+            : 'background:transparent;color:var(--dim);'),
+        select: () => this.setState({ tab: d.value }),
+      };
+    });
+  }
+
+  renderVals() {
+    const highlighted = this.props.highlightedPlan ?? 'standard';
+    const glass = 'border-radius:26px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);';
+    const hot = glass + 'background:linear-gradient(150deg, rgba(255,255,255,.66), rgba(236,48,19,.1));border-color:rgba(236,48,19,.34);';
+
+    const features = [
+      { num: '01', title: 'Geofence múltiplo', body: 'Várias cercas virtuais por unidade, obra ou cliente. A batida só é aceita dentro do perímetro autorizado.' },
+      { num: '02', title: 'Biometria facial', body: 'Reconhecimento facial em cada batida. Acaba a carona de crachá e a marcação feita por outra pessoa.' },
+      { num: '03', title: 'Controle de batidas', body: 'Entradas, saídas e intervalos validados na hora, com correção registrando quem pediu e quem aprovou.' },
+      { num: '04', title: 'Comprovantes de batida', body: 'Cada marcação gera o comprovante do funcionário com data, hora e localização — automático.' },
+      { num: '05', title: 'Relatório mensal', body: 'Espelho de ponto consolidado por funcionário e unidade, fechado no fim do mês e pronto para a folha.' },
+      { num: '06', title: 'REP‑P e LGPD', body: 'Alinhado à Portaria 671 para registro eletrônico por programa, com dados nas bases legais exigidas.' },
+      { num: '07', title: 'Log de auditoria', body: 'Trilha imutável de acessos, ajustes e alterações. Quem mexeu, quando e no quê.' },
+      { num: '08', title: 'Notificações', body: 'Avisos automáticos de atraso, esquecimento de marcação e pendências, para funcionário e gestor.' },
+      { num: '09', title: 'Configurações da empresa', body: 'Unidades, jornadas, escalas, feriados e permissões por perfil em um painel administrativo único.' },
+    ].map((f, i) => ({
+      ...f,
+      cellStyle: 'padding:26px;border-radius:22px;background:var(--glass);' +
+        'backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);' +
+        'border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);' +
+        'transition:transform .35s cubic-bezier(.22,.75,.2,1), box-shadow .35s ease;',
+      cellHover: 'transform:translateY(-4px);box-shadow:0 26px 60px rgba(20,17,16,.14), inset 0 1px 0 rgba(255,255,255,.9);',
+    }));
+
+    const active = this.state.motif;
+    const unusedMotifs = [
+      { el: this.fingerprint(), anim: 'ps-wind-a 34s ease-in-out infinite' },
+      { el: this.face(), anim: 'ps-wind-b 40s ease-in-out infinite' },
+    ].map((m, i) => ({
+      svg: m.el,
+      wrapStyle: 'position:absolute;top:50%;left:50%;width:min(150vh,150vw);aspect-ratio:200/210;' +
+        'transform-origin:50% 50%;margin:calc(min(150vh,150vw) * -0.525) 0 0 calc(min(150vh,150vw) * -0.5);' +
+        'color:var(--ink);will-change:opacity,filter;' +
+        'transition:opacity 3.4s cubic-bezier(.4,0,.2,1), filter 3.4s cubic-bezier(.4,0,.2,1);' +
+        'animation:' + m.anim + ';' +
+        (i === active ? 'opacity:.2;filter:blur(0px);' : 'opacity:0;filter:blur(6px);'),
+    }));
+
+    return {
+      waveHost: this.waveHost,
+      waveCanvas: this.waveCanvas,
+      tabs: this.buildTabs(),
+      features,
+      basicoStyle: highlighted === 'basico' ? hot : glass,
+      standardStyle: highlighted === 'standard' ? hot : glass,
+      enterpriseStyle: highlighted === 'enterprise' ? hot : glass,
+      steps: [
+        { num: '01', title: 'Configure a empresa', open: true, text: 'Cadastre unidades, jornadas, escalas e os geofences de cada local. Perfis de acesso definem quem aprova ajustes e quem só consulta.' },
+        { num: '02', title: 'A equipe bate o ponto', open: false, text: 'O funcionário registra pelo celular com biometria facial dentro do perímetro autorizado e recebe o comprovante da batida na hora.' },
+        { num: '03', title: 'Feche o mês', open: false, text: 'O espelho de ponto sai consolidado por funcionário, com log de auditoria anexo, e vai direto para a folha de pagamento.' },
+      ],
+      compliance: [
+        'Conformidade com a Portaria 671 (REP‑P)',
+        'Tratamento de dados alinhado à LGPD',
+        'Log de auditoria imutável, com trilha completa',
+        'Comprovante de batida entregue ao funcionário',
+      ],
+      faq: [
+        { q: 'O PontoSeven atende à Portaria 671 (REP‑P)?', a: 'Sim. O sistema segue as regras da Portaria 671 do Ministério do Trabalho para o Registro Eletrônico de Ponto por Programa.' },
+        { q: 'Como funciona o geofence?', a: 'Você define uma ou mais áreas autorizadas por unidade ou obra. A batida só é aceita quando o funcionário está dentro do perímetro configurado.' },
+        { q: 'A biometria facial é obrigatória para todos?', a: 'A biometria pode ser ativada por unidade ou perfil, conforme a política da sua empresa.' },
+        { q: 'Como os dados dos colaboradores são tratados?', a: 'Segundo a LGPD, com acesso restrito por perfil e trilha de auditoria para qualquer consulta ou alteração.' },
+        { q: 'Posso mudar de plano depois?', a: 'Sim. O plano acompanha o número de funcionários da empresa e pode ser ajustado quando a equipe crescer.' },
+      ],
+    };
+  }
+}
+
+</script>
+</body>
+</html>
