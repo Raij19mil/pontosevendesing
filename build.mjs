@@ -14,6 +14,7 @@
  */
 
 import { cp, mkdir, rm, readFile, writeFile, stat } from 'node:fs/promises';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -39,6 +40,39 @@ const PAGINAS = [
 // /bem-vindo.
 const CSS_PAGINAS = { origem: 'paginas/pagina.css', destino: 'pagina.css' };
 
+/* ── React servido do nosso domínio ───────────────────────────────────
+   O support.js carrega React da unpkg EM TEMPO DE EXECUÇÃO, e a landing
+   inteira depende disso: sem React, boot() não roda e a página vai ao ar
+   em branco. Com um CDN de terceiros no caminho crítico, a
+   disponibilidade da página de vendas é a disponibilidade da unpkg.
+
+   O próprio support.js tem o gancho para resolver: `cdnScriptFor()` olha
+   `window.__resources[url]` antes de usar a CDN. Publicamos os arquivos
+   em /vendor/ e injetamos o mapa antes do <script src="support.js">.
+   Nenhuma linha do runtime é alterada.
+
+   `sri` é o hash que o support.js FIXA para cada URL. Conferimos em todo
+   build: arquivo trocado, corrompido ou de outra versão reprova aqui em
+   vez de ir para produção. E é a prova de que o arquivo local é o mesmo
+   byte a byte que a unpkg servia. */
+const VENDOR = [
+  {
+    url: 'https://unpkg.com/react@18.3.1/umd/react.production.min.js',
+    arquivo: 'vendor/react.production.min.js',
+    sri: 'sha384-DGyLxAyjq0f9SPpVevD6IgztCFlnMF6oW/XQGmfe+IsZ8TqEiDrcHkMLKI6fiB/Z',
+  },
+  {
+    url: 'https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js',
+    arquivo: 'vendor/react-dom.production.min.js',
+    sri: 'sha384-gTGxhz21lVGYNMcdJOyq01Edg0jhn/c22nsx0kyqP0TxaV5WVdsSH1fSDUf5YJj1',
+  },
+];
+
+// O <script> do support.js é o ponto de injeção: o loadReactUmd() roda na
+// hora em que esse arquivo é avaliado, não no DOMContentLoaded, então o
+// mapa precisa existir ANTES dele.
+const ANCORA_SUPPORT = '<script src="./support.js"></script>';
+
 // image-slot.js busca '.image-slots.state.json' (com ponto) ao lado do
 // HTML. Publicamos sem o ponto — arquivos ocultos não são servidos de
 // forma confiável — e o rewrite do vercel.json liga um caminho ao outro.
@@ -63,8 +97,55 @@ async function exigir(nome) {
 await rm(SAIDA, { recursive: true, force: true });
 await mkdir(SAIDA, { recursive: true });
 
+/* ── React do nosso domínio: conferir, publicar, injetar ─────────── */
+
+const sri = (dados) => `sha384-${crypto.createHash('sha384').update(dados).digest('base64')}`;
+
+await mkdir(path.join(SAIDA, 'vendor'), { recursive: true });
+const mapaResources = {};
+
+for (const item of VENDOR) {
+  const dados = await readFile(await exigir(item.arquivo));
+  const conferido = sri(dados);
+  if (conferido !== item.sri) {
+    throw new Error(
+      `${item.arquivo} não é o arquivo que o support.js fixa.\n` +
+      `  esperado: ${item.sri}\n` +
+      `  no disco: ${conferido}\n` +
+      `Refaça o download (ver vendor/README.md) ou atualize VENDOR se o ` +
+      `support.js passou a fixar outra versão.`,
+    );
+  }
+  const destino = `vendor/${path.basename(item.arquivo)}`;
+  await writeFile(path.join(SAIDA, destino), dados);
+  mapaResources[item.url] = `/${destino}`;
+}
+
 // A landing vira a raiz do site.
-const html = await readFile(await exigir(PAGINA), 'utf8');
+const fonte = await readFile(await exigir(PAGINA), 'utf8');
+
+if (!fonte.includes(ANCORA_SUPPORT)) {
+  // Sem esta guarda, um support.js incluído de outra forma faria a
+  // injeção virar no-op EM SILÊNCIO — e a página voltaria a depender da
+  // unpkg sem ninguém notar até o dia em que ela cair.
+  throw new Error(
+    `Não achei ${ANCORA_SUPPORT} em "${PAGINA}".\n` +
+    `É o ponto onde o mapa de /vendor/ é injetado; sem ele a página volta ` +
+    `a carregar React da unpkg. Ajuste ANCORA_SUPPORT no build.mjs.`,
+  );
+}
+
+const injecao =
+  '<script>\n' +
+  '/* Injetado pelo build.mjs — ver VENDOR lá e vendor/README.md.\n' +
+  '   support.js consulta este mapa em cdnScriptFor() antes de ir à CDN,\n' +
+  '   então React vem do nosso domínio e a página não depende da unpkg\n' +
+  '   para renderizar. Sem integrity: o arquivo é do mesmo domínio, e o\n' +
+  '   hash que o support.js fixava é conferido no build. */\n' +
+  `window.__resources = ${JSON.stringify(mapaResources, null, 2)};\n` +
+  '</script>\n';
+
+const html = fonte.replace(ANCORA_SUPPORT, injecao + ANCORA_SUPPORT);
 await writeFile(path.join(SAIDA, 'index.html'), html);
 
 for (const nome of COPIAR) {
@@ -124,5 +205,6 @@ if (quebradas.length) {
 
 console.log(
   `public/ pronto — ${documentos.length} páginas, ${COPIAR.length + 2} recursos, ` +
+  `${VENDOR.length} arquivos de vendor com SRI conferido, ` +
   `${conferidas} referências conferidas`,
 );

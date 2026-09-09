@@ -23,6 +23,7 @@ PontoSeven Landing*.dc.html   fontes de design (Claude Design Canvas)
 support.js  image-slot.js     runtime do canvas e o componente <image-slot>
 .image-slots.state.json       imagens dos slots da v4
 _ds/  assets/                 design system "Modernist" e imagens
+vendor/                       React 18.3.1 UMD servido do nosso domínio
 
 paginas/                      páginas de fluxo (HTML puro, sem runtime)
   bem-vindo.html                retorno do checkout
@@ -54,16 +55,17 @@ lib/http.js  lib/sessaoHttp.js  utilidades de HTTP e de sessão
 
 db/migracoes.js               o esquema, versionado
 scripts/migrate.mjs           npm run db:migrate
-tests/                        teste ponta a ponta (npm test)
+tests/fluxo.test.mjs          cadastro → pagamento → login, ponta a ponta
+tests/build.test.mjs          trava o vendoramento do React (mapa + SRI)
 
 vercel.json  package.json  .env.example
 ```
 
 O `build.mjs` copia a v4 para `public/index.html`, publica as páginas de
-`paginas/` como rotas (`/entrar`, `/bem-vindo`, `/obrigado-vendas`) e
-**falha se alguma referência não existir na saída** — foi exatamente esse
-tipo de referência quebrada que já tinha deixado a página sem estilo e
-sem logo.
+`paginas/` como rotas (`/entrar`, `/bem-vindo`, `/obrigado-vendas`),
+serve o React de `/vendor/` em vez da unpkg e **falha se alguma
+referência não existir na saída** — foi exatamente esse tipo de
+referência quebrada que já tinha deixado a página sem estilo e sem logo.
 
 ---
 
@@ -330,6 +332,29 @@ cancelamento.
 à mão no dashboard não é motivo para rebaixar ninguém — vira aviso no
 log.
 
+**React vem do nosso domínio, não da unpkg.** O `support.js` carregava
+React de `unpkg.com` **em tempo de execução**, e a landing inteira
+dependia disso: sem React, `boot()` não roda e a página vai ao ar **em
+branco** — não é degradação, é tela vazia. Com um CDN de terceiros no
+caminho crítico, a disponibilidade da página de vendas era a
+disponibilidade da unpkg, e qualquer rede que bloqueie CDNs públicos via
+um site quebrado.
+
+A correção usa um gancho do próprio runtime — `cdnScriptFor()` consulta
+`window.__resources[url]` antes de ir à CDN — então **nenhuma linha do
+`support.js` foi alterada**, e um `support.js` novo não desfaz o
+conserto. O `build.mjs` publica `vendor/` em `/vendor/`, injeta o mapa
+antes do `<script src="support.js">` e **confere o SRI que o
+`support.js` fixa em cada build**: arquivo trocado reprova o build em
+vez de ir para produção. Os hashes conferem com os que ele fixava para a
+unpkg, ou seja, são os mesmos bytes. Detalhes em
+[`vendor/README.md`](vendor/README.md).
+
+Verificado com a unpkg inalcançável: a página renderiza, e o HTML
+renderizado é **idêntico**, byte a byte, ao da versão que carregava da
+CDN. `tests/build.test.mjs` trava as duas pontas — o mapa injetado e o
+SRI — porque as duas quebram em silêncio.
+
 **Rewrite do sidecar de imagens.** `image-slot.js` busca
 `.image-slots.state.json` (com ponto) ao lado do HTML, e arquivo oculto
 não é servido de forma confiável. O build publica
@@ -345,7 +370,9 @@ validação e derruba o deploy.
 - [x] ~~Trocar `lib/contas.js` pelo banco real~~ — PostgreSQL, com migrações
 - [x] ~~Rate limit por IP e por e‑mail antes do hash de senha~~
 - [x] ~~Ligar cadastro e assinatura ao Log de Auditoria~~ — tabela `auditoria`
+- [x] ~~React fora do caminho crítico de CDN~~ — servido de `/vendor/`
 - [ ] Implementar `/sso` na plataforma para receber o token (ver `lib/token.js`)
+- [ ] Hospedar as duas fontes (Overused Grotesk via jsdelivr, Archivo via Google Fonts) — hoje são as **únicas** dependências externas em tempo de execução; caem para `system-ui` sem quebrar a página, então é aparência, não disponibilidade
 - [ ] Publicar `/termos` e `/privacidade` — o checkbox do cadastro já aponta para lá
 - [ ] E‑mail de boas‑vindas disparado **do webhook** (o TODO está lá)
 - [ ] Recuperação de senha — hoje só existe login
