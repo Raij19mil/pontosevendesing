@@ -29,7 +29,21 @@ import { resolverPlano } from '../../lib/plans.js';
 import * as contas from '../../lib/contas.js';
 
 const scrypt = promisify(crypto.scrypt);
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-06-20' });
+
+// Cliente preguiçoso: construir a Stripe no topo do módulo derruba a função
+// inteira na inicialização quando a chave não está configurada, e aí toda
+// requisição vira erro de plataforma sem mensagem. Assim, um deploy sem
+// variáveis responde 503 explicando o que falta.
+let _stripe = null;
+function getStripe() {
+  if (!_stripe) _stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-06-20' });
+  return _stripe;
+}
+
+function faltaConfigurar() {
+  return ['STRIPE_SECRET_KEY', 'STRIPE_PRICE_BASICO', 'STRIPE_PRICE_STANDARD']
+    .filter((v) => !process.env[v]);
+}
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const ORIGENS = (process.env.ORIGENS_PERMITIDAS || '')
@@ -108,6 +122,14 @@ export async function OPTIONS(request) {
 export async function POST(request) {
   const cors = cabecalhosCors(request);
 
+  const faltando = faltaConfigurar();
+  if (faltando.length) {
+    console.error('[checkout] variáveis ausentes:', faltando.join(', '));
+    return json({
+      mensagem: 'O cadastro ainda não está disponível neste ambiente. Fale com o suporte.',
+    }, 503, cors);
+  }
+
   // TODO(produção): limitar tentativas por IP e por e-mail antes daqui
   // (o hash de senha é caro de propósito — sem limite ele vira o alvo).
 
@@ -183,7 +205,7 @@ export async function POST(request) {
        domínio, o que mantém o escopo de PCI no SAQ-A. */
     let customerId = conta.stripeCustomerId;
     if (!customerId) {
-      const customer = await stripe.customers.create(
+      const customer = await getStripe().customers.create(
         {
           email,                       // a senha NUNCA vai para a Stripe
           name: nome,
@@ -201,7 +223,7 @@ export async function POST(request) {
     const sucesso = process.env.URL_SUCESSO || `${base}/bem-vindo`;
     const cancelamento = process.env.URL_CANCELAMENTO || `${base}/?checkout=cancelado`;
 
-    const sessao = await stripe.checkout.sessions.create(
+    const sessao = await getStripe().checkout.sessions.create(
       {
         mode: 'subscription',
         customer: customerId,

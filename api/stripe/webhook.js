@@ -22,7 +22,13 @@ import Stripe from 'stripe';
 import { planoPorPriceId } from '../../lib/plans.js';
 import * as contas from '../../lib/contas.js';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-06-20' });
+// Preguiçoso pelo mesmo motivo do checkout: sem a chave, construir aqui
+// derrubaria a função na inicialização em vez de dar uma resposta legível.
+let _stripe = null;
+function getStripe() {
+  if (!_stripe) _stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-06-20' });
+  return _stripe;
+}
 
 async function contaDoEvento(objeto) {
   const id = objeto.client_reference_id || objeto.metadata?.conta_id;
@@ -34,13 +40,19 @@ async function contaDoEvento(objeto) {
 }
 
 export async function POST(request) {
+  if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
+    console.error('[webhook] STRIPE_SECRET_KEY ou STRIPE_WEBHOOK_SECRET ausente');
+    // 503 faz a Stripe reentregar depois — melhor do que engolir o evento.
+    return Response.json({ mensagem: 'Webhook não configurado.' }, { status: 503 });
+  }
+
   const cru = await request.text();
 
   let evento;
   try {
     // constructEventAsync usa WebCrypto: é a variante correta fora do
     // caminho síncrono do Node e funciona igual aqui.
-    evento = await stripe.webhooks.constructEventAsync(
+    evento = await getStripe().webhooks.constructEventAsync(
       cru,
       request.headers.get('stripe-signature'),
       process.env.STRIPE_WEBHOOK_SECRET,
