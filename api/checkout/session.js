@@ -1,75 +1,48 @@
 /**
  * POST /api/checkout/session
  *
- * Único endpoint que a landing chama. Cria (ou reaproveita) a conta e
- * devolve para onde redirecionar:
+ * Endpoint do cadastro. Cria (ou reaproveita) a conta NO BANCO e devolve
+ * para onde redirecionar:
  *   planos pagos → Stripe Checkout hospedado
  *   Enterprise   → página de obrigado, com o lead registrado
  *
- * Corpo esperado (o mesmo que a v4 envia):
+ * Corpo esperado (o mesmo que a landing v4 envia):
  *   { nome, email, senha, plano, aceiteLgpd, lgpdVersao, origem }
  *
  * Resposta:
  *   200 { url }                   → redirecionar o browser para cá
  *   400 { mensagem, campo? }      → validação
- *   409 { mensagem }              → e-mail já tem conta ativa
+ *   409 { mensagem, acao? }       → o e-mail já tem conta que passou pelo caixa
+ *   429 { mensagem }              → limite de tentativas
  *   500 { mensagem }              → erro interno (detalhe só no log)
+ *   503 { mensagem }              → ambiente sem Stripe ou sem banco
+ *
+ * A conta nasce 'pendente'. Quem a torna 'ativa' é o webhook, em
+ * api/stripe/webhook.js — o redirect de sucesso do browser não é prova
+ * de pagamento.
  *
  * Assinatura Web das Vercel Functions: exportar POST/OPTIONS faz a
- * plataforma responder 405 sozinha nos demais métodos.
- *
- * Runtime Node (padrão) de propósito: o SDK da Stripe e o crypto.scrypt
- * abaixo não rodam no runtime Edge.
+ * plataforma responder 405 sozinha nos demais métodos. Runtime Node
+ * (padrão) de propósito — o SDK da Stripe e o scrypt do hash de senha
+ * não rodam no Edge.
  */
 
-import crypto from 'node:crypto';
-import { promisify } from 'node:util';
-import Stripe from 'stripe';
 import { resolverPlano } from '../../lib/plans.js';
+import { stripe, respostaSeNaoConfigurado } from '../../lib/stripe.js';
+import { gerarHash } from '../../lib/senha.js';
 import * as contas from '../../lib/contas.js';
-
-const scrypt = promisify(crypto.scrypt);
-
-// Cliente preguiçoso: construir a Stripe no topo do módulo derruba a função
-// inteira na inicialização quando a chave não está configurada, e aí toda
-// requisição vira erro de plataforma sem mensagem. Assim, um deploy sem
-// variáveis responde 503 explicando o que falta.
-let _stripe = null;
-function getStripe() {
-  if (!_stripe) _stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-06-20' });
-  return _stripe;
-}
-
-function faltaConfigurar() {
-  return ['STRIPE_SECRET_KEY', 'STRIPE_PRICE_BASICO', 'STRIPE_PRICE_STANDARD']
-    .filter((v) => !process.env[v]);
-}
+import { bloquear } from '../../lib/limite.js';
+import {
+  json, cabecalhosCors, respostaOptions, lerCorpoJson,
+  ipDoPedido, userAgentDoPedido, baseDoPedido,
+} from '../../lib/http.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const ORIGENS = (process.env.ORIGENS_PERMITIDAS || '')
-  .split(',').map((o) => o.trim()).filter(Boolean);
-
-/* ── senha ────────────────────────────────────────────────────────────
-   scrypt do próprio Node para não precisar de dependência nativa.
-   Se puder instalar @node-rs/argon2, argon2id é preferível — troque só
-   esta função, o formato do hash já carrega o algoritmo no prefixo. */
-
-// maxmem é obrigatório aqui: N=32768 e r=8 pedem 128*N*r = 32 MiB, que é
-// exatamente o teto padrão do Node — sem folga, todo hash morre com
-// "memory limit exceeded" e nenhum cadastro passa.
-const SCRYPT = { N: 32768, r: 8, p: 1, keylen: 64, maxmem: 64 * 1024 * 1024 };
-
-async function hashSenha(senha) {
-  const salt = crypto.randomBytes(16);
-  const chave = await scrypt(senha, salt, SCRYPT.keylen, {
-    N: SCRYPT.N, r: SCRYPT.r, p: SCRYPT.p, maxmem: SCRYPT.maxmem,
-  });
-  return ['scrypt', SCRYPT.N, SCRYPT.r, SCRYPT.p, salt.toString('base64'), chave.toString('base64')].join('$');
-}
 
 /* ── validação ────────────────────────────────────────────────────────
-   Repete o que a landing já checa. A validação do cliente é conveniência;
-   esta é a que vale, porque qualquer um pode chamar o endpoint direto. */
+   Repete o que a landing já checa. A validação do cliente é
+   conveniência; esta é a que vale, porque qualquer um pode chamar o
+   endpoint direto. */
 function validar(corpo) {
   const nome = String(corpo.nome || '').trim();
   if (nome.length < 3) return { campo: 'nome', mensagem: 'Informe o nome do responsável pela conta.' };
@@ -94,51 +67,38 @@ function validar(corpo) {
   return null;
 }
 
-/* ── CORS ─────────────────────────────────────────────────────────────
-   Só entra em jogo se a landing for servida de outro domínio. No deploy
-   padrão ela é do mesmo projeto e chama /api/checkout/session relativo,
-   ou seja, mesma origem e nada disto é exercitado. */
-function cabecalhosCors(request) {
-  const h = {
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Max-Age': '86400',
-  };
-  const origem = request.headers.get('origin');
-  if (origem && ORIGENS.includes(origem)) {
-    h['Access-Control-Allow-Origin'] = origem;
-    h['Vary'] = 'Origin';
-  }
-  return h;
-}
-
-const json = (corpo, status, extras) =>
-  Response.json(corpo, { status, headers: extras });
+/**
+ * O que responder quando o e-mail já pertence a uma conta que passou
+ * pelo caixa. Nenhuma delas é sobrescrita pelo formulário anônimo: a
+ * volta é sempre pelo login, com a senha que a pessoa já tem.
+ */
+const RESPOSTA_POR_STATUS = {
+  ativa: {
+    mensagem: 'Esse e‑mail já tem uma conta ativa. Entre na plataforma para mudar de plano.',
+    acao: 'entrar',
+  },
+  inadimplente: {
+    mensagem: 'Esse e‑mail já tem conta, com um pagamento pendente. Entre para regularizar a assinatura.',
+    acao: 'regularizar',
+  },
+  cancelada: {
+    mensagem: 'Esse e‑mail já teve uma conta aqui. Entre com a sua senha para reativar a assinatura.',
+    acao: 'reativar',
+  },
+};
 
 export async function OPTIONS(request) {
-  return new Response(null, { status: 204, headers: cabecalhosCors(request) });
+  return respostaOptions(request);
 }
 
 export async function POST(request) {
   const cors = cabecalhosCors(request);
 
-  const faltando = faltaConfigurar();
-  if (faltando.length) {
-    console.error('[checkout] variáveis ausentes:', faltando.join(', '));
-    return json({
-      mensagem: 'O cadastro ainda não está disponível neste ambiente. Fale com o suporte.',
-    }, 503, cors);
-  }
+  const naoConfigurado = respostaSeNaoConfigurado('checkout', cors);
+  if (naoConfigurado) return naoConfigurado;
 
-  // TODO(produção): limitar tentativas por IP e por e-mail antes daqui
-  // (o hash de senha é caro de propósito — sem limite ele vira o alvo).
-
-  let corpo;
-  try {
-    corpo = await request.json();
-  } catch {
-    return json({ mensagem: 'Corpo inválido.' }, 400, cors);
-  }
+  const corpo = await lerCorpoJson(request);
+  if (!corpo) return json({ mensagem: 'Corpo inválido.' }, 400, cors);
 
   const erro = validar(corpo);
   if (erro) return json(erro, 400, cors);
@@ -146,6 +106,15 @@ export async function POST(request) {
   const nome = String(corpo.nome).trim();
   const email = String(corpo.email).trim().toLowerCase();
   const lgpdVersao = String(corpo.lgpdVersao || '1.0');
+  const ip = ipDoPedido(request);
+
+  // Antes do hash, nunca depois: o scrypt é a parte cara, e deixá-la
+  // atrás do limite é o motivo de o limite existir.
+  const limitado = await bloquear([
+    { chave: `cadastro:ip:${ip}`, limite: 12, janelaSegundos: 600 },
+    { chave: `cadastro:email:${email}`, limite: 6, janelaSegundos: 3600 },
+  ], cors);
+  if (limitado) return limitado;
 
   let plano;
   try {
@@ -157,45 +126,41 @@ export async function POST(request) {
   }
 
   try {
-    const senhaHash = await hashSenha(String(corpo.senha));
-    const encaminhado = request.headers.get('x-forwarded-for');
+    const senhaHash = await gerarHash(String(corpo.senha));
     const aceiteLgpd = {
       versao: lgpdVersao,
       em: new Date().toISOString(),
-      ip: encaminhado ? encaminhado.split(',')[0].trim() : null,
-      userAgent: String(request.headers.get('user-agent') || '').slice(0, 300),
+      ip,
+      userAgent: userAgentDoPedido(request),
     };
 
-    let conta = await contas.buscarPorEmail(email);
+    let conta = await contas.criarOuReaproveitar({
+      nome, email, senhaHash, plano: plano.slug, maxFuncionarios: plano.maxFuncionarios, aceiteLgpd,
+    });
 
-    if (conta && conta.status === 'ativa') {
-      // Não criamos uma segunda assinatura para o mesmo e-mail: quem já
-      // paga muda de plano dentro da plataforma, não por aqui.
-      return json({
-        mensagem: 'Esse e‑mail já tem uma conta ativa. Entre na plataforma para mudar de plano.',
-      }, 409, cors);
-    }
-
-    if (conta) {
-      // Conta pendente de um checkout abandonado: reaproveita em vez de
-      // travar a pessoa para sempre num e-mail que ela nunca conseguiu usar.
-      conta = await contas.atualizar(conta.id, {
-        nome, senhaHash, plano: plano.slug, maxFuncionarios: plano.maxFuncionarios, aceiteLgpd,
+    // O status devolvido é o que a conta JÁ tinha: 'pendente' é
+    // cadastro novo ou checkout abandonado; qualquer outro é conta que
+    // já existiu de verdade e não se sobrescreve por aqui.
+    const jaExiste = RESPOSTA_POR_STATUS[conta.status];
+    if (jaExiste) {
+      await contas.registrarAuditoria({
+        contaId: conta.id, acao: 'Cadastro recusado (conta existente)',
+        entidade: email, ip, statusAtual: conta.status,
       });
-    } else {
-      conta = await contas.criar({
-        nome, email, senhaHash, plano: plano.slug, maxFuncionarios: plano.maxFuncionarios, aceiteLgpd,
-      });
+      return json(jaExiste, 409, cors);
     }
 
     await contas.registrarAuditoria({
-      acao: 'Aceite Termo LGPD', entidade: email, versao: lgpdVersao,
-      ip: aceiteLgpd.ip, contaId: conta.id,
+      contaId: conta.id, acao: 'Aceite Termo LGPD',
+      entidade: email, ip, versao: lgpdVersao, plano: plano.slug,
     });
 
     /* ── Enterprise: vira lead, sem passar pela Stripe ──────────────── */
     if (plano.cobranca === 'vendas') {
-      await contas.registrarAuditoria({ acao: 'Lead Enterprise', entidade: email, contaId: conta.id });
+      await contas.registrarAuditoria({
+        contaId: conta.id, acao: 'Lead Enterprise', entidade: email, ip,
+        origem: String(corpo.origem || 'landing'),
+      });
       // TODO(produção): notificar o comercial (e-mail/CRM) aqui.
       return json({ url: process.env.URL_OBRIGADO_VENDAS || '/obrigado-vendas' }, 200, cors);
     }
@@ -205,7 +170,7 @@ export async function POST(request) {
        domínio, o que mantém o escopo de PCI no SAQ-A. */
     let customerId = conta.stripeCustomerId;
     if (!customerId) {
-      const customer = await getStripe().customers.create(
+      const customer = await stripe().customers.create(
         {
           email,                       // a senha NUNCA vai para a Stripe
           name: nome,
@@ -214,16 +179,14 @@ export async function POST(request) {
         { idempotencyKey: `customer:${conta.id}` },
       );
       customerId = customer.id;
-      await contas.atualizar(conta.id, { stripeCustomerId: customerId });
+      conta = await contas.atualizar(conta.id, { stripeCustomerId: customerId });
     }
 
-    // Base absoluta para as URLs de retorno: a Stripe exige URL completa,
-    // e no preview da Vercel o domínio muda a cada deploy.
-    const base = process.env.URL_BASE || new URL(request.url).origin;
+    const base = baseDoPedido(request);
     const sucesso = process.env.URL_SUCESSO || `${base}/bem-vindo`;
     const cancelamento = process.env.URL_CANCELAMENTO || `${base}/?checkout=cancelado`;
 
-    const sessao = await getStripe().checkout.sessions.create(
+    const sessao = await stripe().checkout.sessions.create(
       {
         mode: 'subscription',
         customer: customerId,
@@ -231,6 +194,9 @@ export async function POST(request) {
         line_items: [{ price: plano.priceId, quantity: 1 }],
         locale: 'pt-BR',
         allow_promotion_codes: true,
+        // Repetido na assinatura E na sessão: o webhook de
+        // customer.subscription.* recebe só a assinatura, e sem os
+        // metadados nela a única pista de dono seria o customer.
         subscription_data: { metadata: { conta_id: conta.id, plano: plano.slug } },
         metadata: { conta_id: conta.id, plano: plano.slug },
         success_url: `${sucesso}?session_id={CHECKOUT_SESSION_ID}`,
@@ -240,6 +206,11 @@ export async function POST(request) {
       // Stripe devolve a MESMA sessão em vez de abrir duas cobranças.
       { idempotencyKey: `checkout:${conta.id}:${plano.slug}` },
     );
+
+    await contas.registrarAuditoria({
+      contaId: conta.id, acao: 'Checkout iniciado', entidade: email, ip,
+      plano: plano.slug, sessao: sessao.id,
+    });
 
     return json({ url: sessao.url }, 200, cors);
   } catch (e) {

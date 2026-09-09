@@ -1,16 +1,19 @@
 /**
  * POST /api/stripe/webhook
  *
- * É aqui que a assinatura vira conta ativa. O /api/checkout/session só
- * cria a conta como 'pendente': confiar no redirect de sucesso do browser
- * é furado (a pessoa fecha a aba, a rede cai, ou alguém abre a success_url
- * na mão). O webhook é a única fonte confiável de "pagou".
+ * É aqui que a assinatura vira conta ativa NO BANCO. O
+ * /api/checkout/session só cria a conta como 'pendente': confiar no
+ * redirect de sucesso do browser é furado — a pessoa fecha a aba, a rede
+ * cai, ou alguém abre a success_url na mão. O webhook é a única fonte
+ * confiável de "pagou".
  *
  * Eventos tratados:
- *   checkout.session.completed      → ativa a conta
- *   customer.subscription.updated   → acompanha plano e status
- *   customer.subscription.deleted   → cancela
- *   invoice.payment_failed          → marca inadimplente
+ *   checkout.session.completed        → ativa a conta
+ *   customer.subscription.created     → registra a assinatura
+ *   customer.subscription.updated     → acompanha plano, status e período
+ *   customer.subscription.deleted     → cancela e derruba as sessões
+ *   invoice.paid / .payment_succeeded → renovação: reativa quem estava devendo
+ *   invoice.payment_failed            → marca inadimplente
  *
  * A assinatura Web resolve de graça o erro nº 1 de quem integra webhook:
  * `await request.text()` devolve os BYTES CRUS. Com a assinatura Node
@@ -18,30 +21,71 @@
  * um byte muda e toda entrega passa a falhar na verificação.
  */
 
-import Stripe from 'stripe';
-import { planoPorPriceId } from '../../lib/plans.js';
+import { stripe } from '../../lib/stripe.js';
+import { bancoConfigurado } from '../../lib/db.js';
 import * as contas from '../../lib/contas.js';
+import {
+  resolverConta, sincronizarAssinatura, aplicarCheckout, paraId,
+} from '../../lib/assinatura.js';
 
-// Preguiçoso pelo mesmo motivo do checkout: sem a chave, construir aqui
-// derrubaria a função na inicialização em vez de dar uma resposta legível.
-let _stripe = null;
-function getStripe() {
-  if (!_stripe) _stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-06-20' });
-  return _stripe;
+/* ── tratadores por evento ────────────────────────────────────────── */
+
+async function aoConcluirCheckout(sessao) {
+  await aplicarCheckout(sessao, { acao: 'Assinatura ativada' });
+  // TODO(produção): e-mail de boas-vindas daqui, nunca do
+  // /api/checkout/session — só neste ponto o pagamento está confirmado.
 }
 
-async function contaDoEvento(objeto) {
-  const id = objeto.client_reference_id || objeto.metadata?.conta_id;
-  if (id) {
-    const c = await contas.buscarPorStripeCustomer(objeto.customer);
-    if (c && c.id === id) return c;
-  }
-  return objeto.customer ? contas.buscarPorStripeCustomer(objeto.customer) : null;
+async function aoMudarAssinatura(assinatura, acao) {
+  const conta = await resolverConta(assinatura);
+  if (!conta) { console.error('[webhook] conta não encontrada para', assinatura.id); return; }
+  await sincronizarAssinatura(conta, assinatura, { acao });
+  // Cancelar NÃO apaga registro de ponto: a Portaria 671 exige a guarda
+  // dos dados de jornada. Bloqueie o acesso, preserve o histórico.
 }
+
+async function aoPagarFatura(fatura) {
+  const conta = await resolverConta(fatura);
+  if (!conta) return;
+
+  const assinaturaId = paraId(
+    fatura.subscription ?? fatura.parent?.subscription_details?.subscription,
+  );
+  if (!assinaturaId) return;   // fatura avulsa: não mexe na assinatura
+
+  // Buscar a assinatura em vez de confiar na fatura: é a renovação que
+  // move o período, e o período novo só existe lá.
+  const assinatura = await stripe().subscriptions.retrieve(assinaturaId);
+  await sincronizarAssinatura(conta, assinatura, { acao: 'Pagamento confirmado' });
+}
+
+async function aoFalharPagamento(fatura) {
+  const conta = await resolverConta(fatura);
+  if (!conta) return;
+
+  await contas.atualizar(conta.id, { status: 'inadimplente', assinaturaStatus: 'past_due' });
+  await contas.registrarAuditoria({
+    contaId: conta.id, acao: 'Pagamento recusado', entidade: conta.email,
+    fatura: fatura.id, tentativa: fatura.attempt_count ?? null,
+    valor: fatura.amount_due ?? null,
+  });
+  // As sessões NÃO são revogadas aqui: a Stripe ainda vai tentar
+  // recobrar por alguns dias, e derrubar o cliente na primeira recusa
+  // (cartão vencido, limite momentâneo) é castigo demais. Quem corta o
+  // acesso é o cancelamento.
+}
+
+/* ── entrada ──────────────────────────────────────────────────────── */
 
 export async function POST(request) {
-  if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
-    console.error('[webhook] STRIPE_SECRET_KEY ou STRIPE_WEBHOOK_SECRET ausente');
+  const faltando = [
+    !process.env.STRIPE_SECRET_KEY && 'STRIPE_SECRET_KEY',
+    !process.env.STRIPE_WEBHOOK_SECRET && 'STRIPE_WEBHOOK_SECRET',
+    !bancoConfigurado() && 'DATABASE_URL',
+  ].filter(Boolean);
+
+  if (faltando.length) {
+    console.error('[webhook] variáveis ausentes:', faltando.join(', '));
     // 503 faz a Stripe reentregar depois — melhor do que engolir o evento.
     return Response.json({ mensagem: 'Webhook não configurado.' }, { status: 503 });
   }
@@ -52,7 +96,7 @@ export async function POST(request) {
   try {
     // constructEventAsync usa WebCrypto: é a variante correta fora do
     // caminho síncrono do Node e funciona igual aqui.
-    evento = await getStripe().webhooks.constructEventAsync(
+    evento = await stripe().webhooks.constructEventAsync(
       cru,
       request.headers.get('stripe-signature'),
       process.env.STRIPE_WEBHOOK_SECRET,
@@ -63,89 +107,55 @@ export async function POST(request) {
     return Response.json({ mensagem: 'Assinatura inválida.' }, { status: 400 });
   }
 
-  // A Stripe reentrega em timeout ou 5xx. Sem esta guarda, uma reentrega
-  // reprocessa o evento — e um 200 rápido evita que ela reentregue à toa.
-  if (await contas.eventoJaProcessado(evento.id)) {
-    return Response.json({ recebido: true });
+  // Reserva ANTES de processar. A Stripe reentrega em timeout ou 5xx, e
+  // duas entregas simultâneas do mesmo evento leriam "não processado" ao
+  // mesmo tempo se a marcação viesse depois.
+  let reservado;
+  try {
+    reservado = await contas.reivindicarEvento(evento.id, evento.type);
+  } catch (e) {
+    console.error('[webhook] banco indisponível na reserva de', evento.id, e.message);
+    return Response.json({ mensagem: 'Banco indisponível.' }, { status: 503 });
   }
+  if (!reservado) return Response.json({ recebido: true, duplicado: true });
 
   try {
     switch (evento.type) {
-      case 'checkout.session.completed': {
-        const sessao = evento.data.object;
-        if (sessao.payment_status !== 'paid' && sessao.status !== 'complete') break;
-
-        const conta = await contaDoEvento(sessao);
-        if (!conta) { console.error('[webhook] conta não encontrada para', sessao.id); break; }
-
-        await contas.atualizar(conta.id, {
-          status: 'ativa',
-          stripeSubscriptionId: sessao.subscription || null,
-        });
-        await contas.registrarAuditoria({
-          acao: 'Assinatura ativada', entidade: conta.email,
-          contaId: conta.id, plano: conta.plano, sessao: sessao.id,
-        });
-        // TODO(produção): disparar o e-mail de boas-vindas daqui, não do
-        // /api/checkout/session — só neste ponto o pagamento está confirmado.
+      case 'checkout.session.completed':
+        await aoConcluirCheckout(evento.data.object);
         break;
-      }
 
-      case 'customer.subscription.updated': {
-        const assinatura = evento.data.object;
-        const conta = await contas.buscarPorStripeCustomer(assinatura.customer);
-        if (!conta) break;
-
-        const priceId = assinatura.items?.data?.[0]?.price?.id;
-        const plano = priceId ? planoPorPriceId(priceId) : null;
-
-        // 'active' e 'trialing' liberam o uso; past_due/unpaid seguram.
-        const liberado = assinatura.status === 'active' || assinatura.status === 'trialing';
-
-        await contas.atualizar(conta.id, {
-          status: liberado ? 'ativa' : 'inadimplente',
-          stripeSubscriptionId: assinatura.id,
-          ...(plano ? { plano: plano.slug, maxFuncionarios: plano.maxFuncionarios } : {}),
-        });
-        await contas.registrarAuditoria({
-          acao: 'Assinatura atualizada', entidade: conta.email,
-          contaId: conta.id, statusStripe: assinatura.status, plano: plano?.slug ?? conta.plano,
-        });
+      case 'customer.subscription.created':
+        await aoMudarAssinatura(evento.data.object, 'Assinatura criada');
         break;
-      }
 
-      case 'customer.subscription.deleted': {
-        const assinatura = evento.data.object;
-        const conta = await contas.buscarPorStripeCustomer(assinatura.customer);
-        if (!conta) break;
-        await contas.atualizar(conta.id, { status: 'cancelada' });
-        await contas.registrarAuditoria({
-          acao: 'Assinatura cancelada', entidade: conta.email, contaId: conta.id,
-        });
-        // Cancelar NÃO apaga registro de ponto: a Portaria 671 exige guarda
-        // dos dados de jornada. Bloqueie o acesso, preserve o histórico.
+      case 'customer.subscription.updated':
+        await aoMudarAssinatura(evento.data.object, 'Assinatura atualizada');
         break;
-      }
 
-      case 'invoice.payment_failed': {
-        const fatura = evento.data.object;
-        const conta = await contas.buscarPorStripeCustomer(fatura.customer);
-        if (!conta) break;
-        await contas.atualizar(conta.id, { status: 'inadimplente' });
-        await contas.registrarAuditoria({
-          acao: 'Pagamento recusado', entidade: conta.email,
-          contaId: conta.id, fatura: fatura.id,
-        });
+      case 'customer.subscription.deleted':
+        await aoMudarAssinatura(evento.data.object, 'Assinatura cancelada');
         break;
-      }
+
+      case 'invoice.paid':
+      case 'invoice.payment_succeeded':
+        await aoPagarFatura(evento.data.object);
+        break;
+
+      case 'invoice.payment_failed':
+        await aoFalharPagamento(evento.data.object);
+        break;
 
       default:
         break;   // eventos não assinados chegam mesmo assim; ignorar é o certo
     }
 
-    await contas.marcarEventoProcessado(evento.id);
+    await contas.concluirEvento(evento.id);
     return Response.json({ recebido: true });
   } catch (e) {
+    // Devolve o evento à fila: sem isto, a reserva feita acima
+    // transformaria uma falha temporária em evento perdido para sempre.
+    await contas.liberarEvento(evento.id);
     // 500 faz a Stripe reentregar — é o que queremos quando a falha é nossa.
     console.error('[webhook] falha ao processar', evento.type, evento.id, e.message);
     return Response.json({ mensagem: 'Falha ao processar evento.' }, { status: 500 });
