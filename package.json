@@ -1,0 +1,15 @@
+{
+  "name": "pontoseven-landing",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Landing do PontoSeven com cadastro e assinatura via Stripe.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "stripe": "^17.5.0"
+  }
+}
