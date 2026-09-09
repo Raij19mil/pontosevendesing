@@ -2,6 +2,7 @@
 
 > Relatório completo de análise da estrutura do repositório.
 > Gerado em 09/09/2026 · branch `claude/affectionate-dirac-j07u33` · commit base `8f59882`
+> **Atualizado em 09/09/2026** — inclui o fluxo de Entrar / Criar conta e a preparação para a Stripe (§11).
 
 ---
 
@@ -16,14 +17,14 @@ Este repositório **não é uma aplicação web** — é um **projeto de design 
 | Idioma do conteúdo | Português (pt‑BR) |
 | Artboards | 4 versões da landing page |
 | Histórico Git | **1 commit único** (`Add files via upload`) |
-| Build / CI / testes | **Nenhum** (sem `package.json`, sem workflows, sem README) |
+| Build / CI / testes | **Nenhum** na raiz (sem workflows, sem README). `stripe/` traz seu próprio `package.json` |
 | Tamanho do `.git` | 1,3 MB |
 
 **Os três achados mais importantes** (detalhados na seção 8):
 
 1. 🔴 **O repositório está quebrado quando servido a partir da raiz** — as pastas `_ds/`, `assets/`, `uploads/` e `screenshots/` existem **apenas dentro do arquivo `.zip`** e não foram versionadas. Cinco referências (`styles.css`, `_ds_bundle.js`, `logo.png`, `app-screen.png`) apontam para arquivos inexistentes.
 2. 🔴 **Divergência entre a promessa de marketing e o estado real do produto** — a landing afirma "100% Conforme Portaria 671"; o screenshot do próprio produto embutido na v4 exibe um aviso de que o AFD **ainda não** é o arquivo oficial exigido pela fiscalização e que **não existe geração de AEJ**.
-3. 🟠 **Erosão do design system ao longo das versões** — a v1 tem zero cores fixas (100 % tokens); a v4 tem 30 ocorrências de hex hardcoded e um sistema de tokens paralelo, violando as regras de aderência declaradas em `_adherence.oxlintrc.json`.
+3. 🟠 **Erosão do design system ao longo das versões** — a v1 tem zero cores fixas (100 % tokens); a v4 tem 39 ocorrências de hex hardcoded e um sistema de tokens paralelo, violando as regras de aderência declaradas em `_adherence.oxlintrc.json`.
 
 ---
 
@@ -42,6 +43,8 @@ Este repositório **não é uma aplicação web** — é um **projeto de design 
 | `.image-slots.state.json` | 172.787 B | 1 | Sidecar de persistência de imagens (base64) |
 | `.thumbnail` | 29.606 B | — | Capa do projeto (WebP, sem extensão) |
 | `Página de vendas Ponto Eletrônico.zip` | 850.134 B | — | **Export completo** do projeto (20 arquivos) |
+| `banco-memoria.md` | — | — | Este relatório |
+| `stripe/` | 28.639 B | 7 arq. | Backend de referência do cadastro e da assinatura (§11) |
 
 ### 2.2 Conteúdo do `.zip` — o projeto íntegro
 
@@ -225,14 +228,15 @@ O `readme.md` documenta `theme.json`, `thumbnail.html`, `foundations/*.html` (5)
 | Carrega `_ds/styles.css` | ✅ | ✅ | ❌ | ✅ (mas sobrescrito) |
 | Fonte | Archivo (DS) | Overused Grotesk | Overused Grotesk | Overused Grotesk |
 | Sistema de tokens | `--color-*` (DS) | `--color-*` (DS) | `--fg/--muted/--border/--primary` | `--ink/--dim/--red/--glass-*` |
-| Hex hardcoded | **0** | 5 | 22 | **30** |
+| Hex hardcoded | **0** | 5 | 22 | **39** |
 | Raio de canto | 0 (DS) | 0 (DS) | 10 px | 22–26 px, pills 999 px |
 | Seções | 4 | 5 | 5 | 5 |
 | Features | 9 cards estáticos | 9 via `sc-for` | 9 via `sc-for` | 9 via `sc-for` + hover |
 | Tabs de produto | ❌ | ✅ 3 tabs | ✅ 3 tabs | ✅ 3 tabs (preenchidas) |
 | Animação | nenhuma | `ps-rise` | `ps-in` | canvas WebGL‑like + 8 keyframes + scroll reveal |
 | Props editáveis | 2 | 2 | 2 | 1 |
-| Linhas | 283 | 349 | 324 | **566** |
+| Linhas | 283 | 349 | 324 | **919** |
+| Entrar / Criar conta | ❌ | ❌ | ❌ | ✅ (§11) |
 
 ### 5.2 Headline por versão
 
@@ -408,14 +412,17 @@ Ocorrências de hex hardcoded por versão (regra `no-restricted-syntax` do `_adh
 v1  ──────────────────────────────────────────  0   ✅ 100% tokens
 v2  ████                                         5
 v3  ██████████████████                          22
-v4  ████████████████████████                    30   🔴
+v4  ████████████████████████████████            39   🔴
 ```
+
+> O salto de 30 para 39 vem do CSS do modal de cadastro (§11), que segue a
+> paleta que a v4 já havia adotado. Não muda a natureza do achado.
 
 Violações acumuladas:
 
 | Regra do DS | v2 | v3 | v4 |
 |---|:-:|:-:|:-:|
-| Sem hex cru | ⚠️ 5 | ❌ 22 | ❌ 30 |
+| Sem hex cru | ⚠️ 5 | ❌ 22 | ❌ 39 |
 | Fonte = Archivo | ❌ Overused Grotesk | ❌ | ❌ |
 | Raio = 0 px | ✅ | ❌ 10 px | ❌ 22–26 px / 999 px |
 | Rótulo de botão à esquerda | ✅ | ❌ centralizado | ❌ centralizado |
@@ -425,7 +432,7 @@ A v3 sequer carrega `styles.css` — é um documento autônomo com paleta própr
 
 **Decisão pendente:** ou o DS "Modernist" é o padrão (e v3/v4 precisam ser reconciliadas ou descartadas), ou a direção de fato mudou (e o DS deve ser retunado em `styles.css`/`theme.json`, como o próprio readme instrui). Manter os dois em paralelo é o pior dos mundos.
 
-### 8.4 🟠 Alto — código morto custoso na v4
+### 8.4 ✅ ~~Alto — código morto custoso na v4~~ — RESOLVIDO
 
 Em `renderVals()` (linha 520‑533):
 
@@ -440,7 +447,13 @@ const unusedMotifs = [
 
 `fingerprint()` e `face()` geram ~100 elementos React SVG **a cada render** e o resultado é descartado. `state.motif` é inicializado mas nunca atualizado. Como cada clique de tab dispara `setState` → re‑render, o custo é pago repetidamente sem qualquer efeito visual.
 
-**Correção:** remover `unusedMotifs`, `state.motif`, `draw()`, `fingerprint()` e `face()` (≈115 linhas), **ou** cablear os motivos ao markup se o efeito era intencional.
+**Correção aplicada.** `unusedMotifs`, `state.motif`, `draw()`, `fingerprint()`,
+`face()` e os quatro `@keyframes` que só eles usavam (`ps-wind-a`, `ps-wind-b`,
+`ps-scan`, `ps-draw`) foram removidos — 79 linhas de JS e 4 de CSS.
+
+O gatilho foi o formulário de cadastro (§11): campos controlados re-renderizam
+a cada tecla digitada, o que levaria o custo de "uma vez por clique de aba"
+para "uma vez por caractere".
 
 ### 8.5 🟡 Médio — acessibilidade
 
@@ -448,9 +461,9 @@ const unusedMotifs = [
 |---|---|---|
 | Tabs sem `aria-selected` | v2, v3, v4 | `role="tablist"`/`role="tab"` presentes, mas **nenhum** `aria-selected`, `aria-controls`, `tabindex` ou navegação por setas. Leitores de tela não anunciam a aba ativa. |
 | Painéis sem `role="tabpanel"` | v2, v3, v4 | Painéis alternam por `display:none` sem associação ARIA |
-| Landmarks ausentes | v3, v4 | Zero atributos `aria-*` no documento inteiro (v1 e v2 têm 2 `aria-label` cada) |
+| Landmarks ausentes | v3 | Zero atributos `aria-*` no documento (v1 e v2 têm 2 `aria-label` cada). Na v4 o modal de cadastro (§11) trouxe `role="dialog"`, `aria-modal`, `aria-labelledby`, `aria-invalid` e `aria-describedby`; o restante da página segue sem landmarks |
 | Contraste de texto | todas | O DS avisa que `--color-accent` (#ec3013) sobre o fundo atinge só ~3:1 — adequado para ícones e texto grande, **não** para corpo de texto. As versões usam `--color-accent-700` corretamente nos kickers ✅, mas v3/v4 usam `--primary`/`--red` puro em links de corpo ❌ |
-| Botões sem destino | todas | Todos os CTAs ("Criar conta", "Falar com vendas") são `<button type="button">` sem `onClick` nem `href` — inertes por serem mockups de design |
+| Botões sem destino | v1, v2, v3 | Os CTAs são `<button type="button">` sem `onClick` nem `href` — inertes por serem mockups. **Na v4 os 7 CTAs já estão ligados** (§11) |
 
 ✅ **Pontos positivos:** `alt` descritivo no mockup do app; `alt=""` correto no logo decorativo da v4; `prefers-reduced-motion` respeitado na v2 e v4; `:focus-visible` com anel de 2 px em v3 e v4.
 
@@ -550,4 +563,123 @@ pontoseven.desing/
 
 ---
 
-*Documento gerado por análise estática de 100 % dos arquivos rastreados do repositório, incluindo a extração e inspeção do `.zip`, a decodificação dos 4 slots de imagem em base64 e a leitura visual dos screenshots do produto.*
+## 11. Fluxo de Entrar / Criar conta e integração Stripe
+
+> Adicionado em 09/09/2026, **apenas na v4**. As versões v1–v3 seguem com os
+> CTAs inertes.
+
+### 11.1 O que existe agora
+
+| Gatilho | Comportamento |
+|---|---|
+| **Entrar** (nav e rodapé) | `<a href>` para `https://seteponto.cloud/` — link real, abre em nova aba com o botão do meio |
+| **Criar conta** (nav, hero, CTA final) | Abre o modal com o plano corrente |
+| **Criar conta** (card Básico / Standard) | Abre o modal já com aquele plano marcado |
+| **Falar com vendas** (card Enterprise, CTA final) | Abre o modal com Enterprise marcado |
+
+Os 7 CTAs da v4 estão ligados. O modal pede **nome, e‑mail, senha**, deixa
+**escolher o plano** e exige o **aceite LGPD** — a mesma versão de termo que o
+Log de Auditoria do produto já grava ("Aceite Termo LGPD — Versão 1.0").
+
+### 11.2 Pontos de configuração
+
+No topo do `<script>` da v4, deliberadamente juntos e comentados:
+
+```js
+const PLATFORM_LOGIN_URL = 'https://seteponto.cloud/';
+const SIGNUP_ENDPOINT    = 'https://seteponto.cloud/api/checkout/session';
+const TERMOS_URL         = 'https://seteponto.cloud/termos';
+const PRIVACIDADE_URL    = 'https://seteponto.cloud/privacidade';
+const LGPD_VERSAO        = '1.0';
+const PLANOS             = [ /* slug, nome, preço, limite, cobrança */ ];
+```
+
+⚠️ `/termos` e `/privacidade` **ainda não existem** — o checkbox já aponta
+para lá. Publicar as duas páginas é pré‑requisito para ir ao ar, ainda mais
+num produto que vende conformidade LGPD.
+
+### 11.3 Contrato com o backend
+
+```jsonc
+POST /api/checkout/session
+{ "nome", "email", "senha", "plano", "aceiteLgpd", "lgpdVersao", "origem" }
+
+200 { "url" }              → window.location.assign(url)
+400 { "campo", "mensagem" }
+409 { "mensagem" }         → e-mail já tem conta ativa
+500 { "mensagem" }
+```
+
+Um único contrato para os três planos: o **servidor** decide o destino —
+Stripe Checkout nos pagos, página de obrigado no Enterprise. A landing não
+sabe (nem precisa saber) qual dos dois é.
+
+### 11.4 Backend de referência (`stripe/`)
+
+| Arquivo | Papel |
+|---|---|
+| `plans.js` | Catálogo e de‑para slug → price ID |
+| `api/checkout-session.js` | Cria conta (`pendente`), Customer e Checkout Session |
+| `api/webhook.js` | `checkout.session.completed` ativa; trata update, delete e falha de pagamento |
+| `db/contas.js` | **Stub em memória** — trocar pelo banco real (as assinaturas são o contrato) |
+| `.env.example` | Variáveis; nenhuma delas chega à landing |
+| `README.md` | Passo a passo, decisões e checklist de produção |
+
+**Decisões que valem preservar:**
+
+- **Price ID nunca sai do servidor.** A landing manda só o slug. Se ela
+  mandasse o price, bastaria o devtools para assinar o Standard pagando o
+  Básico.
+- **Checkout hospedado, não Elements.** Nenhum dado de cartão passa pelo
+  domínio do PontoSeven → escopo PCI fica no SAQ‑A.
+- **A senha nunca vai à Stripe** — só e‑mail e nome, para o Customer.
+  Verificado por teste automatizado.
+- **A conta só vira `ativa` no webhook.** O redirect de sucesso do browser
+  não é prova de pagamento.
+- **Conta pendente é reaproveitada;** só conta ativa devolve 409. Sem isso um
+  checkout abandonado queimaria o e‑mail para sempre.
+- **Cancelar não apaga registro de ponto** — a Portaria 671 exige a guarda.
+
+### 11.5 O que foi verificado
+
+Renderizado no Chromium com o React servido localmente (o ambiente bloqueia
+`unpkg.com`), e o handler exercitado contra um módulo `stripe` falso:
+
+| Verificação | Resultado |
+|---|---|
+| Boot do runtime, `href` do Entrar, modal fechado no load | ✅ |
+| Abertura por cada CTA com o plano correto pré‑selecionado | ✅ |
+| Foco vai ao 1º campo; Escape fecha; foco volta ao gatilho | ✅ |
+| Tab circula dentro do diálogo; scroll do body travado e destravado | ✅ |
+| Validação de nome, e‑mail, senha e aceite (vazio e inválido) | ✅ |
+| Mostrar/ocultar senha; troca de plano muda rótulo e nota do botão | ✅ |
+| Submit → `POST` → redirect para a URL da Stripe | ✅ |
+| Erro 409 do servidor exibido, senha preservada, botão restaurado | ✅ |
+| Falha de rede → mensagem em português | ✅ |
+| Backend: 400/405/409, price correto, idempotência, aceite LGPD gravado | ✅ |
+| Enterprise: zero chamadas à Stripe | ✅ |
+| Senha ausente de tudo que vai à Stripe | ✅ |
+
+**Dois defeitos encontrados e corrigidos durante a verificação:**
+
+1. Falha de rede exibia o `"Failed to fetch"` cru do browser em vez da
+   mensagem em português — o `catch` não distinguia erro do servidor de erro
+   de transporte. Resolvido com uma marca `amigavel` no erro.
+2. `crypto.scrypt` com `N=32768` e `r=8` pede exatamente 32 MiB, que é o teto
+   padrão do Node: **todo cadastro falharia em produção** com *memory limit
+   exceeded*. Resolvido passando `maxmem` explícito.
+
+### 11.6 Pendências deste fluxo
+
+- [ ] Publicar `/termos` e `/privacidade`
+- [ ] Rate limit antes do hash de senha (é caro de propósito — vira alvo sem limite)
+- [ ] Trocar `db/contas.js` pelo banco real
+- [ ] Ligar cadastro e assinatura ao Log de Auditoria append‑only do produto
+- [ ] Criar os produtos e preços na Stripe e preencher o `.env`
+- [ ] Notificar o comercial no lead Enterprise (hoje só grava auditoria)
+- [ ] As **tabs de produto** da v4 seguem sem `aria-selected` (§8.5) — o modal
+      foi feito acessível, as tabs continuam pendentes
+
+---
+
+*Seções 1–10: análise estática de 100 % dos arquivos rastreados, incluindo extração do `.zip`, decodificação dos 4 slots de imagem em base64 e leitura visual dos screenshots do produto. Seção 11: implementação verificada em navegador real e por teste do handler de backend.*

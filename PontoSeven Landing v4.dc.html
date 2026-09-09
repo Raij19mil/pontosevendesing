@@ -43,11 +43,7 @@
     :focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
     summary::-webkit-details-marker { display: none; }
     @keyframes ps-rise { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
-    @keyframes ps-wind-a { 0% { transform: translate3d(-2%,0,0) scale(1.02) skewY(0deg); } 50% { transform: translate3d(2.5%,-1.5%,0) scale(1.06) skewY(-1.2deg); } 100% { transform: translate3d(-2%,0,0) scale(1.02) skewY(0deg); } }
-    @keyframes ps-wind-b { 0% { transform: translate3d(1.5%,1%,0) scale(1.05) skewX(0deg); } 50% { transform: translate3d(-2%,-1%,0) scale(1.01) skewX(1.4deg); } 100% { transform: translate3d(1.5%,1%,0) scale(1.05) skewX(0deg); } }
-    @keyframes ps-scan { 0% { transform: translateY(-40%); opacity: 0; } 15% { opacity: .8; } 85% { opacity: .8; } 100% { transform: translateY(40%); opacity: 0; } }
     @keyframes ps-spin { to { transform: rotate(360deg); } }
-    @keyframes ps-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
     @keyframes ps-smoke-a { 0% { transform: translate3d(-4%,2%,0) scale(1.05); } 50% { transform: translate3d(5%,-3%,0) scale(1.18); } 100% { transform: translate3d(-4%,2%,0) scale(1.05); } }
     @keyframes ps-smoke-b { 0% { transform: translate3d(4%,-2%,0) scale(1.12); } 50% { transform: translate3d(-5%,4%,0) scale(1); } 100% { transform: translate3d(4%,-2%,0) scale(1.12); } }
     @keyframes ps-smoke-c { 0% { transform: translate3d(0,3%,0) scale(1); } 50% { transform: translate3d(-3%,-4%,0) scale(1.14); } 100% { transform: translate3d(0,3%,0) scale(1); } }
@@ -70,6 +66,36 @@
     }
     @media (max-width: 640px) {
       [data-grid="three"] { grid-template-columns: minmax(0,1fr) !important; }
+    }
+    /* — Autenticação: modal de criar conta ————————————————————— */
+    @keyframes ps-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes ps-sheet-in { from { opacity: 0; transform: translateY(20px) scale(.985); } to { opacity: 1; transform: none; } }
+    .ps-label { display: block; font-size: 12.5px; font-weight: 600; color: var(--dim); margin: 0 0 7px; }
+    .ps-input {
+      width: 100%; box-sizing: border-box; padding: 13px 15px; border-radius: 14px;
+      border: 1px solid rgba(20,17,16,.16); background: rgba(255,255,255,.72);
+      font-family: inherit; font-size: 15px; color: var(--ink);
+      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    .ps-input::placeholder { color: rgba(20,17,16,.38); }
+    .ps-input:hover { background: rgba(255,255,255,.88); }
+    .ps-input:focus { outline: none; border-color: var(--red); background: #fff; box-shadow: 0 0 0 3px rgba(236,48,19,.16); }
+    .ps-input[aria-invalid="true"] { border-color: #c9260d; background: rgba(236,48,19,.04); }
+    .ps-input[aria-invalid="true"]:focus { box-shadow: 0 0 0 3px rgba(201,38,13,.18); }
+    .ps-err { display: block; font-size: 12.5px; line-height: 1.45; color: #a51d08; margin: 7px 0 0; }
+    .ps-hint { display: block; font-size: 12.5px; line-height: 1.45; color: var(--dim); margin: 7px 0 0; }
+    .ps-plan { display: block; cursor: pointer; padding: 14px 16px; border-radius: 16px; transition: border-color .18s ease, background .18s ease; }
+    .ps-plan:hover { background: rgba(255,255,255,.9); }
+    .ps-plan input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .ps-plan input:focus-visible + .ps-plan-box { outline: 2px solid var(--red); outline-offset: 3px; }
+    .ps-spinner {
+      width: 15px; height: 15px; border-radius: 50%; flex: none;
+      border: 2px solid rgba(255,255,255,.34); border-top-color: #fff;
+      animation: ps-spin .7s linear infinite;
+    }
+    @media (max-width: 560px) {
+      .ps-sheet { border-radius: 22px !important; padding: 24px 20px !important; }
+      .ps-plan-grid { grid-template-columns: minmax(0,1fr) !important; }
     }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } [data-reveal] { opacity: 1 !important; } }
   </style>
@@ -97,7 +123,10 @@
     <a href="#planos" style="color:var(--dim)" style-hover="color:var(--ink)">Planos</a>
     <a href="#faq" style="color:var(--dim)" style-hover="color:var(--ink)">FAQ</a>
   </div>
-  <button type="button" style="border:0;border-radius:999px;background:var(--red);color:#fff;font-size:14px;font-weight:600;white-space:nowrap;padding:11px 22px;cursor:pointer;box-shadow:0 6px 18px rgba(236,48,19,.28)" style-hover="background:#c9260d">Criar conta</button>
+  <div style="display:flex;align-items:center;gap:10px">
+    <a href="{{ loginUrl }}" style="color:var(--ink);font-size:14px;font-weight:600;white-space:nowrap;padding:11px 16px;border-radius:999px" style-hover="color:var(--ink);background:rgba(255,255,255,.7);text-decoration:none">Entrar</a>
+    <button type="button" onClick="{{ openSignup }}" style="border:0;border-radius:999px;background:var(--red);color:#fff;font-size:14px;font-weight:600;white-space:nowrap;padding:11px 22px;cursor:pointer;box-shadow:0 6px 18px rgba(236,48,19,.28)" style-hover="background:#c9260d">Criar conta</button>
+  </div>
 </nav>
 
 <section style="min-height:calc(100svh - 92px);display:flex;flex-direction:column;justify-content:center;padding:clamp(32px,5svh,72px) clamp(18px,4vw,52px)">
@@ -113,7 +142,7 @@
       Biometria facial, geofence e log de auditoria imutável em um só registro de ponto. Cada batida vira comprovante, cada mês vira espelho de ponto.
     </p>
     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:clamp(20px,3svh,34px);animation:ps-rise .7s ease-out .6s both">
-      <button type="button" style="border:0;border-radius:999px;background:var(--red);color:#fff;font-size:15px;font-weight:600;padding:15px 30px;cursor:pointer;box-shadow:0 10px 30px rgba(236,48,19,.3);transition:transform .25s ease" style-hover="transform:translateY(-2px)">Criar conta</button>
+      <button type="button" onClick="{{ openSignup }}" style="border:0;border-radius:999px;background:var(--red);color:#fff;font-size:15px;font-weight:600;padding:15px 30px;cursor:pointer;box-shadow:0 10px 30px rgba(236,48,19,.3);transition:transform .25s ease" style-hover="transform:translateY(-2px)">Criar conta</button>
       <a href="#plataforma" style="border-radius:999px;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);color:var(--ink);font-size:15px;font-weight:600;padding:15px 30px;transition:transform .25s ease" style-hover="color:var(--ink);transform:translateY(-2px)">Ver a plataforma</a>
     </div>
   </div>
@@ -223,7 +252,7 @@
         <li>Comprovantes e relatório mensal</li>
         <li>Conformidade REP‑P e LGPD</li>
       </ul>
-      <div style="margin-top:auto;padding-top:32px"><button type="button" style="width:100%;border-radius:999px;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);color:var(--ink);font-size:15px;font-weight:600;padding:13px 20px;cursor:pointer" style-hover="background:#fff">Criar conta</button></div>
+      <div style="margin-top:auto;padding-top:32px"><button type="button" onClick="{{ signupBasico }}" style="width:100%;border-radius:999px;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);color:var(--ink);font-size:15px;font-weight:600;padding:13px 20px;cursor:pointer" style-hover="background:#fff">Criar conta</button></div>
     </div>
 
     <div style="padding:36px 32px;display:flex;flex-direction:column;position:relative;{{ standardStyle }}">
@@ -236,7 +265,7 @@
         <li>Múltiplos geofences</li>
         <li>Log de auditoria completo</li>
       </ul>
-      <div style="margin-top:auto;padding-top:32px"><button type="button" style="width:100%;border:0;border-radius:999px;background:var(--red);color:#fff;font-size:15px;font-weight:600;padding:14px 20px;cursor:pointer;box-shadow:0 10px 28px rgba(236,48,19,.3)" style-hover="background:#c9260d">Criar conta</button></div>
+      <div style="margin-top:auto;padding-top:32px"><button type="button" onClick="{{ signupStandard }}" style="width:100%;border:0;border-radius:999px;background:var(--red);color:#fff;font-size:15px;font-weight:600;padding:14px 20px;cursor:pointer;box-shadow:0 10px 28px rgba(236,48,19,.3)" style-hover="background:#c9260d">Criar conta</button></div>
     </div>
 
     <div style="padding:32px;display:flex;flex-direction:column;{{ enterpriseStyle }}">
@@ -248,7 +277,7 @@
         <li>Integrações dedicadas de folha e RH</li>
         <li>Atendimento e SLA dedicados</li>
       </ul>
-      <div style="margin-top:auto;padding-top:32px"><button type="button" style="width:100%;border-radius:999px;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);color:var(--ink);font-size:15px;font-weight:600;padding:13px 20px;cursor:pointer" style-hover="background:#fff">Falar com vendas</button></div>
+      <div style="margin-top:auto;padding-top:32px"><button type="button" onClick="{{ signupEnterprise }}" style="width:100%;border-radius:999px;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);color:var(--ink);font-size:15px;font-weight:600;padding:13px 20px;cursor:pointer" style-hover="background:#fff">Falar com vendas</button></div>
     </div>
 
   </div>
@@ -272,28 +301,180 @@
     <h3 style="font-size:clamp(32px,5vw,72px);font-weight:800;line-height:.98;letter-spacing:-0.035em;margin:0;max-width:18ch">Crie a conta hoje. Bata o ponto amanhã.</h3>
     <p style="font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.7;color:rgba(255,255,255,.86);margin:24px 0 0;max-width:60ch">Sem instalação de relógio, sem contrato longo. Configure a empresa e comece a registrar jornada no mesmo dia.</p>
     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:32px">
-      <button type="button" style="border:0;border-radius:999px;background:#fff;color:var(--ink);font-size:15px;font-weight:600;padding:15px 30px;cursor:pointer;box-shadow:0 10px 30px rgba(20,17,16,.2)" style-hover="background:rgba(255,255,255,.88)">Criar conta</button>
-      <button type="button" style="border:1px solid rgba(255,255,255,.5);border-radius:999px;background:rgba(255,255,255,.14);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;font-size:15px;font-weight:600;padding:15px 30px;cursor:pointer" style-hover="background:rgba(255,255,255,.26)">Falar com vendas</button>
+      <button type="button" onClick="{{ openSignup }}" style="border:0;border-radius:999px;background:#fff;color:var(--ink);font-size:15px;font-weight:600;padding:15px 30px;cursor:pointer;box-shadow:0 10px 30px rgba(20,17,16,.2)" style-hover="background:rgba(255,255,255,.88)">Criar conta</button>
+      <button type="button" onClick="{{ signupEnterprise }}" style="border:1px solid rgba(255,255,255,.5);border-radius:999px;background:rgba(255,255,255,.14);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;font-size:15px;font-weight:600;padding:15px 30px;cursor:pointer" style-hover="background:rgba(255,255,255,.26)">Falar com vendas</button>
     </div>
   </div>
 </section>
 
 <footer style="max-width:1240px;margin:0 auto;padding:40px clamp(18px,4vw,52px) 56px;border-top:1px solid rgba(20,17,16,.1);display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--dim)">
   <span>ponto · seven — ponto eletrônico digital</span>
-  <span>REP‑P · Portaria 671 · LGPD</span>
+  <span style="display:flex;flex-wrap:wrap;gap:18px;align-items:center">
+    <a href="{{ loginUrl }}" style="color:var(--dim)" style-hover="color:var(--ink)">Entrar na plataforma</a>
+    <span>REP‑P · Portaria 671 · LGPD</span>
+  </span>
 </footer>
 
 </div>
+
+
+<!-- ══════════ Modal: criar conta ══════════
+     Abre pelos CTAs "Criar conta" / "Falar com vendas".
+     Envia para SIGNUP_ENDPOINT e redireciona para a URL que o backend devolver
+     (Stripe Checkout nos planos pagos). Ver stripe/README.md. -->
+<sc-if value="{{ signupOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ onBackdropClick }}" style="position:fixed;inset:0;z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:clamp(14px,4vh,56px) 16px;overflow-y:auto;background:rgba(20,17,16,.44);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:ps-backdrop-in .26s ease-out both">
+  <div ref="{{ sheetRef }}" role="dialog" aria-modal="true" aria-labelledby="ps-signup-title" class="ps-sheet" style="position:relative;width:100%;max-width:568px;margin:auto;padding:34px clamp(22px,4vw,38px);border-radius:26px;background:rgba(255,255,255,.9);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:0 40px 90px rgba(20,17,16,.3), inset 0 1px 0 rgba(255,255,255,.92);animation:ps-sheet-in .38s cubic-bezier(.22,.75,.2,1) both">
+
+    <button type="button" onClick="{{ closeSignup }}" aria-label="Fechar" style="position:absolute;top:16px;right:16px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border:0;border-radius:999px;background:transparent;color:var(--dim);cursor:pointer" style-hover="background:rgba(20,17,16,.07);color:var(--ink)">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+
+    <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Criar conta</p>
+    <h2 id="ps-signup-title" style="font-size:clamp(24px,3vw,32px);font-weight:700;line-height:1.06;letter-spacing:-0.03em;margin:14px 0 0">Comece a registrar jornada hoje.</h2>
+    <p style="font-size:14px;color:var(--dim);margin:10px 0 0">Já tem conta? <a href="{{ loginUrl }}" style="color:var(--red);font-weight:600">Entrar na plataforma</a>.</p>
+
+    <form onSubmit="{{ onSubmit }}" noValidate style="margin-top:26px">
+
+      <div style="display:grid;gap:17px">
+
+        <div>
+          <label class="ps-label" for="ps-nome">Nome completo</label>
+          <input id="ps-nome" ref="{{ nomeRef }}" class="ps-input" type="text" name="name" autoComplete="name" placeholder="Nome do responsável pela conta" value="{{ nome }}" onInput="{{ onNome }}" onBlur="{{ onBlurNome }}" aria-invalid="{{ nomeInvalido }}" aria-describedby="ps-nome-err">
+          <span class="ps-err" id="ps-nome-err" style="{{ erroNomeStyle }}">{{ erroNome }}</span>
+        </div>
+
+        <div>
+          <label class="ps-label" for="ps-email">E‑mail corporativo</label>
+          <input id="ps-email" class="ps-input" type="email" name="email" autoComplete="email" inputMode="email" placeholder="voce@suaempresa.com.br" value="{{ email }}" onInput="{{ onEmail }}" onBlur="{{ onBlurEmail }}" aria-invalid="{{ emailInvalido }}" aria-describedby="ps-email-err">
+          <span class="ps-err" id="ps-email-err" style="{{ erroEmailStyle }}">{{ erroEmail }}</span>
+        </div>
+
+        <div>
+          <label class="ps-label" for="ps-senha">Senha</label>
+          <div style="position:relative">
+            <input id="ps-senha" class="ps-input" type="{{ senhaType }}" name="new-password" autoComplete="new-password" placeholder="Mínimo de 8 caracteres" value="{{ senha }}" onInput="{{ onSenha }}" onBlur="{{ onBlurSenha }}" aria-invalid="{{ senhaInvalida }}" aria-describedby="ps-senha-err" style="padding-right:52px">
+            <button type="button" onClick="{{ toggleSenha }}" aria-label="{{ senhaToggleLabel }}" style="position:absolute;top:50%;right:6px;transform:translateY(-50%);width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:0;border-radius:999px;background:transparent;color:var(--dim);cursor:pointer" style-hover="background:rgba(20,17,16,.07);color:var(--ink)">
+              <sc-if value="{{ senhaVisivel }}" hint-placeholder-val="{{ false }}">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.7 6.2A9.8 9.8 0 0 1 12 6c5 0 9 4.5 10 6a15.6 15.6 0 0 1-3.1 3.7"/><path d="M6.6 6.8C3.9 8.4 2.3 10.9 2 12c1 1.5 5 6 10 6a10 10 0 0 0 4.5-1.1"/><path d="m2 2 20 20"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+              </sc-if>
+              <sc-if value="{{ senhaOculta }}" hint-placeholder-val="{{ true }}">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6-10-6-10-6Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </sc-if>
+            </button>
+          </div>
+          <span class="ps-hint" style="{{ hintSenhaStyle }}">Mínimo de 8 caracteres, com pelo menos uma letra e um número.</span>
+          <span class="ps-err" id="ps-senha-err" style="{{ erroSenhaStyle }}">{{ erroSenha }}</span>
+        </div>
+
+      </div>
+
+      <fieldset style="border:0;padding:0;margin:26px 0 0;min-width:0">
+        <legend class="ps-label" style="padding:0;margin:0 0 10px">Plano</legend>
+        <div class="ps-plan-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+          <sc-for list="{{ planos }}" as="p" hint-placeholder-count="3">
+            <label class="ps-plan" style="{{ p.style }}">
+              <input type="radio" name="ps-plano" value="{{ p.id }}" checked="{{ p.checked }}" onChange="{{ p.select }}">
+              <span class="ps-plan-box" style="display:block">
+                <span style="display:block;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:{{ p.corNome }}">{{ p.nome }}</span>
+                <span style="display:block;font-size:{{ p.tamPreco }};font-weight:800;letter-spacing:-0.03em;margin:7px 0 0;white-space:nowrap">{{ p.preco }}</span>
+                <span style="display:block;font-size:11.5px;line-height:1.4;color:var(--dim);margin:5px 0 0">{{ p.limite }}</span>
+              </span>
+            </label>
+          </sc-for>
+        </div>
+      </fieldset>
+
+      <label style="display:flex;gap:11px;align-items:flex-start;cursor:pointer;margin:22px 0 0">
+        <input type="checkbox" checked="{{ aceite }}" onChange="{{ onAceite }}" aria-invalid="{{ aceiteInvalido }}" aria-describedby="ps-aceite-err" style="margin-top:2px;width:17px;height:17px;flex:none;accent-color:#ec3013;cursor:pointer">
+        <span style="font-size:13px;line-height:1.55;color:var(--dim)">Li e aceito os <a href="{{ termosUrl }}" target="_blank" rel="noopener noreferrer" style="color:var(--red);font-weight:600">Termos de Uso</a> e a <a href="{{ privacidadeUrl }}" target="_blank" rel="noopener noreferrer" style="color:var(--red);font-weight:600">Política de Privacidade</a>, incluindo o tratamento de dados pessoais conforme a LGPD.</span>
+      </label>
+      <span class="ps-err" id="ps-aceite-err" style="{{ erroAceiteStyle }}">{{ erroAceite }}</span>
+
+      <div role="alert" style="{{ erroFormStyle }}">
+        <div style="display:flex;gap:10px;align-items:flex-start;margin-top:20px;padding:13px 15px;border-radius:14px;background:rgba(236,48,19,.07);border:1px solid rgba(236,48,19,.25)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a51d08" stroke-width="2" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+          <span style="font-size:13.5px;line-height:1.5;color:#a51d08">{{ erroForm }}</span>
+        </div>
+      </div>
+
+      <button type="submit" disabled="{{ submitDisabled }}" style="{{ submitStyle }}" style-hover="{{ submitHover }}">
+        <sc-if value="{{ submitting }}" hint-placeholder-val="{{ false }}"><span class="ps-spinner"></span></sc-if>
+        {{ submitLabel }}
+      </button>
+
+      <p style="font-size:12.5px;line-height:1.55;color:var(--dim);text-align:center;margin:14px 0 0">{{ submitNota }}</p>
+
+    </form>
+  </div>
+</div>
+</sc-if>
 
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{
   &quot;highlightedPlan&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;standard&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;basico&quot;, &quot;standard&quot;, &quot;enterprise&quot;], &quot;section&quot;: &quot;Planos&quot;}
 }">
+/* ══════════════════════════════════════════════════════════════════════
+   INTEGRAÇÃO — pontos de configuração
+   Trocar os valores abaixo é tudo que a landing precisa para apontar
+   para o ambiente real. Backend de referência: stripe/ (ver README.md).
+   ══════════════════════════════════════════════════════════════════════ */
+
+// Destino do botão "Entrar".
+const PLATFORM_LOGIN_URL = 'https://seteponto.cloud/';
+
+// Cria a conta e devolve { url } para onde redirecionar.
+// Implementação de referência: stripe/api/checkout-session.js
+const SIGNUP_ENDPOINT = 'https://seteponto.cloud/api/checkout/session';
+
+const TERMOS_URL = 'https://seteponto.cloud/termos';
+const PRIVACIDADE_URL = 'https://seteponto.cloud/privacidade';
+
+// Versão do termo aceita no cadastro. Vai junto no payload para que o
+// Log de Auditoria registre o aceite como já faz hoje ("Aceite Termo LGPD
+// — Versão 1.0"). Subir esta string obriga o aceite de novo.
+const LGPD_VERSAO = '1.0';
+
+// Catálogo de planos. O price ID da Stripe NÃO fica aqui de propósito: o
+// cliente manda só o slug e o servidor faz o de-para (stripe/plans.js),
+// para que ninguém troque o preço cobrado pelo devtools.
+const PLANOS = [
+  { id: 'basico',     nome: 'Básico',     preco: 'R$ 100', limite: 'por mês · até 10 pessoas',   cobranca: 'stripe' },
+  { id: 'standard',   nome: 'Standard',   preco: 'R$ 200', limite: 'por mês · até 25 pessoas',   cobranca: 'stripe' },
+  { id: 'enterprise', nome: 'Enterprise', preco: 'Sob consulta', limite: 'acima de 25 pessoas',  cobranca: 'vendas' },
+];
+
+// Erro com mensagem já escrita para o usuário. Sem esta marca, o catch
+// não teria como distinguir a mensagem do servidor do "Failed to fetch"
+// cru que o browser joga quando a rede cai.
+function erroAmigavel(msg) {
+  const e = new Error(msg);
+  e.amigavel = true;
+  return e;
+}
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
 class Component extends DCLogic {
-  state = { tab: 'app', motif: 0 };
+  state = {
+    tab: 'app',
+    // — modal de criar conta —
+    signupOpen: false,
+    plano: 'standard',
+    nome: '',
+    email: '',
+    senha: '',
+    aceite: false,
+    senhaVisivel: false,
+    tocado: {},        // campo só mostra erro depois do blur ou do 1º submit
+    submitting: false,
+    erroForm: '',
+  };
 
   waveHost = React.createRef();
   waveCanvas = React.createRef();
+  sheetRef = React.createRef();
+  nomeRef = React.createRef();
   pointer = { x: -2000, y: -2000, targetX: -2000, targetY: -2000 };
 
   componentDidMount() {
@@ -330,6 +511,14 @@ class Component extends DCLogic {
     };
     window.addEventListener('mousemove', this.onMove);
     window.addEventListener('mouseleave', this.onLeave);
+
+    // Teclado do modal: Escape fecha, Tab circula dentro do diálogo.
+    this.onKeyDown = (e) => {
+      if (!this.state.signupOpen) return;
+      if (e.key === 'Escape') { e.preventDefault(); this.fechar(); return; }
+      if (e.key === 'Tab') this.prenderFoco(e);
+    };
+    window.addEventListener('keydown', this.onKeyDown);
 
     const render = () => {
       time += 0.015;
@@ -391,86 +580,153 @@ class Component extends DCLogic {
     if (this.io) this.io.disconnect();
     window.removeEventListener('mousemove', this.onMove);
     window.removeEventListener('mouseleave', this.onLeave);
+    window.removeEventListener('keydown', this.onKeyDown);
+    document.body.style.overflow = '';
   }
 
-  // desenho de entrada: cada traço se forma na carga
-  draw(i, dur) {
-    return {
-      pathLength: 1,
-      strokeDasharray: 1,
-      strokeDashoffset: 1,
-      style: { animation: 'ps-draw ' + (dur || 2.6) + 's cubic-bezier(.22,.75,.2,1) ' + (0.2 + i * 0.045) + 's forwards' },
-    };
+  /* ─────────────────────────────────────────────────────────────────
+     Criar conta — abertura, validação e envio
+     ───────────────────────────────────────────────────────────────── */
+
+  abrir(plano) {
+    this.voltarFoco = document.activeElement;
+    document.body.style.overflow = 'hidden';
+    this.setState(
+      (s) => ({ signupOpen: true, plano: plano || s.plano, erroForm: '' }),
+      () => requestAnimationFrame(() => {
+        const campo = this.nomeRef.current;
+        if (campo) campo.focus();
+      })
+    );
   }
 
-  // cristas de digital abertas em ondas atravessando a tela
-  fingerprint() {
-    const h = React.createElement;
-    const el = [];
-
-    const N = 42;
-    for (let i = 0; i < N; i++) {
-      const y = 6 + i * 4.7;
-      const amp = 11 + Math.sin(i * 0.42) * 7;
-      const drop = i * 0.5;
-      const d = 'M-30 ' + (y + amp * 0.6) +
-        ' C 20 ' + (y - amp) + ', 60 ' + (y + amp) + ', 100 ' + (y + drop * 0.2) +
-        ' S 170 ' + (y - amp * 0.9) + ', 230 ' + (y + amp * 0.5 + drop * 0.3);
-      const strong = i % 5 === 0;
-      el.push(h('path', Object.assign({
-        key: 'w' + i, d, fill: 'none', stroke: 'currentColor',
-        strokeWidth: strong ? 1.15 : 0.4, strokeLinecap: 'round',
-        opacity: strong ? 0.95 : 0.5,
-      }, this.draw(i, 2.6))));
-    }
-
-    // núcleo em laço, ancorando a leitura de digital
-    for (let i = 0; i < 6; i++) {
-      const r = 5 + i * 4.4;
-      el.push(h('path', Object.assign({
-        key: 'c' + i,
-        d: 'M' + (100 - r) + ' 118 C' + (100 - r) + ' ' + (106 - i * 4) + ' ' + (100 + r) + ' ' + (106 - i * 4) + ' ' + (100 + r) + ' ' + (120 + i * 2.4),
-        fill: 'none', stroke: 'currentColor', strokeWidth: i % 2 ? 0.4 : 1.1, strokeLinecap: 'round', opacity: 0.9,
-      }, this.draw(N + i, 2.2))));
-    }
-
-    return h('svg', { viewBox: '0 0 200 210', preserveAspectRatio: 'xMidYMid slice', width: '100%', height: '100%', 'aria-hidden': 'true' }, el);
+  fechar() {
+    document.body.style.overflow = '';
+    this.setState({ signupOpen: false, submitting: false }, () => {
+      const alvo = this.voltarFoco;
+      if (alvo && typeof alvo.focus === 'function') alvo.focus();
+    });
   }
 
-  // malha biométrica facial gigante
-  face() {
-    const h = React.createElement;
-    const mesh = [];
-    for (let i = 0; i < 26; i++) {
-      const y = 56 + i * 4.2;
-      const w = 26 + Math.sin((i / 25) * Math.PI) * 32;
-      mesh.push(h('path', {
-        key: 'm' + i,
-        d: 'M' + (100 - w) + ' ' + y + ' Q100 ' + (y + 8) + ' ' + (100 + w) + ' ' + y,
-        fill: 'none', stroke: 'currentColor', strokeWidth: i % 5 === 0 ? 1.05 : 0.4, opacity: i % 5 === 0 ? 0.9 : 0.5,
-      }));
-    }
-    for (let i = 0; i < 24; i++) {
-      const x = 50 + i * 4.4;
-      mesh.push(h('path', {
-        key: 'v' + i,
-        d: 'M' + x + ' 58 Q' + (x + (x - 100) * 0.14) + ' 112 ' + (x + (x - 100) * 0.34) + ' 164',
-        fill: 'none', stroke: 'currentColor',
-        strokeWidth: i % 6 === 0 ? 0.95 : 0.35, opacity: i % 6 === 0 ? 0.8 : 0.4,
-      }));
-    }
-    return h('svg', { viewBox: '0 0 200 210', preserveAspectRatio: 'xMidYMid slice', width: '100%', height: '100%', 'aria-hidden': 'true' }, [
-      h('path', {
-        key: 'oval',
-        d: 'M100 44 c27 0 42 24 42 54 c0 34 -19 56 -42 56 c-23 0 -42 -22 -42 -56 c0 -30 15 -54 42 -54 z',
-        fill: 'none', stroke: 'currentColor', strokeWidth: 0.85, opacity: 0.6,
-      }),
-      h('g', { key: 'mesh', clipPath: 'none' }, mesh),
-      h('circle', { key: 'e1', cx: 82, cy: 100, r: 2.6, fill: 'none', stroke: 'currentColor', strokeWidth: 0.9 }),
-      h('circle', { key: 'e2', cx: 118, cy: 100, r: 2.6, fill: 'none', stroke: 'currentColor', strokeWidth: 0.9 }),
-      h('path', { key: 'sc', d: 'M48 106 h104', stroke: 'currentColor', strokeWidth: 0.9, opacity: 0.7, style: { animation: 'ps-scan 6s ease-in-out infinite' } }),
-    ]);
+  // Mantém o Tab dentro do diálogo enquanto ele está aberto.
+  prenderFoco(e) {
+    const raiz = this.sheetRef.current;
+    if (!raiz) return;
+    const foco = Array.prototype.slice
+      .call(raiz.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'))
+      .filter((n) => n.offsetWidth > 0 || n.offsetHeight > 0);
+    if (!foco.length) return;
+    const primeiro = foco[0];
+    const ultimo = foco[foco.length - 1];
+    if (e.shiftKey && document.activeElement === primeiro) { e.preventDefault(); ultimo.focus(); }
+    else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primeiro.focus(); }
   }
+
+  tocar(campo) {
+    this.setState((s) => {
+      const t = Object.assign({}, s.tocado);
+      t[campo] = true;
+      return { tocado: t };
+    });
+  }
+
+  validar(s) {
+    const e = {};
+
+    const nome = (s.nome || '').trim();
+    if (!nome) e.nome = 'Informe o nome do responsável pela conta.';
+    else if (nome.length < 3) e.nome = 'O nome precisa ter pelo menos 3 caracteres.';
+
+    const email = (s.email || '').trim();
+    if (!email) e.email = 'Informe um e‑mail.';
+    else if (!EMAIL_RE.test(email)) e.email = 'Esse e‑mail não parece válido.';
+
+    const senha = s.senha || '';
+    if (!senha) e.senha = 'Escolha uma senha.';
+    else if (senha.length < 8) e.senha = 'A senha precisa ter pelo menos 8 caracteres.';
+    else if (!/[A-Za-zÀ-ÿ]/.test(senha) || !/\d/.test(senha)) e.senha = 'Use pelo menos uma letra e um número.';
+
+    if (!s.aceite) e.aceite = 'É preciso aceitar os termos para criar a conta.';
+
+    return e;
+  }
+
+  // Um único contrato para os três planos: o backend decide o destino —
+  // Stripe Checkout nos pagos, página de contato no Enterprise.
+  async enviar(ev) {
+    if (ev && ev.preventDefault) ev.preventDefault();
+    if (this.state.submitting) return;
+
+    const erros = this.validar(this.state);
+    if (Object.keys(erros).length) {
+      this.setState({ tocado: { nome: true, email: true, senha: true, aceite: true }, erroForm: '' });
+      return;
+    }
+
+    this.setState({ submitting: true, erroForm: '' });
+
+    try {
+      const res = await fetch(SIGNUP_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'omit',
+        body: JSON.stringify({
+          nome: this.state.nome.trim(),
+          email: this.state.email.trim().toLowerCase(),
+          senha: this.state.senha,
+          plano: this.state.plano,
+          aceiteLgpd: true,
+          lgpdVersao: LGPD_VERSAO,
+          origem: 'landing-v4',
+        }),
+      });
+
+      let dados = {};
+      try { dados = await res.json(); } catch (_) { /* corpo vazio ou não-JSON */ }
+
+      if (!res.ok) {
+        throw erroAmigavel(dados.mensagem || 'Não foi possível criar a conta agora. Tente de novo em instantes.');
+      }
+      if (!dados.url) {
+        throw erroAmigavel('O servidor não devolveu o destino do checkout. Fale com o suporte.');
+      }
+
+      // A senha nunca chega à Stripe: o backend guarda o hash e só manda
+      // e-mail e customer para lá. Aqui só seguimos o redirecionamento.
+      window.location.assign(dados.url);
+    } catch (err) {
+      this.setState({
+        submitting: false,
+        erroForm: err && err.amigavel
+          ? err.message
+          : 'Não conseguimos falar com o servidor. Verifique sua conexão e tente de novo.',
+      });
+    }
+  }
+
+  // Handlers ligados ao template (arrow fields para manter o `this`).
+  openSignup = () => this.abrir(null);
+  signupBasico = () => this.abrir('basico');
+  signupStandard = () => this.abrir('standard');
+  signupEnterprise = () => this.abrir('enterprise');
+  closeSignup = () => this.fechar();
+  onBackdropClick = (e) => { if (e.target === e.currentTarget) this.fechar(); };
+  onSubmit = (e) => this.enviar(e);
+  onNome = (e) => this.setState({ nome: e.target.value });
+  onEmail = (e) => this.setState({ email: e.target.value });
+  onSenha = (e) => this.setState({ senha: e.target.value });
+  onBlurNome = () => this.tocar('nome');
+  onBlurEmail = () => this.tocar('email');
+  onBlurSenha = () => this.tocar('senha');
+  toggleSenha = () => this.setState((s) => ({ senhaVisivel: !s.senhaVisivel }));
+  onAceite = (e) => {
+    const v = e.target.checked;
+    this.setState((s) => {
+      const t = Object.assign({}, s.tocado);
+      t.aceite = true;
+      return { aceite: v, tocado: t };
+    });
+  };
 
   buildTabs() {
     const defs = [
@@ -517,23 +773,120 @@ class Component extends DCLogic {
       cellHover: 'transform:translateY(-4px);box-shadow:0 26px 60px rgba(20,17,16,.14), inset 0 1px 0 rgba(255,255,255,.9);',
     }));
 
-    const active = this.state.motif;
-    const unusedMotifs = [
-      { el: this.fingerprint(), anim: 'ps-wind-a 34s ease-in-out infinite' },
-      { el: this.face(), anim: 'ps-wind-b 40s ease-in-out infinite' },
-    ].map((m, i) => ({
-      svg: m.el,
-      wrapStyle: 'position:absolute;top:50%;left:50%;width:min(150vh,150vw);aspect-ratio:200/210;' +
-        'transform-origin:50% 50%;margin:calc(min(150vh,150vw) * -0.525) 0 0 calc(min(150vh,150vw) * -0.5);' +
-        'color:var(--ink);will-change:opacity,filter;' +
-        'transition:opacity 3.4s cubic-bezier(.4,0,.2,1), filter 3.4s cubic-bezier(.4,0,.2,1);' +
-        'animation:' + m.anim + ';' +
-        (i === active ? 'opacity:.2;filter:blur(0px);' : 'opacity:0;filter:blur(6px);'),
-    }));
+    /* ── Modal de criar conta ──────────────────────────────────────
+       A linguagem de template não tem ternário nem chamada de função,
+       então tudo que varia sai pronto daqui. */
+    const st = this.state;
+    const erros = this.validar(st);
+    const erroDe = (campo) => (st.tocado[campo] ? erros[campo] || '' : '');
+    const errNome = erroDe('nome');
+    const errEmail = erroDe('email');
+    const errSenha = erroDe('senha');
+    const errAceite = erroDe('aceite');
+    const mostra = 'display:block';
+    const esconde = 'display:none';
+
+    const planoAtual = PLANOS.filter((p) => p.id === st.plano)[0] || PLANOS[1];
+    const porVendas = planoAtual.cobranca === 'vendas';
+
+    const planos = PLANOS.map((p) => {
+      const sel = p.id === st.plano;
+      return {
+        id: p.id,
+        nome: p.nome,
+        preco: p.preco,
+        limite: p.limite,
+        checked: sel,
+        corNome: sel ? 'var(--red)' : 'var(--dim)',
+        tamPreco: p.cobranca === 'vendas' ? '14.5px' : '20px',
+        style: sel
+          ? 'border:1px solid rgba(236,48,19,.5);background:rgba(236,48,19,.06);box-shadow:0 6px 18px rgba(236,48,19,.12)'
+          : 'border:1px solid rgba(20,17,16,.14);background:rgba(255,255,255,.6)',
+        select: () => this.setState({ plano: p.id, erroForm: '' }),
+      };
+    });
+
+    // O botão fica habilitado mesmo com o formulário inválido: quem explica
+    // o que falta são as mensagens de erro, não um botão morto sem motivo.
+    const botaoBase =
+      'width:100%;display:flex;align-items:center;justify-content:center;gap:9px;' +
+      'margin-top:24px;border:0;border-radius:999px;font-family:inherit;font-size:15px;' +
+      'font-weight:600;padding:15px 22px;color:#fff;background:var(--red);' +
+      'transition:background .2s ease, opacity .2s ease;';
+    const submitStyle = botaoBase + (st.submitting
+      ? 'opacity:.72;cursor:progress;'
+      : 'cursor:pointer;box-shadow:0 10px 28px rgba(236,48,19,.3);');
+
+    let submitLabel;
+    if (st.submitting) submitLabel = porVendas ? 'Enviando…' : 'Abrindo pagamento seguro…';
+    else submitLabel = porVendas ? 'Falar com vendas' : 'Criar conta e ir para o pagamento';
+
+    const submitNota = porVendas
+      ? 'Nosso time comercial responde em até 1 dia útil para desenhar o plano da sua operação.'
+      : 'Você segue para o ambiente seguro da Stripe para concluir a assinatura. Cancele quando quiser.';
 
     return {
       waveHost: this.waveHost,
       waveCanvas: this.waveCanvas,
+
+      // — links e ações —
+      loginUrl: PLATFORM_LOGIN_URL,
+      termosUrl: TERMOS_URL,
+      privacidadeUrl: PRIVACIDADE_URL,
+      openSignup: this.openSignup,
+      closeSignup: this.closeSignup,
+      signupBasico: this.signupBasico,
+      signupStandard: this.signupStandard,
+      signupEnterprise: this.signupEnterprise,
+      onBackdropClick: this.onBackdropClick,
+      onSubmit: this.onSubmit,
+      onNome: this.onNome,
+      onEmail: this.onEmail,
+      onSenha: this.onSenha,
+      onBlurNome: this.onBlurNome,
+      onBlurEmail: this.onBlurEmail,
+      onBlurSenha: this.onBlurSenha,
+      onAceite: this.onAceite,
+      toggleSenha: this.toggleSenha,
+      sheetRef: this.sheetRef,
+      nomeRef: this.nomeRef,
+
+      // — estado do formulário —
+      signupOpen: st.signupOpen,
+      nome: st.nome,
+      email: st.email,
+      senha: st.senha,
+      aceite: st.aceite,
+      senhaType: st.senhaVisivel ? 'text' : 'password',
+      senhaVisivel: st.senhaVisivel,
+      senhaOculta: !st.senhaVisivel,
+      senhaToggleLabel: st.senhaVisivel ? 'Ocultar senha' : 'Mostrar senha',
+      planos,
+
+      // — validação —
+      nomeInvalido: !!errNome,
+      emailInvalido: !!errEmail,
+      senhaInvalida: !!errSenha,
+      aceiteInvalido: !!errAceite,
+      erroNome: errNome,
+      erroEmail: errEmail,
+      erroSenha: errSenha,
+      erroAceite: errAceite,
+      erroNomeStyle: errNome ? mostra : esconde,
+      erroEmailStyle: errEmail ? mostra : esconde,
+      erroSenhaStyle: errSenha ? mostra : esconde,
+      erroAceiteStyle: errAceite ? mostra : esconde,
+      hintSenhaStyle: errSenha ? esconde : mostra,
+      erroForm: st.erroForm,
+      erroFormStyle: st.erroForm ? mostra : esconde,
+
+      // — envio —
+      submitting: st.submitting,
+      submitDisabled: !!st.submitting,
+      submitStyle,
+      submitHover: st.submitting ? 'background:var(--red)' : 'background:#c9260d',
+      submitLabel,
+      submitNota,
       tabs: this.buildTabs(),
       features,
       basicoStyle: highlighted === 'basico' ? hot : glass,
