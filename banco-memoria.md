@@ -2,7 +2,7 @@
 
 > Relatório completo de análise da estrutura do repositório.
 > Gerado em 09/09/2026 · branch `claude/affectionate-dirac-j07u33` · commit base `8f59882`
-> **Atualizado em 09/09/2026** — inclui o fluxo de Entrar / Criar conta e a preparação para a Stripe (§11).
+> **Atualizado em 09/09/2026** — inclui o fluxo de Entrar / Criar conta, a integração Stripe e o deploy na Vercel (§11).
 
 ---
 
@@ -12,17 +12,17 @@ Este repositório **não é uma aplicação web** — é um **projeto de design 
 
 | Item | Valor |
 |---|---|
-| Tipo de projeto | Canvas de design (`.dc.html`) + runtime JS + design system |
+| Tipo de projeto | Canvas de design (`.dc.html`) + runtime JS + design system + deploy Vercel |
 | Produto retratado | PontoSeven — ponto eletrônico digital |
 | Idioma do conteúdo | Português (pt‑BR) |
 | Artboards | 4 versões da landing page |
 | Histórico Git | **1 commit único** (`Add files via upload`) |
-| Build / CI / testes | **Nenhum** na raiz (sem workflows, sem README). `stripe/` traz seu próprio `package.json` |
+| Build / CI / testes | `npm run build` monta `public/`; sem CI ainda |
 | Tamanho do `.git` | 1,3 MB |
 
 **Os três achados mais importantes** (detalhados na seção 8):
 
-1. 🔴 **O repositório está quebrado quando servido a partir da raiz** — as pastas `_ds/`, `assets/`, `uploads/` e `screenshots/` existem **apenas dentro do arquivo `.zip`** e não foram versionadas. Cinco referências (`styles.css`, `_ds_bundle.js`, `logo.png`, `app-screen.png`) apontam para arquivos inexistentes.
+1. ✅ ~~**O repositório está quebrado quando servido a partir da raiz**~~ — as pastas `_ds/` e `assets/` existiam **apenas dentro do `.zip`**, deixando cinco referências apontando para arquivos inexistentes. **Resolvido** ao preparar o deploy (§8.1, §11.7): os assets foram versionados e o build agora falha se uma referência sumir.
 2. 🔴 **Divergência entre a promessa de marketing e o estado real do produto** — a landing afirma "100% Conforme Portaria 671"; o screenshot do próprio produto embutido na v4 exibe um aviso de que o AFD **ainda não** é o arquivo oficial exigido pela fiscalização e que **não existe geração de AEJ**.
 3. 🟠 **Erosão do design system ao longo das versões** — a v1 tem zero cores fixas (100 % tokens); a v4 tem 39 ocorrências de hex hardcoded e um sistema de tokens paralelo, violando as regras de aderência declaradas em `_adherence.oxlintrc.json`.
 
@@ -44,7 +44,10 @@ Este repositório **não é uma aplicação web** — é um **projeto de design 
 | `.thumbnail` | 29.606 B | — | Capa do projeto (WebP, sem extensão) |
 | `Página de vendas Ponto Eletrônico.zip` | 850.134 B | — | **Export completo** do projeto (20 arquivos) |
 | `banco-memoria.md` | — | — | Este relatório |
-| `stripe/` | 28.639 B | 7 arq. | Backend de referência do cadastro e da assinatura (§11) |
+| `README.md` | — | — | Entrada do projeto: estrutura, rodar local, deploy |
+| `_ds/` · `assets/` | — | 7 arq. | Design system e imagens, **extraídos do `.zip`** (§8.1) |
+| `api/` · `lib/` | — | 4 arq. | Vercel Functions e módulos compartilhados (§11) |
+| `build.mjs` · `vercel.json` · `package.json` · `.gitignore` · `.env.example` | — | 5 arq. | Build e configuração do deploy (§11.7) |
 
 ### 2.2 Conteúdo do `.zip` — o projeto íntegro
 
@@ -371,21 +374,30 @@ Bloco "SUA FILIAL": geofence ativo, **raio de 100 m**, link "Conferir coordenada
 
 ## 8. Achados e riscos
 
-### 8.1 🔴 Crítico — assets não versionados (repositório quebrado)
+### 8.1 ✅ ~~Crítico — assets não versionados (repositório quebrado)~~ — RESOLVIDO
 
 Cinco referências dos artboards apontam para arquivos que **não existem no repositório**:
 
 | Referência | Usada em | Status |
 |---|---|---|
-| `_ds/modernist-…/styles.css` | v1, v2, v4 | ❌ ausente (só no `.zip`) |
-| `_ds/modernist-…/_ds_bundle.js` | v1, v2, v4 | ❌ ausente (só no `.zip`) |
-| `./assets/logo.png` | v1, v2, v3, v4 (favicon + nav) | ❌ ausente (só no `.zip`) |
-| `./assets/app-screen.png` | v4 (mockup do hero) | ❌ ausente (só no `.zip`) |
-| `./support.js` · `./image-slot.js` | todas | ✅ presente |
+| `_ds/modernist-…/styles.css` | v1, v2, v4 | ✅ versionado |
+| `_ds/modernist-…/_ds_bundle.js` | v1, v2, v4 | ✅ versionado |
+| `./assets/logo.png` | v1, v2, v3, v4 (favicon + nav) | ✅ versionado |
+| `./assets/app-screen.png` | v4 (mockup do hero) | ✅ versionado |
+| `./support.js` · `./image-slot.js` | todas | ✅ versionado |
 
-**Consequência:** abrir qualquer `.dc.html` direto do clone produz uma página **sem estilo do design system, sem logo e sem o mockup do app**. A v3 é a única que renderiza aceitavelmente, porque define todos os seus tokens inline.
+**Era:** abrir qualquer `.dc.html` direto do clone produzia uma página **sem
+estilo do design system, sem logo e sem o mockup do app**.
 
-**Correção:** extrair `_ds/`, `assets/`, `uploads/` e `screenshots/` do `.zip` e commitá‑los; depois avaliar remover o `.zip` (hoje 850 KB de conteúdo 100 % duplicado, exceto pelas pastas ausentes).
+**Correção aplicada.** `_ds/` e `assets/` foram extraídos do `.zip` e
+versionados — virou pré‑requisito ao preparar o deploy na Vercel (§11.7), já
+que sem eles a página iria ao ar quebrada. O `build.mjs` agora **falha o
+build** se alguma referência da página não existir na saída, para que a
+regressão não volte silenciosamente.
+
+Segue pendente: `uploads/` e `screenshots/` continuam só no `.zip` (nada os
+referencia), e o `.zip` continua versionado — 850 KB de conteúdo agora
+majoritariamente duplicado.
 
 ### 8.2 🔴 Crítico — alegação de conformidade divergente do produto
 
@@ -471,11 +483,11 @@ para "uma vez por caractere".
 
 | Item | Situação |
 |---|---|
-| `README.md` | ❌ ausente — nada explica o que é o projeto nem como abrir os arquivos |
+| `README.md` | ✅ **criado** — o que é o projeto, como rodar local e como fazer o deploy |
 | `LICENSE` | ❌ ausente |
-| `.gitignore` | ❌ ausente |
-| `package.json` / build | ❌ ausente |
-| CI / workflows | ❌ ausente |
+| `.gitignore` | ✅ **criado** (`node_modules/`, `public/`, `.vercel`, `.env`) |
+| `package.json` / build | ✅ **criado** — `npm run build` monta `public/` |
+| CI / workflows | ❌ ausente — o `_adherence.oxlintrc.json` do DS ainda não roda em lugar nenhum |
 | Histórico Git | 1 commit único, mensagem genérica ("Add files via upload") |
 | Nome do repositório | `pontoseven.desing` — **typo** de "design" |
 | `.zip` versionado | 850 KB duplicando o conteúdo já rastreado |
@@ -587,7 +599,7 @@ No topo do `<script>` da v4, deliberadamente juntos e comentados:
 
 ```js
 const PLATFORM_LOGIN_URL = 'https://seteponto.cloud/';
-const SIGNUP_ENDPOINT    = 'https://seteponto.cloud/api/checkout/session';
+const SIGNUP_ENDPOINT    = '/api/checkout/session';   // relativo — ver §11.7
 const TERMOS_URL         = 'https://seteponto.cloud/termos';
 const PRIVACIDADE_URL    = 'https://seteponto.cloud/privacidade';
 const LGPD_VERSAO        = '1.0';
@@ -614,16 +626,16 @@ Um único contrato para os três planos: o **servidor** decide o destino —
 Stripe Checkout nos pagos, página de obrigado no Enterprise. A landing não
 sabe (nem precisa saber) qual dos dois é.
 
-### 11.4 Backend de referência (`stripe/`)
+### 11.4 Backend (Vercel Functions)
 
 | Arquivo | Papel |
 |---|---|
-| `plans.js` | Catálogo e de‑para slug → price ID |
-| `api/checkout-session.js` | Cria conta (`pendente`), Customer e Checkout Session |
-| `api/webhook.js` | `checkout.session.completed` ativa; trata update, delete e falha de pagamento |
-| `db/contas.js` | **Stub em memória** — trocar pelo banco real (as assinaturas são o contrato) |
+| `lib/plans.js` | Catálogo e de‑para slug → price ID |
+| `api/checkout/session.js` | `POST /api/checkout/session` — conta (`pendente`), Customer e Checkout Session |
+| `api/stripe/webhook.js` | `POST /api/stripe/webhook` — ativa; trata update, delete e falha de pagamento |
+| `lib/contas.js` | **Stub em memória** — trocar pelo banco real (as assinaturas são o contrato) |
 | `.env.example` | Variáveis; nenhuma delas chega à landing |
-| `README.md` | Passo a passo, decisões e checklist de produção |
+| `README.md` | Estrutura, rodar local, deploy, decisões e checklist |
 
 **Decisões que valem preservar:**
 
@@ -680,6 +692,64 @@ Renderizado no Chromium com o React servido localmente (o ambiente bloqueia
 - [ ] As **tabs de produto** da v4 seguem sem `aria-selected` (§8.5) — o modal
       foi feito acessível, as tabs continuam pendentes
 
+### 11.7 Deploy na Vercel
+
+O projeto virou um site estático com duas Vercel Functions.
+
+```
+build.mjs  →  public/          api/checkout/session.js   → POST /api/checkout/session
+              ├─ index.html    api/stripe/webhook.js     → POST /api/stripe/webhook
+              ├─ support.js    lib/plans.js  lib/contas.js
+              ├─ image-slot.js
+              ├─ image-slots.state.json
+              ├─ _ds/  assets/
+```
+
+**As fontes `.dc.html` não são publicadas.** O `build.mjs` copia a v4 para
+`public/index.html` na hora do build, então não existe uma segunda cópia da
+landing para sair de sincronia com a fonte de design. As v1–v3 seguem no
+repositório sem ir ao ar.
+
+| Decisão | Por quê |
+|---|---|
+| Assinatura **Web** (`export async function POST(request)`) | `await request.text()` devolve os bytes crus que a verificação da Stripe exige. Com a assinatura Node seria preciso desligar o `bodyParser` — esquecer disso é o erro nº 1 de quem integra webhook |
+| Runtime **Node**, não Edge | O SDK da Stripe e o `crypto.scrypt` do hash de senha não rodam no Edge |
+| `SIGNUP_ENDPOINT` **relativo** (`/api/checkout/session`) | O mesmo build vale em preview, em `*.vercel.app` e no domínio final; e por ser mesma origem não passa por CORS |
+| URLs de retorno com *fallback* para a origem da requisição | O domínio do preview muda a cada deploy; a Stripe exige URL absoluta |
+| Sidecar publicado **sem o ponto** + `rewrite` | `image-slot.js` busca `.image-slots.state.json`; arquivo oculto não é servido de forma confiável, então o build publica `image-slots.state.json` e o `vercel.json` liga os dois |
+| `build.mjs` valida as referências | Falha o build se a página apontar para algo que não foi publicado — a regressão de §8.1 não volta em silêncio |
+
+**Verificado** com um servidor que imita o roteamento da Vercel (estático de
+`public/`, os `rewrites` do `vercel.json` e as funções com assinatura Web):
+
+| Verificação | Resultado |
+|---|---|
+| Página em `/`, com `_ds/`, logo e mockup carregando (`naturalWidth > 0`) | ✅ |
+| Sidecar servido pelo rewrite; 4 `image-slot` presentes | ✅ |
+| `GET /api/checkout/session` → 405 automático | ✅ |
+| Cadastro completo → `POST /api/checkout/session` 200 → redirect para a Stripe | ✅ |
+| Nenhuma chamada cross‑origin (tudo mesma origem) | ✅ |
+
+**Webhook verificado com o SDK real da Stripe** (`generateTestHeaderString` +
+`constructEventAsync`):
+
+| Cenário | Resultado |
+|---|---|
+| Assinatura válida | 200, conta `pendente` → `ativa` com `subscription` gravada |
+| Reentrega do mesmo `event.id` | 200 sem reprocessar |
+| Corpo adulterado | 400 |
+| Sem header `stripe-signature` | 400 |
+| `customer.subscription.deleted` | 200, conta → `cancelada` |
+
+### 11.8 Pendências do deploy
+
+- [ ] Criar os produtos e preços na Stripe e preencher as variáveis na Vercel
+- [ ] Cadastrar o endpoint do webhook apontando para o domínio real
+- [ ] Sem CSP ainda — a página carrega scripts de `unpkg`, fonte do `jsdelivr`
+      e usa `<style>` inline, então a política precisa ser montada com cuidado
+      (§8.7). Os headers `nosniff`, `Referrer-Policy` e `X-Frame-Options` já estão
+- [ ] O `.zip` continua versionado e agora duplica o que está na árvore
+
 ---
 
-*Seções 1–10: análise estática de 100 % dos arquivos rastreados, incluindo extração do `.zip`, decodificação dos 4 slots de imagem em base64 e leitura visual dos screenshots do produto. Seção 11: implementação verificada em navegador real e por teste do handler de backend.*
+*Seções 1–10: análise estática de 100 % dos arquivos rastreados, incluindo extração do `.zip`, decodificação dos 4 slots de imagem em base64 e leitura visual dos screenshots do produto. Seção 11: implementação verificada em navegador real, contra um servidor que imita o roteamento da Vercel, e com o SDK da Stripe assinando eventos de teste.*

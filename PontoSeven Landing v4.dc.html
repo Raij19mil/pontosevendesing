@@ -424,8 +424,12 @@
 const PLATFORM_LOGIN_URL = 'https://seteponto.cloud/';
 
 // Cria a conta e devolve { url } para onde redirecionar.
-// Implementação de referência: stripe/api/checkout-session.js
-const SIGNUP_ENDPOINT = 'https://seteponto.cloud/api/checkout/session';
+// Implementação: api/checkout/session.js
+// Caminho relativo de propósito: vale igual no preview da Vercel, no
+// *.vercel.app e no domínio final, e por ser mesma origem não passa por
+// CORS. Só vire URL absoluta se a landing for servida de outro domínio
+// que não o da API — aí preencha ORIGENS_PERMITIDAS no backend.
+const SIGNUP_ENDPOINT = '/api/checkout/session';
 
 const TERMOS_URL = 'https://seteponto.cloud/termos';
 const PRIVACIDADE_URL = 'https://seteponto.cloud/privacidade';

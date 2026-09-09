@@ -1,9 +1,9 @@
 /**
  * POST /api/stripe/webhook
  *
- * É aqui que a assinatura vira conta ativa. O checkout-session só cria a
- * conta como 'pendente': confiar no redirect de sucesso do browser é
- * furado (a pessoa fecha a aba, a rede cai, ou alguém abre a success_url
+ * É aqui que a assinatura vira conta ativa. O /api/checkout/session só
+ * cria a conta como 'pendente': confiar no redirect de sucesso do browser
+ * é furado (a pessoa fecha a aba, a rede cai, ou alguém abre a success_url
  * na mão). O webhook é a única fonte confiável de "pagou".
  *
  * Eventos tratados:
@@ -12,31 +12,17 @@
  *   customer.subscription.deleted   → cancela
  *   invoice.payment_failed          → marca inadimplente
  *
- * Configure em: Stripe Dashboard → Developers → Webhooks → Add endpoint.
- * Em desenvolvimento: `stripe listen --forward-to localhost:3000/api/stripe/webhook`
+ * A assinatura Web resolve de graça o erro nº 1 de quem integra webhook:
+ * `await request.text()` devolve os BYTES CRUS. Com a assinatura Node
+ * seria preciso desligar o bodyParser, senão o corpo é re-serializado,
+ * um byte muda e toda entrega passa a falhar na verificação.
  */
 
 import Stripe from 'stripe';
-import { planoPorPriceId } from '../plans.js';
-import * as contas from '../db/contas.js';
+import { planoPorPriceId } from '../../lib/plans.js';
+import * as contas from '../../lib/contas.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-06-20' });
-
-/**
- * A verificação de assinatura roda sobre os BYTES CRUS do corpo. Se o
- * framework fizer o parse antes, o JSON é re-serializado, um byte muda e
- * toda entrega passa a falhar — este é o erro nº 1 de quem integra webhook.
- */
-export const config = { api: { bodyParser: false } };
-
-function corpoCru(req) {
-  return new Promise((resolve, reject) => {
-    const partes = [];
-    req.on('data', (c) => partes.push(c));
-    req.on('end', () => resolve(Buffer.concat(partes)));
-    req.on('error', reject);
-  });
-}
 
 async function contaDoEvento(objeto) {
   const id = objeto.client_reference_id || objeto.metadata?.conta_id;
@@ -47,28 +33,29 @@ async function contaDoEvento(objeto) {
   return objeto.customer ? contas.buscarPorStripeCustomer(objeto.customer) : null;
 }
 
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    return res.status(405).end();
-  }
+export async function POST(request) {
+  const cru = await request.text();
 
   let evento;
   try {
-    evento = stripe.webhooks.constructEvent(
-      await corpoCru(req),
-      req.headers['stripe-signature'],
+    // constructEventAsync usa WebCrypto: é a variante correta fora do
+    // caminho síncrono do Node e funciona igual aqui.
+    evento = await stripe.webhooks.constructEventAsync(
+      cru,
+      request.headers.get('stripe-signature'),
       process.env.STRIPE_WEBHOOK_SECRET,
     );
   } catch (e) {
     // 400 sem detalhe: quem chega aqui sem assinatura válida não é a Stripe.
     console.error('[webhook] assinatura inválida:', e.message);
-    return res.status(400).json({ mensagem: 'Assinatura inválida.' });
+    return Response.json({ mensagem: 'Assinatura inválida.' }, { status: 400 });
   }
 
   // A Stripe reentrega em timeout ou 5xx. Sem esta guarda, uma reentrega
   // reprocessa o evento — e um 200 rápido evita que ela reentregue à toa.
-  if (await contas.eventoJaProcessado(evento.id)) return res.status(200).json({ recebido: true });
+  if (await contas.eventoJaProcessado(evento.id)) {
+    return Response.json({ recebido: true });
+  }
 
   try {
     switch (evento.type) {
@@ -88,7 +75,7 @@ export default async function handler(req, res) {
           contaId: conta.id, plano: conta.plano, sessao: sessao.id,
         });
         // TODO(produção): disparar o e-mail de boas-vindas daqui, não do
-        // checkout-session — só neste ponto o pagamento está confirmado.
+        // /api/checkout/session — só neste ponto o pagamento está confirmado.
         break;
       }
 
@@ -145,10 +132,10 @@ export default async function handler(req, res) {
     }
 
     await contas.marcarEventoProcessado(evento.id);
-    return res.status(200).json({ recebido: true });
+    return Response.json({ recebido: true });
   } catch (e) {
     // 500 faz a Stripe reentregar — é o que queremos quando a falha é nossa.
     console.error('[webhook] falha ao processar', evento.type, evento.id, e.message);
-    return res.status(500).json({ mensagem: 'Falha ao processar evento.' });
+    return Response.json({ mensagem: 'Falha ao processar evento.' }, { status: 500 });
   }
 }
