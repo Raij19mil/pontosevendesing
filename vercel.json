@@ -4,7 +4,6 @@
   "outputDirectory": "public",
   "rewrites": [
     {
-      "comment": "image-slot.js busca o sidecar com ponto na frente; arquivos ocultos não são servidos de forma confiável, então o build publica sem o ponto e este rewrite liga os dois.",
       "source": "/.image-slots.state.json",
       "destination": "/image-slots.state.json"
     }

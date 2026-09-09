@@ -155,6 +155,13 @@ webhook, porque o corpo é re‑serializado e toda entrega passa a falhar.
 **Runtime Node, não Edge.** O SDK da Stripe e o `crypto.scrypt` do hash de
 senha não rodam no Edge.
 
+**Rewrite do sidecar de imagens.** `image-slot.js` busca
+`.image-slots.state.json` (com ponto) ao lado do HTML, e arquivo oculto não é
+servido de forma confiável. O build publica `image-slots.state.json` e o
+`vercel.json` liga um caminho ao outro. A explicação mora aqui e não dentro do
+JSON porque o `vercel.json` não aceita chaves fora do schema — uma chave
+`comment` a mais reprova a validação e derruba o deploy.
+
 **`maxmem` explícito no scrypt.** Com `N=32768` e `r=8` o algoritmo pede
 `128·N·r` = 32 MiB, exatamente o teto padrão do Node. Sem folga, todo hash
 falha com *memory limit exceeded*.
