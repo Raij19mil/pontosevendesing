@@ -10,8 +10,11 @@
 
 import { cp, mkdir, rm, readFile, writeFile, stat } from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const RAIZ = import.meta.dirname;
+// fileURLToPath em vez de import.meta.dirname: aquele só existe a partir do
+// Node 20.11, e a versão exata do runtime da Vercel é escolha do projeto.
+const RAIZ = path.dirname(fileURLToPath(import.meta.url));
 const SAIDA = path.join(RAIZ, 'public');
 
 const PAGINA = 'PontoSeven Landing v4.dc.html';
