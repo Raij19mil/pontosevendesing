@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entrar — PontoSeven</title>
+<link rel="icon" href="/assets/logo.png">
+<link rel="stylesheet" href="/pagina.css">
+<meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+
+<header class="topo">
+  <img src="/assets/logo.png" alt="">
+  <strong>PontoSeven</strong>
+</header>
+
+<main>
+  <h1>Entrar</h1>
+  <p>Use o e‑mail e a senha cadastrados na contratação.</p>
+
+  <!-- novalidate: a validação nativa do browser aparece em inglês em
+       parte dos navegadores; as mensagens abaixo estão em português e
+       são as mesmas que o servidor devolve. -->
+  <form id="form" novalidate>
+    <div class="campo">
+      <label class="rotulo" for="email">E‑mail</label>
+      <input class="entrada" id="email" name="email" type="email"
+             autocomplete="username" inputmode="email" required
+             placeholder="voce@empresa.com.br">
+    </div>
+
+    <div class="campo">
+      <label class="rotulo" for="senha">Senha</label>
+      <input class="entrada" id="senha" name="senha" type="password"
+             autocomplete="current-password" required placeholder="Sua senha">
+    </div>
+
+    <p class="erro" id="erro" role="alert"></p>
+
+    <button class="btn" id="enviar" type="submit">Entrar</button>
+  </form>
+
+  <!-- Aparece quando a senha confere mas a assinatura não libera o
+       acesso: em vez de barrar, explica e oferece o caminho de volta.
+
+       A explicação mora AQUI, fora do <form>, e não no #erro: quando a
+       saída é oferecida o formulário é escondido, e uma mensagem dentro
+       dele desapareceria junto — sobrava um botão sem motivo aparente. -->
+  <div id="saidas" hidden>
+    <p class="estado" id="estado" role="alert"></p>
+    <div class="botoes">
+      <button class="btn" id="resolver" type="button"></button>
+      <button class="btn secundario" id="sair" type="button">Entrar com outra conta</button>
+    </div>
+  </div>
+
+  <p class="aviso">
+    Ainda não tem conta? <a href="/#planos">Escolha um plano</a> para começar.
+  </p>
+</main>
+
+<footer class="rodape">
+  <span>PontoSeven · ponto eletrônico REP‑P</span>
+  <span>Dúvidas? <a href="mailto:suporte@seteponto.cloud">suporte@seteponto.cloud</a></span>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var form     = document.getElementById('form');
+  var email    = document.getElementById('email');
+  var senha    = document.getElementById('senha');
+  var erro     = document.getElementById('erro');
+  var enviar   = document.getElementById('enviar');
+  var saidas   = document.getElementById('saidas');
+  var estado   = document.getElementById('estado');
+  var resolver = document.getElementById('resolver');
+  var sair     = document.getElementById('sair');
+
+  // Cada estado bloqueado tem UM botão e UM endpoint. O rótulo diz o que
+  // vai acontecer, não o nome interno da ação.
+  var SAIDAS = {
+    assinar:     { rotulo: 'Escolher um plano e pagar', rota: '/api/billing/assinar' },
+    reativar:    { rotulo: 'Reativar minha assinatura', rota: '/api/billing/assinar' },
+    regularizar: { rotulo: 'Regularizar pagamento',     rota: '/api/billing/portal' },
+    portal:      { rotulo: 'Abrir área de cobrança',    rota: '/api/billing/portal' },
+    vendas:      { rotulo: 'Falar com o time comercial', rota: null, url: 'mailto:comercial@seteponto.cloud' }
+  };
+
+  function mostrarErro(msg) {
+    erro.textContent = msg || '';
+  }
+
+  /** Mensagem do painel de saída. `ruim` a pinta como falha. */
+  function mostrarEstado(msg, ruim) {
+    estado.textContent = msg || '';
+    estado.className = ruim ? 'estado ruim' : 'estado';
+  }
+
+  function ocupado(elemento, sim, rotuloOriginal) {
+    elemento.disabled = sim;
+    elemento.innerHTML = sim
+      ? '<span class="girando"></span>Aguarde…'
+      : rotuloOriginal;
+  }
+
+  function pedir(rota, corpo) {
+    return fetch(rota, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // Sem isto o cookie de sessão não é enviado em nenhum dos dois
+      // endpoints de cobrança, e os dois respondem 401.
+      credentials: 'same-origin',
+      body: JSON.stringify(corpo || {})
+    }).then(function (res) {
+      return res.json()
+        .catch(function () { return {}; })
+        .then(function (dados) { return { ok: res.ok, status: res.status, dados: dados }; });
+    });
+  }
+
+  function oferecerSaida(acao, mensagem, plano) {
+    var saida = SAIDAS[acao];
+    if (!saida) return mostrarErro(mensagem);
+
+    mostrarErro('');
+    mostrarEstado(mensagem);
+    form.hidden = true;
+    saidas.hidden = false;
+    resolver.textContent = saida.rotulo;
+
+    resolver.onclick = function () {
+      if (saida.url) { location.href = saida.url; return; }
+      ocupado(resolver, true);
+      pedir(saida.rota, plano ? { plano: plano } : {})
+        .then(function (r) {
+          if (r.ok && r.dados.url) { location.assign(r.dados.url); return; }
+          ocupado(resolver, false, saida.rotulo);
+          // A resposta pode redirecionar para OUTRA saída — inadimplente
+          // que pede portal em vez de novo checkout, por exemplo.
+          if (r.dados.acao && SAIDAS[r.dados.acao] && r.dados.acao !== acao) {
+            return oferecerSaida(r.dados.acao, r.dados.mensagem, plano);
+          }
+          mostrarEstado(r.dados.mensagem || 'Não foi possível continuar. Tente de novo.', true);
+        })
+        .catch(function () {
+          ocupado(resolver, false, saida.rotulo);
+          mostrarEstado('Falha de conexão. Verifique a sua internet e tente de novo.', true);
+        });
+    };
+  }
+
+  sair.onclick = function () {
+    fetch('/api/auth/sessao', { method: 'DELETE', credentials: 'same-origin' })
+      .catch(function () { /* sair localmente já basta para a tela */ })
+      .then(function () { location.reload(); });
+  };
+
+  form.onsubmit = function (evento) {
+    evento.preventDefault();
+    mostrarErro('');
+
+    var e = email.value.trim().toLowerCase();
+    var s = senha.value;
+    if (!e || e.indexOf('@') === -1) { mostrarErro('Informe um e‑mail válido.'); email.focus(); return; }
+    if (!s) { mostrarErro('Informe a sua senha.'); senha.focus(); return; }
+
+    ocupado(enviar, true);
+    pedir('/api/auth/login', { email: e, senha: s })
+      .then(function (r) {
+        ocupado(enviar, false, 'Entrar');
+
+        if (!r.ok) {
+          if (r.status === 429) return mostrarErro(r.dados.mensagem || 'Muitas tentativas. Aguarde alguns minutos.');
+          return mostrarErro(r.dados.mensagem || 'Não foi possível entrar. Tente de novo.');
+        }
+
+        if (r.dados.acesso && r.dados.url) {
+          // A senha some da memória do formulário antes do redirect.
+          senha.value = '';
+          location.assign(r.dados.url);
+          return;
+        }
+
+        oferecerSaida(
+          r.dados.acao,
+          r.dados.mensagem,
+          r.dados.conta && r.dados.conta.plano ? r.dados.conta.plano.slug : null
+        );
+      })
+      .catch(function () {
+        ocupado(enviar, false, 'Entrar');
+        mostrarErro('Falha de conexão. Verifique a sua internet e tente de novo.');
+      });
+  };
+
+  email.focus();
+})();
+</script>
+
+</body>
+</html>

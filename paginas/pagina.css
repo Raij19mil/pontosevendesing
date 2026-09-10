@@ -1,0 +1,163 @@
+/* Estilo das páginas de fluxo (/bem-vindo, /entrar, /obrigado-vendas).
+
+   Não usam o runtime do canvas: são HTML e CSS puros, servidos direto.
+   A landing carrega support.js + o design system porque é um documento
+   de design; estas páginas aparecem no meio de um pagamento e precisam
+   pintar mesmo se um script falhar.
+
+   Os tokens são os mesmos da v4 para que a virada da landing para cá
+   não pareça outro site. */
+
+@font-face {
+  font-family: 'Overused Grotesk';
+  src: url('https://cdn.jsdelivr.net/gh/RandomMaerks/Overused-Grotesk@0.5-alpha.2/fonts/variable/OverusedGroteskRoman-VF.woff2') format('woff2-variations');
+  font-weight: 300 900; font-style: normal; font-display: swap;
+}
+
+:root {
+  --ink: #141110;
+  --paper: #ffffff;
+  --line: rgba(20, 17, 16, .16);
+  --dim: rgba(20, 17, 16, .62);
+  --red: #ec3013;
+  --verde: #0f7b4f;
+  --areia: #faf8f7;
+}
+
+* { box-sizing: border-box; }
+
+/* Precisa vir com !important: o atributo `hidden` vale display:none pela
+   folha do navegador, e QUALQUER display declarado aqui ganha dele. Sem
+   esta linha, `.botoes { display: grid }` deixa os botões de ação
+   visíveis desde o carregamento — o botão vazio aparecia na tela de
+   login antes de haver ação nenhuma para oferecer. */
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Overused Grotesk', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-wrap: pretty;
+}
+
+a { color: var(--red); text-decoration: none; font-weight: 600; }
+a:hover { color: #b8250c; text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+
+.topo {
+  display: flex; align-items: center; gap: 10px;
+  padding: 20px clamp(18px, 5vw, 40px);
+  border-bottom: 1px solid var(--line);
+}
+.topo img { height: 26px; width: auto; }
+.topo strong { font-size: 15px; letter-spacing: -.01em; }
+
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: clamp(32px, 7vw, 64px) clamp(18px, 5vw, 24px) 64px;
+}
+
+h1 { font-size: clamp(26px, 5vw, 34px); line-height: 1.15; letter-spacing: -.025em; margin: 0 0 10px; }
+h2 { font-size: 15px; font-weight: 600; margin: 0 0 12px; }
+p { font-size: 15.5px; line-height: 1.6; color: var(--dim); margin: 0 0 18px; }
+p strong { color: var(--ink); }
+
+/* Selo de estado no topo do cartão: cor e texto vêm do JS. */
+.selo {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12.5px; font-weight: 600; letter-spacing: .01em;
+  padding: 6px 12px; border-radius: 999px; margin-bottom: 18px;
+  background: rgba(20, 17, 16, .06); color: var(--dim);
+}
+.selo::before { content: ''; width: 7px; height: 7px; border-radius: 999px; background: currentColor; }
+.selo.ok { background: rgba(15, 123, 79, .1); color: var(--verde); }
+.selo.espera { background: rgba(236, 48, 19, .1); color: var(--red); }
+.selo.erro { background: rgba(236, 48, 19, .1); color: var(--red); }
+
+.cartao {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: clamp(20px, 4vw, 28px);
+  background: var(--areia);
+  margin: 0 0 22px;
+}
+
+.linhas { display: grid; gap: 12px; }
+.linha { display: flex; justify-content: space-between; gap: 16px; font-size: 14.5px; }
+.linha dt { color: var(--dim); }
+.linha dd { margin: 0; font-weight: 600; text-align: right; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 14px 20px; border: 0; border-radius: 999px;
+  font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
+  background: var(--red); color: #fff; text-decoration: none;
+  transition: background .2s, opacity .2s;
+}
+.btn:hover { background: #cf280f; color: #fff; text-decoration: none; }
+.btn[disabled] { opacity: .55; cursor: not-allowed; }
+.btn.secundario { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.btn.secundario:hover { background: rgba(20, 17, 16, .05); color: var(--ink); }
+.botoes { display: grid; gap: 10px; margin: 22px 0 0; }
+
+.campo { margin: 0 0 16px; }
+.rotulo { display: block; font-size: 12.5px; font-weight: 600; color: var(--dim); margin: 0 0 7px; }
+.entrada {
+  width: 100%; padding: 12px 14px;
+  border: 1px solid var(--line); border-radius: 12px;
+  background: #fff; font-family: inherit; font-size: 15px; color: var(--ink);
+}
+.entrada:focus {
+  outline: none; border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(236, 48, 19, .16);
+}
+
+/* role="alert" no HTML: leitores de tela anunciam o erro sem que o foco
+   precise sair do campo. */
+.erro {
+  font-size: 13.5px; line-height: 1.5; color: var(--red);
+  margin: 0 0 16px; min-height: 0;
+}
+.erro:empty { display: none; }
+
+.estado {
+  font-size: 15px; line-height: 1.6; color: var(--ink);
+  background: var(--areia); border: 1px solid var(--line);
+  border-radius: 12px; padding: 14px 16px; margin: 0;
+}
+.estado.ruim {
+  color: var(--red); background: rgba(236, 48, 19, .06);
+  border-color: rgba(236, 48, 19, .32);
+}
+.estado:empty { display: none; }
+
+.aviso {
+  font-size: 13.5px; line-height: 1.55; color: var(--dim);
+  border-left: 2px solid var(--line); padding-left: 12px; margin: 18px 0 0;
+}
+
+.rodape {
+  padding: 24px clamp(18px, 5vw, 40px);
+  border-top: 1px solid var(--line);
+  font-size: 13px; color: var(--dim);
+  display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: space-between;
+}
+
+.girando { display: inline-block; width: 14px; height: 14px; border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, .45); border-top-color: #fff;
+  animation: girar .7s linear infinite; }
+.selo .girando { border-color: rgba(236, 48, 19, .3); border-top-color: var(--red); }
+@keyframes girar { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .girando { animation: none; }
+  * { transition: none !important; }
+}

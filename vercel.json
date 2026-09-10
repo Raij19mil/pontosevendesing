@@ -8,6 +8,12 @@
       "destination": "/image-slots.state.json"
     }
   ],
+  "functions": {
+    "api/**/*.js": { "maxDuration": 30 }
+  },
+  "crons": [
+    { "path": "/api/manutencao", "schedule": "0 4 * * *" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

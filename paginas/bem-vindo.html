@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bem-vindo — PontoSeven</title>
+<link rel="icon" href="/assets/logo.png">
+<link rel="stylesheet" href="/pagina.css">
+<!-- noindex: a URL carrega o session_id do pagamento. -->
+<meta name="robots" content="noindex, nofollow">
+<!-- Sem Referer: o session_id viaja na query, e o cabeçalho o entregaria
+     a qualquer domínio linkado a partir daqui. -->
+<meta name="referrer" content="no-referrer">
+</head>
+<body>
+
+<header class="topo">
+  <img src="/assets/logo.png" alt="">
+  <strong>PontoSeven</strong>
+</header>
+
+<main>
+  <!-- Estado inicial: a página abre confirmando, nunca comemorando.
+       Quem manda é a resposta de /api/checkout/status. -->
+  <p class="selo espera" id="selo"><span class="girando"></span>Confirmando o pagamento…</p>
+
+  <h1 id="titulo">Só um instante</h1>
+  <p id="texto">Estamos confirmando a sua assinatura com a operadora de pagamento.</p>
+
+  <div class="cartao" id="cartao" hidden>
+    <dl class="linhas" id="linhas"></dl>
+  </div>
+
+  <div class="botoes" id="botoes" hidden>
+    <a class="btn" id="acao" href="/entrar">Entrar na plataforma</a>
+    <a class="btn secundario" href="/">Voltar ao site</a>
+  </div>
+
+  <p class="aviso" id="aviso" hidden></p>
+</main>
+
+<footer class="rodape">
+  <span>PontoSeven · ponto eletrônico REP‑P</span>
+  <span>Dúvidas? <a href="mailto:suporte@seteponto.cloud">suporte@seteponto.cloud</a></span>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var selo    = document.getElementById('selo');
+  var titulo  = document.getElementById('titulo');
+  var texto   = document.getElementById('texto');
+  var cartao  = document.getElementById('cartao');
+  var linhas  = document.getElementById('linhas');
+  var botoes  = document.getElementById('botoes');
+  var acao    = document.getElementById('acao');
+  var aviso   = document.getElementById('aviso');
+
+  var sessionId = new URLSearchParams(location.search).get('session_id');
+
+  // O webhook da Stripe costuma chegar em segundos, mas não há promessa
+  // disso. A página tenta de novo, espaçando as tentativas, em vez de
+  // dizer que deu errado para quem já pagou.
+  var ESPERAS = [1200, 2000, 3000, 4000, 6000];
+  var tentativa = 0;
+
+  function definirSelo(classe, html) {
+    selo.className = 'selo ' + classe;
+    selo.innerHTML = html;
+  }
+
+  function linha(rotulo, valor) {
+    if (!valor) return;
+    var div = document.createElement('div');
+    div.className = 'linha';
+    var dt = document.createElement('dt');
+    dt.textContent = rotulo;
+    var dd = document.createElement('dd');
+    // textContent, nunca innerHTML: o nome vem do que a pessoa digitou.
+    dd.textContent = valor;
+    div.appendChild(dt);
+    div.appendChild(dd);
+    linhas.appendChild(div);
+  }
+
+  function dataBr(iso) {
+    if (!iso) return null;
+    var d = new Date(iso);
+    return isNaN(d) ? null : d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+  }
+
+  function preencherCartao(dados) {
+    linhas.innerHTML = '';
+    linha('Conta', dados.nome);
+    linha('E‑mail', dados.email);
+    if (dados.plano) {
+      linha('Plano', dados.plano.nome + (dados.plano.preco ? ' · ' + dados.plano.preco + '/mês' : ''));
+      if (dados.plano.maxFuncionarios) linha('Funcionários', 'até ' + dados.plano.maxFuncionarios);
+    }
+    var proxima = dataBr(dados.periodoFim);
+    if (proxima) linha(dados.cancelamentoAgendado ? 'Acesso até' : 'Próxima cobrança', proxima);
+    cartao.hidden = linhas.children.length === 0;
+  }
+
+  function mostrarAtiva(dados) {
+    definirSelo('ok', 'Pagamento confirmado');
+    titulo.textContent = 'Bem-vindo ao PontoSeven';
+    texto.innerHTML = 'Sua conta está <strong>ativa</strong>. Entre com o e‑mail e a senha que você acabou de cadastrar.';
+    preencherCartao(dados);
+    acao.textContent = 'Entrar na plataforma';
+    acao.href = '/entrar';
+    botoes.hidden = false;
+  }
+
+  function mostrarProcessando(dados) {
+    // Pago, mas a conta ainda não consta como ativa. Só chega aqui se a
+    // reconciliação do servidor também não tiver resolvido — é raro, e
+    // não é problema de quem pagou.
+    definirSelo('espera', '<span class="girando"></span>Liberando o acesso…');
+    titulo.textContent = 'Pagamento recebido';
+    texto.innerHTML = 'O pagamento foi confirmado e estamos liberando a sua conta. Isso costuma levar alguns segundos.';
+    preencherCartao(dados);
+    aviso.textContent = 'Se demorar mais que isso, escreva para suporte@seteponto.cloud com o seu e‑mail de cadastro — o pagamento já está registrado.';
+    aviso.hidden = false;
+    acao.textContent = 'Tentar entrar';
+    acao.href = '/entrar';
+    botoes.hidden = false;
+  }
+
+  function mostrarNaoPago() {
+    definirSelo('erro', 'Pagamento não concluído');
+    titulo.textContent = 'O pagamento não foi concluído';
+    texto.textContent = 'Nenhuma cobrança foi feita. Você pode escolher o plano e tentar de novo quando quiser.';
+    acao.textContent = 'Escolher um plano';
+    acao.href = '/#planos';
+    botoes.hidden = false;
+  }
+
+  function mostrarErro(mensagem) {
+    definirSelo('erro', 'Não foi possível confirmar');
+    titulo.textContent = 'Não conseguimos confirmar agora';
+    texto.textContent = mensagem || 'Tente recarregar a página em instantes.';
+    acao.textContent = 'Entrar na plataforma';
+    acao.href = '/entrar';
+    botoes.hidden = false;
+    aviso.textContent = 'Se você concluiu o pagamento, ele está registrado — escreva para suporte@seteponto.cloud com o seu e‑mail de cadastro.';
+    aviso.hidden = false;
+  }
+
+  function consultar() {
+    fetch('/api/checkout/status?session_id=' + encodeURIComponent(sessionId), {
+      headers: { Accept: 'application/json' },
+    })
+      .then(function (res) {
+        return res.json().then(function (corpo) { return { ok: res.ok, corpo: corpo }; });
+      })
+      .then(function (r) {
+        if (!r.ok) return mostrarErro(r.corpo && r.corpo.mensagem);
+
+        if (r.corpo.estado === 'ativa') return mostrarAtiva(r.corpo);
+
+        if (r.corpo.estado === 'processando') {
+          if (tentativa < ESPERAS.length) {
+            // Mostra o cartão já na primeira espera: quem pagou vê o
+            // plano certo enquanto o resto se resolve.
+            preencherCartao(r.corpo);
+            return setTimeout(consultar, ESPERAS[tentativa++]);
+          }
+          return mostrarProcessando(r.corpo);
+        }
+
+        return mostrarNaoPago();
+      })
+      .catch(function () {
+        if (tentativa < ESPERAS.length) return setTimeout(consultar, ESPERAS[tentativa++]);
+        mostrarErro('Verifique a sua conexão e recarregue a página.');
+      });
+  }
+
+  if (!sessionId) {
+    // Alguém abriu /bem-vindo direto. Não é erro: é só uma página sem
+    // pagamento para confirmar.
+    definirSelo('', 'Acesso à plataforma');
+    titulo.textContent = 'Entrar no PontoSeven';
+    texto.textContent = 'Use o e‑mail e a senha cadastrados para acessar a plataforma.';
+    botoes.hidden = false;
+  } else {
+    consultar();
+  }
+})();
+</script>
+
+</body>
+</html>

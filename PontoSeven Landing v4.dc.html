@@ -420,8 +420,13 @@
    para o ambiente real. Backend de referência: stripe/ (ver README.md).
    ══════════════════════════════════════════════════════════════════════ */
 
-// Destino do botão "Entrar".
-const PLATFORM_LOGIN_URL = 'https://seteponto.cloud/';
+// Destino do botão "Entrar". Aponta para a nossa própria página de
+// login (paginas/entrar.html): é ela que confere a senha contra o banco,
+// vê se a assinatura está em dia e só então repassa para a plataforma
+// com um token assinado. Mandar direto para seteponto.cloud pularia essa
+// checagem e deixaria conta cancelada e inadimplente na mesma porta de
+// quem está com tudo pago.
+const PLATFORM_LOGIN_URL = '/entrar';
 
 // Cria a conta e devolve { url } para onde redirecionar.
 // Implementação: api/checkout/session.js
