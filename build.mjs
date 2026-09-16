@@ -219,16 +219,19 @@ if (quebradas.length) {
 function idsDeSlot(fonte) {
   const literais = [...fonte.matchAll(/<image-slot[^>]*\bid="([^"{]+)"/g)].map((m) => m[1]);
 
-  const prefixo = fonte.match(/slotId:\s*'([^']+)'\s*\+\s*d\.value/);
-  const bloco = fonte.match(/const defs = \[([\s\S]*?)\];/);
-  if (!prefixo || !bloco) {
-    return { ids: literais, aviso: 'não consegui derivar os ids das abas de buildTabs() — a checagem cobriu só os slots de id fixo' };
+  // Os ids das etapas de "Como funciona" não estão no HTML — a página
+  // escreve `id="{{ s.slotId }}"` e o valor vem do array HOW_IT_WORKS, na
+  // fonte. Sem essa extração, os três slots dessa seção ficariam de fora
+  // do aviso de slot vazio abaixo.
+  const bloco = fonte.match(/const HOW_IT_WORKS = \[([\s\S]*?)\n\];/);
+  if (!bloco) {
+    return { ids: literais, aviso: 'não achei o array HOW_IT_WORKS — a checagem cobriu só os slots de id fixo' };
   }
-  const abas = [...bloco[1].matchAll(/value:\s*'([^']+)'/g)].map((m) => prefixo[1] + m[1]);
-  if (!abas.length) {
-    return { ids: literais, aviso: 'o `defs` de buildTabs() não tem nenhum `value` — a checagem cobriu só os slots de id fixo' };
+  const etapas = [...bloco[1].matchAll(/slotId:\s*'([^']+)'/g)].map((m) => m[1]);
+  if (!etapas.length) {
+    return { ids: literais, aviso: 'HOW_IT_WORKS não tem nenhum `slotId` — a checagem cobriu só os slots de id fixo' };
   }
-  return { ids: [...literais, ...abas], aviso: null };
+  return { ids: [...literais, ...etapas], aviso: null };
 }
 
 const { ids: todosOsSlots, aviso: avisoDerivacao } = idsDeSlot(html);

@@ -48,6 +48,7 @@
     @keyframes ps-smoke-b { 0% { transform: translate3d(4%,-2%,0) scale(1.12); } 50% { transform: translate3d(-5%,4%,0) scale(1); } 100% { transform: translate3d(4%,-2%,0) scale(1.12); } }
     @keyframes ps-smoke-c { 0% { transform: translate3d(0,3%,0) scale(1); } 50% { transform: translate3d(-3%,-4%,0) scale(1.14); } 100% { transform: translate3d(0,3%,0) scale(1); } }
     @keyframes ps-reveal { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+    @keyframes ps4-step-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
     [data-reveal] { opacity: 0; }
     [data-reveal].is-in { animation: ps-reveal .8s cubic-bezier(.22,.75,.2,1) both; }
     ::selection { background: rgba(236,48,19,.18); }
@@ -190,30 +191,36 @@
     <div>
       <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Como funciona</p>
       <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:18px 0 0">Da configuração ao fechamento da folha.</h2>
-      <div style="margin-top:36px">
+      <div style="margin-top:36px" role="tablist" aria-label="Como funciona, em três etapas">
         <sc-for list="{{ steps }}" as="s" hint-placeholder-count="3">
-          <details name="ps4-steps" open="{{ s.open }}" style="margin-bottom:10px;padding:0 20px;border-radius:18px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)">
-            <summary style="display:flex;gap:14px;align-items:baseline;padding:18px 0;font-size:17px;font-weight:600;cursor:pointer;list-style:none">
-              <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--red)">{{ s.num }}</span>
-              {{ s.title }}
-            </summary>
-            <p style="font-size:14.5px;line-height:1.75;color:var(--dim);margin:0 0 20px;padding-left:32px;max-width:46ch">{{ s.text }}</p>
-          </details>
+          <button type="button" role="tab" aria-selected="{{ s.active }}" onClick="{{ s.select }}" style="{{ s.rowStyle }}">
+            <span style="{{ s.railStyle }}"><span style="{{ s.railFillStyle }}"></span></span>
+            <span style="{{ s.numStyle }}">{{ s.num }}</span>
+            <span style="flex:1;min-width:0">
+              <span style="{{ s.titleStyle }}">{{ s.title }}</span>
+              <sc-if value="{{ s.active }}" hint-placeholder-val="{{ false }}">
+                <p style="font-size:14.5px;line-height:1.7;color:var(--dim);margin:8px 0 0;max-width:44ch;animation:ps4-step-in .35s ease both">{{ s.text }}</p>
+              </sc-if>
+            </span>
+          </button>
         </sc-for>
       </div>
     </div>
     <div>
-      <div style="position:relative;border-radius:24px 24px 0 0;overflow:hidden;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);border-bottom:0;box-shadow:var(--glass-shadow)">
-        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="1">
-          <div style="{{ t.panelStyle }}">
-            <image-slot id="{{ t.slotId }}" shape="rect" style="width:100%;aspect-ratio:4/3" placeholder="{{ t.placeholder }}"></image-slot>
+      <div style="position:relative;border-radius:24px;overflow:hidden;aspect-ratio:4/3;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)" role="tabpanel" onMouseEnter="{{ pausarAutoplay }}" onMouseLeave="{{ retomarAutoplay }}">
+        <sc-for list="{{ steps }}" as="s" hint-placeholder-count="1">
+          <div style="{{ s.panelStyle }}">
+            <image-slot id="{{ s.slotId }}" shape="rect" style="width:100%;height:100%" placeholder="{{ s.placeholder }}"></image-slot>
           </div>
         </sc-for>
-      </div>
-      <div style="display:flex;border-radius:0 0 24px 24px;overflow:hidden;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)" role="tablist">
-        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
-          <button type="button" role="tab" onClick="{{ t.select }}" style="{{ t.tabStyle }}">{{ t.label }}</button>
-        </sc-for>
+        <div style="position:absolute;bottom:16px;right:16px;display:flex;gap:8px;z-index:2">
+          <button type="button" onClick="{{ passoAnterior }}" aria-label="Etapa anterior" style="{{ setaStyle }}" style-hover="transform:scale(1.06);background:var(--glass-strong)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <button type="button" onClick="{{ passoSeguinte }}" aria-label="Próxima etapa" style="{{ setaStyle }}" style-hover="transform:scale(1.06);background:var(--glass-strong)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -482,9 +489,42 @@ function erroAmigavel(msg) {
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+// Etapas de "Como funciona". Cada uma já correspondia, no conteúdo, a uma
+// das três telas reais mostradas ao lado — mas antes eram dois widgets
+// sem relação: a lista de etapas e a galeria de imagens tinham cada uma
+// seu próprio estado, então clicar numa etapa não trocava a imagem, e a
+// imagem trocava sozinha sem dizer a que etapa pertencia. Uma fonte só de
+// dados resolve isso: 01 configura o geofence → 02 a equipe bate o ponto
+// no app → 03 o painel fecha o mês.
+const HOW_IT_WORKS = [
+  {
+    num: '01', title: 'Configure a empresa',
+    text: 'Cadastre unidades, jornadas, escalas e os geofences de cada local. Perfis de acesso definem quem aprova ajustes e quem só consulta.',
+    slotId: 'ps4-tab-geofence', placeholder: 'Cadastro de geofences: endereço, raio e coordenadas por filial',
+  },
+  {
+    num: '02', title: 'A equipe bate o ponto',
+    text: 'O funcionário registra pelo celular com biometria facial dentro do perímetro autorizado e recebe o comprovante da batida na hora.',
+    slotId: 'ps4-tab-app', placeholder: 'Tela do app: batida com biometria facial',
+  },
+  {
+    num: '03', title: 'Feche o mês',
+    text: 'O espelho de ponto sai consolidado por funcionário, com log de auditoria anexo, e vai direto para a folha de pagamento.',
+    slotId: 'ps4-tab-painel', placeholder: 'Painel do gestor: batidas do dia e geofences',
+  },
+];
+
+// Autoplay da galeria: o passo muda sozinho a cada AUTOPLAY_MS, com a
+// barrinha de progresso enchendo em passos de TICK_MS — fino o bastante
+// pra parecer contínua sem precisar de requestAnimationFrame.
+const AUTOPLAY_MS = 6000;
+const TICK_MS = 50;
+
 class Component extends DCLogic {
   state = {
-    tab: 'app',
+    stepIndex: 0,
+    stepProgress: 0,
+    stepPaused: false,
     // — modal de criar conta —
     signupOpen: false,
     plano: 'standard',
@@ -599,6 +639,21 @@ class Component extends DCLogic {
       });
     }, { rootMargin: '0px 0px -12% 0px', threshold: 0.05 });
     document.querySelectorAll('[data-reveal]').forEach((n) => this.io.observe(n));
+
+    // Autoplay da galeria "Como funciona". Some com prefers-reduced-motion:
+    // quem pediu menos movimento continua trocando de etapa clicando ou
+    // pelas setas — só não avança sozinho.
+    if (!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+      this._stepTimer = setInterval(() => {
+        if (this.state.stepPaused) return;
+        this.setState((s) => {
+          const proximo = s.stepProgress + TICK_MS / AUTOPLAY_MS;
+          return proximo >= 1
+            ? { stepIndex: (s.stepIndex + 1) % HOW_IT_WORKS.length, stepProgress: 0 }
+            : { stepProgress: proximo };
+        });
+      }, TICK_MS);
+    }
   }
 
   componentWillUnmount() {
@@ -609,6 +664,7 @@ class Component extends DCLogic {
     window.removeEventListener('mouseleave', this.onLeave);
     window.removeEventListener('keydown', this.onKeyDown);
     document.body.style.overflow = '';
+    clearInterval(this._stepTimer);
   }
 
   /* ─────────────────────────────────────────────────────────────────
@@ -755,23 +811,56 @@ class Component extends DCLogic {
     });
   };
 
-  buildTabs() {
-    const defs = [
-      { value: 'app', label: 'App do funcionário', placeholder: 'Tela do app: batida com biometria facial' },
-      { value: 'painel', label: 'Painel do gestor', placeholder: 'Painel do gestor: batidas do dia e geofences' },
-      { value: 'geofence', label: 'Geofence', placeholder: 'Cadastro de geofences: endereço, raio e coordenadas por filial' },
-    ];
-    return defs.map((d, i) => {
-      const active = this.state.tab === d.value;
+  irParaEtapa(i) {
+    this.setState({ stepIndex: i, stepProgress: 0 });
+  }
+
+  // Setas do lado da imagem: mesma navegação sequencial da lista, só que
+  // a partir da foto — útil no mobile, onde a foto vem ANTES da lista
+  // (ver ordem das colunas no grid) e não exige rolar pra voltar aos itens.
+  passoSeguinte = () => this.setState((s) => ({
+    stepIndex: (s.stepIndex + 1) % HOW_IT_WORKS.length, stepProgress: 0,
+  }));
+  passoAnterior = () => this.setState((s) => ({
+    stepIndex: (s.stepIndex - 1 + HOW_IT_WORKS.length) % HOW_IT_WORKS.length, stepProgress: 0,
+  }));
+
+  // Passa o mouse na imagem e o autoplay espera — ninguém quer que a
+  // etapa troque no meio de uma olhada mais demorada na tela.
+  pausarAutoplay = () => this.setState({ stepPaused: true });
+  retomarAutoplay = () => this.setState({ stepPaused: false });
+
+  buildSteps() {
+    return HOW_IT_WORKS.map((etapa, i) => {
+      const active = this.state.stepIndex === i;
       return {
-        ...d,
-        slotId: 'ps4-tab-' + d.value,
-        panelStyle: active ? 'display:block' : 'display:none',
-        tabStyle: 'flex:1;margin:6px;padding:12px 10px;border-radius:999px;font-weight:600;font-size:13.5px;white-space:nowrap;cursor:pointer;border:0;transition:background .2s ease;' +
-          (active
-            ? 'background:var(--red);color:#fff;box-shadow:0 8px 22px rgba(236,48,19,.28);'
-            : 'background:transparent;color:var(--dim);'),
-        select: () => this.setState({ tab: d.value }),
+        ...etapa,
+        active,
+        // Painéis empilhados (position:absolute) com crossfade em vez de
+        // display:block/none: display não anima, e um corte seco entre
+        // fotos do próprio produto chama mais atenção pra troca do que
+        // pro conteúdo. pointer-events desliga o painel escondido, senão
+        // ele ficaria clicável por cima do visível.
+        panelStyle: 'position:absolute;inset:0;transition:opacity .5s ease;' +
+          (active ? 'opacity:1;pointer-events:auto' : 'opacity:0;pointer-events:none'),
+        rowStyle: 'position:relative;display:flex;gap:16px;width:100%;text-align:left;' +
+          'padding:20px 0 20px 26px;border:0;' + (i === 0 ? '' : 'border-top:1px solid var(--line);') +
+          'background:transparent;cursor:pointer;font-family:inherit;' +
+          'color:' + (active ? 'var(--ink)' : 'var(--dim)') + ';transition:color .3s ease',
+        // Trilho sempre visível (var(--line)); o preenchimento vermelho só
+        // existe na etapa ativa, e sua altura segue state.stepProgress —
+        // dirigido por número de estado, não por @keyframes, porque
+        // reiniciar uma animação CSS a cada troca de etapa depende de
+        // remontar o nó, e não há garantia de que o diff deste framework
+        // remonte em vez de reaproveitar o elemento.
+        railStyle: 'position:absolute;left:0;top:20px;bottom:20px;width:2px;background:var(--line);overflow:hidden;border-radius:2px',
+        railFillStyle: 'position:absolute;left:0;right:0;top:0;background:var(--red);' +
+          'height:' + (active ? Math.round(this.state.stepProgress * 100) : 0) + '%;' +
+          'transition:height ' + TICK_MS + 'ms linear',
+        numStyle: 'font-family:ui-monospace,Menlo,monospace;font-size:12px;margin-top:3px;flex:none;' +
+          'color:' + (active ? 'var(--red)' : 'inherit'),
+        titleStyle: 'display:block;font-size:19px;font-weight:600;letter-spacing:-.01em;transition:color .3s ease',
+        select: () => this.irParaEtapa(i),
       };
     });
   }
@@ -914,16 +1003,19 @@ class Component extends DCLogic {
       submitHover: st.submitting ? 'background:var(--red)' : 'background:#c9260d',
       submitLabel,
       submitNota,
-      tabs: this.buildTabs(),
+      steps: this.buildSteps(),
+      passoSeguinte: this.passoSeguinte,
+      passoAnterior: this.passoAnterior,
+      pausarAutoplay: this.pausarAutoplay,
+      retomarAutoplay: this.retomarAutoplay,
+      setaStyle: 'width:40px;height:40px;border-radius:999px;display:flex;align-items:center;justify-content:center;' +
+        'border:1px solid var(--glass-line);background:var(--glass-strong);backdrop-filter:var(--glass-blur);' +
+        '-webkit-backdrop-filter:var(--glass-blur);color:var(--ink);cursor:pointer;box-shadow:var(--glass-shadow);' +
+        'transition:transform .2s ease',
       features,
       basicoStyle: highlighted === 'basico' ? hot : glass,
       standardStyle: highlighted === 'standard' ? hot : glass,
       enterpriseStyle: highlighted === 'enterprise' ? hot : glass,
-      steps: [
-        { num: '01', title: 'Configure a empresa', open: true, text: 'Cadastre unidades, jornadas, escalas e os geofences de cada local. Perfis de acesso definem quem aprova ajustes e quem só consulta.' },
-        { num: '02', title: 'A equipe bate o ponto', open: false, text: 'O funcionário registra pelo celular com biometria facial dentro do perímetro autorizado e recebe o comprovante da batida na hora.' },
-        { num: '03', title: 'Feche o mês', open: false, text: 'O espelho de ponto sai consolidado por funcionário, com log de auditoria anexo, e vai direto para a folha de pagamento.' },
-      ],
       compliance: [
         'Conformidade com a Portaria 671 (REP‑P)',
         'Tratamento de dados alinhado à LGPD',
