@@ -154,6 +154,9 @@ for (const nome of COPIAR) {
 
 await cp(await exigir(SIDECAR_ORIGEM), path.join(SAIDA, SIDECAR_DESTINO));
 
+// Lido para conferir quais slots têm imagem (ver o aviso mais abaixo).
+const estadoDosSlots = JSON.parse(await readFile(await exigir(SIDECAR_ORIGEM), 'utf8'));
+
 await cp(await exigir(CSS_PAGINAS.origem), path.join(SAIDA, CSS_PAGINAS.destino));
 
 const htmlDasPaginas = [];
@@ -201,6 +204,43 @@ for (const { destino, conteudo } of documentos) {
 
 if (quebradas.length) {
   throw new Error(`Referências sem arquivo em public/:\n  ${quebradas.join('\n  ')}`);
+}
+
+/* Slots de imagem sem imagem no sidecar saem como um retângulo tracejado
+   na página publicada. O build não falha por isso — pode ser um slot
+   recém-criado, esperando a captura de tela —, mas avisa: é o tipo de
+   coisa que ninguém nota até um cliente abrir a página de vendas.
+
+   Os ids das abas não estão no HTML: a página escreve `id="{{ t.slotId }}"`
+   e o valor sai de `slotId: 'ps4-tab-' + d.value` em buildTabs(). Então a
+   lista é derivada do `defs` da própria fonte — e, se a derivação parar de
+   casar (alguém renomeou a função, mudou o prefixo), o build DIZ isso em
+   vez de checar um conjunto vazio e passar calado. */
+function idsDeSlot(fonte) {
+  const literais = [...fonte.matchAll(/<image-slot[^>]*\bid="([^"{]+)"/g)].map((m) => m[1]);
+
+  const prefixo = fonte.match(/slotId:\s*'([^']+)'\s*\+\s*d\.value/);
+  const bloco = fonte.match(/const defs = \[([\s\S]*?)\];/);
+  if (!prefixo || !bloco) {
+    return { ids: literais, aviso: 'não consegui derivar os ids das abas de buildTabs() — a checagem cobriu só os slots de id fixo' };
+  }
+  const abas = [...bloco[1].matchAll(/value:\s*'([^']+)'/g)].map((m) => prefixo[1] + m[1]);
+  if (!abas.length) {
+    return { ids: literais, aviso: 'o `defs` de buildTabs() não tem nenhum `value` — a checagem cobriu só os slots de id fixo' };
+  }
+  return { ids: [...literais, ...abas], aviso: null };
+}
+
+const { ids: todosOsSlots, aviso: avisoDerivacao } = idsDeSlot(html);
+if (avisoDerivacao) console.warn(`⚠ build: ${avisoDerivacao}`);
+
+const slotsVazios = todosOsSlots.filter((id) => !estadoDosSlots[id]?.u);
+if (slotsVazios.length) {
+  console.warn(
+    `⚠ ${slotsVazios.length} slot(s) de imagem sem imagem: ${slotsVazios.join(', ')}\n` +
+    `  A página vai ao ar com um placeholder tracejado no lugar.\n` +
+    `  Preencha com: node scripts/importar-imagens.mjs <pasta>`,
+  );
 }
 
 console.log(

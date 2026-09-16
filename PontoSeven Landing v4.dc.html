@@ -741,7 +741,7 @@ class Component extends DCLogic {
     const defs = [
       { value: 'app', label: 'App do funcionário', placeholder: 'Tela do app: batida com biometria facial' },
       { value: 'painel', label: 'Painel do gestor', placeholder: 'Painel do gestor: batidas do dia e geofences' },
-      { value: 'relatorio', label: 'Espelho de ponto', placeholder: 'Relatório mensal / espelho de ponto' },
+      { value: 'geofence', label: 'Geofence', placeholder: 'Cadastro de geofences: endereço, raio e coordenadas por filial' },
     ];
     return defs.map((d, i) => {
       const active = this.state.tab === d.value;
