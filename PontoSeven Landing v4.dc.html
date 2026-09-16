@@ -98,6 +98,24 @@
       .ps-plan-grid { grid-template-columns: minmax(0,1fr) !important; }
     }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } [data-reveal] { opacity: 1 !important; } }
+
+    /* — Captura de tela real: sem hover/edição no editor do canvas —————
+       ps4-tab-geofence é uma captura de tela real da plataforma
+       (Geofences & Endereços), não uma imagem qualquer de banco de dados —
+       diferente dos demais slots, essa não pode ser trocada por engano ao
+       clicar/arrastar dentro do editor do Claude Design Canvas.
+       pointer-events:none tira o hover que revelaria os controles
+       Substituir/Reenquadrar (image-slot.js só os mostra em
+       :host([data-editable]:hover)) — mas isso sozinho não barra uma
+       ativação por teclado (Tab + Enter chega ao botão mesmo com
+       pointer-events:none, que só afeta ponteiro). O bloqueio completo
+       está no <script> antes de </body>, que intercepta o evento na fase
+       de CAPTURA — antes de entrar no Shadow DOM do componente — e vale
+       tanto para mouse quanto teclado. Ver o comentário lá para o porquê
+       de não termos alterado o image-slot.js em vez disto: é o runtime
+       sincronizado do canvas (ver README), reescrevê-lo se perderia na
+       próxima sincronização. */
+    #ps4-tab-geofence { pointer-events: none; }
   </style>
 </helmet>
 
@@ -741,7 +759,7 @@ class Component extends DCLogic {
     const defs = [
       { value: 'app', label: 'App do funcionário', placeholder: 'Tela do app: batida com biometria facial' },
       { value: 'painel', label: 'Painel do gestor', placeholder: 'Painel do gestor: batidas do dia e geofences' },
-      { value: 'relatorio', label: 'Espelho de ponto', placeholder: 'Relatório mensal / espelho de ponto' },
+      { value: 'geofence', label: 'Geofence', placeholder: 'Cadastro de geofences: endereço, raio e coordenadas por filial' },
     ];
     return defs.map((d, i) => {
       const active = this.state.tab === d.value;
@@ -923,6 +941,58 @@ class Component extends DCLogic {
   }
 }
 
+</script>
+
+<script>
+/* — Trava a edição de ps4-tab-geofence, também via teclado —————————
+   O CSS acima (pointer-events:none) já tira hover e clique de mouse do
+   slot. Falta o caminho por teclado: dentro do editor do canvas, Tab
+   alcança o botão "Substituir" mesmo com pointer-events:none — a
+   propriedade só afeta ponteiro, não foco — e Enter/Espaço num <button>
+   disparam um evento `click` sintético que o image-slot.js aceita do
+   mesmo jeito (o handler interno só olha `data-editable`, nunca como o
+   clique chegou). Verificado batendo os dois caminhos separadamente
+   antes desta escrita.
+
+   A correção mora aqui, e não em image-slot.js, pelo mesmo motivo do
+   CSS: aquele arquivo é o runtime do canvas, sincronizado de fora — uma
+   mudança nele se perderia na próxima sincronização. Aqui, na própria
+   página, ela fica.
+
+   Intercepta na fase de CAPTURA (o terceiro argumento `true`), que roda
+   ANTES do listener que o componente registra no seu Shadow Root — então
+   o clique nunca chega lá dentro. `stopPropagation` sozinho bastaria
+   para isso; `stopImmediatePropagation` também barra um segundo listener
+   de captura que viesse a ser registrado neste MESMO nó (`document`),
+   o que deixa a trava resiliente a um script futuro que se registre do
+   mesmo jeito. */
+(function () {
+  'use strict';
+  var ALVO_ID = 'ps4-tab-geofence';
+
+  function travado(alvo, evento) {
+    if (!alvo) return false;
+    // composedPath() atravessa a fronteira do Shadow DOM — é como um
+    // listener em document enxerga o botão que está DENTRO do slot.
+    var caminho = evento.composedPath ? evento.composedPath() : [evento.target];
+    return caminho.indexOf(alvo) !== -1;
+  }
+
+  function bloquear(evento) {
+    var alvo = document.getElementById(ALVO_ID);
+    if (travado(alvo, evento)) {
+      evento.stopImmediatePropagation();
+      evento.preventDefault();
+    }
+  }
+
+  // click: cobre Substituir/Reenquadrar (mouse e teclado).
+  // dblclick: entra em modo de reenquadrar arrastando a imagem.
+  // pointerdown: início do arraste/redimensionamento dentro do reframe.
+  ['click', 'dblclick', 'pointerdown'].forEach(function (tipo) {
+    document.addEventListener(tipo, bloquear, true);
+  });
+})();
 </script>
 </body>
 </html>
