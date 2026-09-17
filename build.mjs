@@ -25,8 +25,8 @@ const SAIDA = path.join(RAIZ, 'public');
 
 const PAGINA = 'PontoSeven Landing v4.dc.html';
 
-// Copiados como estão: runtime, componente e os assets que a página pede.
-const COPIAR = ['support.js', 'image-slot.js', '_ds', 'assets'];
+// Copiados como estão: runtime e os assets que a página pede.
+const COPIAR = ['support.js', '_ds', 'assets'];
 
 // Páginas de fluxo: origem em paginas/, destino já como rota.
 const PAGINAS = [
@@ -72,12 +72,6 @@ const VENDOR = [
 // hora em que esse arquivo é avaliado, não no DOMContentLoaded, então o
 // mapa precisa existir ANTES dele.
 const ANCORA_SUPPORT = '<script src="./support.js"></script>';
-
-// image-slot.js busca '.image-slots.state.json' (com ponto) ao lado do
-// HTML. Publicamos sem o ponto — arquivos ocultos não são servidos de
-// forma confiável — e o rewrite do vercel.json liga um caminho ao outro.
-const SIDECAR_ORIGEM = '.image-slots.state.json';
-const SIDECAR_DESTINO = 'image-slots.state.json';
 
 async function existe(p) {
   try { await stat(p); return true; } catch { return false; }
@@ -152,11 +146,6 @@ for (const nome of COPIAR) {
   await cp(await exigir(nome), path.join(SAIDA, nome), { recursive: true });
 }
 
-await cp(await exigir(SIDECAR_ORIGEM), path.join(SAIDA, SIDECAR_DESTINO));
-
-// Lido para conferir quais slots têm imagem (ver o aviso mais abaixo).
-const estadoDosSlots = JSON.parse(await readFile(await exigir(SIDECAR_ORIGEM), 'utf8'));
-
 await cp(await exigir(CSS_PAGINAS.origem), path.join(SAIDA, CSS_PAGINAS.destino));
 
 const htmlDasPaginas = [];
@@ -206,48 +195,8 @@ if (quebradas.length) {
   throw new Error(`Referências sem arquivo em public/:\n  ${quebradas.join('\n  ')}`);
 }
 
-/* Slots de imagem sem imagem no sidecar saem como um retângulo tracejado
-   na página publicada. O build não falha por isso — pode ser um slot
-   recém-criado, esperando a captura de tela —, mas avisa: é o tipo de
-   coisa que ninguém nota até um cliente abrir a página de vendas.
-
-   Os ids das abas não estão no HTML: a página escreve `id="{{ t.slotId }}"`
-   e o valor sai de `slotId: 'ps4-tab-' + d.value` em buildTabs(). Então a
-   lista é derivada do `defs` da própria fonte — e, se a derivação parar de
-   casar (alguém renomeou a função, mudou o prefixo), o build DIZ isso em
-   vez de checar um conjunto vazio e passar calado. */
-function idsDeSlot(fonte) {
-  const literais = [...fonte.matchAll(/<image-slot[^>]*\bid="([^"{]+)"/g)].map((m) => m[1]);
-
-  // Os ids das etapas de "Como funciona" não estão no HTML — a página
-  // escreve `id="{{ s.slotId }}"` e o valor vem do array HOW_IT_WORKS, na
-  // fonte. Sem essa extração, os três slots dessa seção ficariam de fora
-  // do aviso de slot vazio abaixo.
-  const bloco = fonte.match(/const HOW_IT_WORKS = \[([\s\S]*?)\n\];/);
-  if (!bloco) {
-    return { ids: literais, aviso: 'não achei o array HOW_IT_WORKS — a checagem cobriu só os slots de id fixo' };
-  }
-  const etapas = [...bloco[1].matchAll(/slotId:\s*'([^']+)'/g)].map((m) => m[1]);
-  if (!etapas.length) {
-    return { ids: literais, aviso: 'HOW_IT_WORKS não tem nenhum `slotId` — a checagem cobriu só os slots de id fixo' };
-  }
-  return { ids: [...literais, ...etapas], aviso: null };
-}
-
-const { ids: todosOsSlots, aviso: avisoDerivacao } = idsDeSlot(html);
-if (avisoDerivacao) console.warn(`⚠ build: ${avisoDerivacao}`);
-
-const slotsVazios = todosOsSlots.filter((id) => !estadoDosSlots[id]?.u);
-if (slotsVazios.length) {
-  console.warn(
-    `⚠ ${slotsVazios.length} slot(s) de imagem sem imagem: ${slotsVazios.join(', ')}\n` +
-    `  A página vai ao ar com um placeholder tracejado no lugar.\n` +
-    `  Preencha com: node scripts/importar-imagens.mjs <pasta>`,
-  );
-}
-
 console.log(
-  `public/ pronto — ${documentos.length} páginas, ${COPIAR.length + 2} recursos, ` +
+  `public/ pronto — ${documentos.length} páginas, ${COPIAR.length + 1} recursos, ` +
   `${VENDOR.length} arquivos de vendor com SRI conferido, ` +
   `${conferidas} referências conferidas`,
 );

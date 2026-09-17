@@ -20,9 +20,10 @@ versões da landing, achados e riscos) está em
 ```
 PontoSeven Landing*.dc.html   fontes de design (Claude Design Canvas)
                               → só a v4 é publicada, como /
-support.js  image-slot.js     runtime do canvas e o componente <image-slot>
-.image-slots.state.json       imagens dos slots da v4
+support.js                    runtime do canvas
 _ds/  assets/                 design system "Modernist" e imagens
+                              (as capturas de tela da v4 são arquivos
+                              estáticos aqui — sem editor de slot na página)
 vendor/                       React 18.3.1 UMD servido do nosso domínio
 
 paginas/                      páginas de fluxo (HTML puro, sem runtime)
