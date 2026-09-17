@@ -2,12 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "node build.mjs",
   "outputDirectory": "public",
-  "rewrites": [
-    {
-      "source": "/.image-slots.state.json",
-      "destination": "/image-slots.state.json"
-    }
-  ],
   "functions": {
     "api/**/*.js": { "maxDuration": 30 }
   },

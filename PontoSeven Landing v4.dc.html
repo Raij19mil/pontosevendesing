@@ -11,7 +11,6 @@
   <link rel="icon" href="./assets/logo.png">
   <link rel="stylesheet" href="_ds/modernist-f2ad93fd-ad75-4927-9002-9d4b19946590/styles.css">
   <script src="_ds/modernist-f2ad93fd-ad75-4927-9002-9d4b19946590/_ds_bundle.js"></script>
-  <script src="./image-slot.js"></script>
   <title>PontoSeven — Identidade, jornada e prova</title>
   <style>
     @font-face {
@@ -99,24 +98,6 @@
       .ps-plan-grid { grid-template-columns: minmax(0,1fr) !important; }
     }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } [data-reveal] { opacity: 1 !important; } }
-
-    /* — Captura de tela real: sem hover/edição no editor do canvas —————
-       ps4-tab-geofence é uma captura de tela real da plataforma
-       (Geofences & Endereços), não uma imagem qualquer de banco de dados —
-       diferente dos demais slots, essa não pode ser trocada por engano ao
-       clicar/arrastar dentro do editor do Claude Design Canvas.
-       pointer-events:none tira o hover que revelaria os controles
-       Substituir/Reenquadrar (image-slot.js só os mostra em
-       :host([data-editable]:hover)) — mas isso sozinho não barra uma
-       ativação por teclado (Tab + Enter chega ao botão mesmo com
-       pointer-events:none, que só afeta ponteiro). O bloqueio completo
-       está no <script> antes de </body>, que intercepta o evento na fase
-       de CAPTURA — antes de entrar no Shadow DOM do componente — e vale
-       tanto para mouse quanto teclado. Ver o comentário lá para o porquê
-       de não termos alterado o image-slot.js em vez disto: é o runtime
-       sincronizado do canvas (ver README), reescrevê-lo se perderia na
-       próxima sincronização. */
-    #ps4-tab-geofence { pointer-events: none; }
   </style>
 </helmet>
 
@@ -210,7 +191,7 @@
       <div style="position:relative;border-radius:24px;overflow:hidden;aspect-ratio:4/3;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)" role="tabpanel" onMouseEnter="{{ pausarAutoplay }}" onMouseLeave="{{ retomarAutoplay }}">
         <sc-for list="{{ steps }}" as="s" hint-placeholder-count="1">
           <div style="{{ s.panelStyle }}">
-            <image-slot id="{{ s.slotId }}" shape="rect" style="width:100%;height:100%" placeholder="{{ s.placeholder }}"></image-slot>
+            <img src="{{ s.img }}" alt="{{ s.placeholder }}" style="{{ s.imgStyle }}">
           </div>
         </sc-for>
         <div style="position:absolute;bottom:16px;right:16px;display:flex;gap:8px;z-index:2">
@@ -258,7 +239,7 @@
       </ul>
     </div>
     <div style="border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.28)">
-      <image-slot id="ps4-auditoria" shape="rect" style="width:100%;aspect-ratio:16/11" placeholder="Screenshot do painel de auditoria"></image-slot>
+      <img src="assets/ps4-auditoria.webp" alt="Log de auditoria: ações registradas com usuário, IP e data/hora" style="width:100%;aspect-ratio:16/11;object-fit:cover;object-position:center top;display:block">
     </div>
   </div>
 </section>
@@ -500,17 +481,25 @@ const HOW_IT_WORKS = [
   {
     num: '01', title: 'Configure a empresa',
     text: 'Cadastre unidades, jornadas, escalas e os geofences de cada local. Perfis de acesso definem quem aprova ajustes e quem só consulta.',
-    slotId: 'ps4-tab-geofence', placeholder: 'Cadastro de geofences: endereço, raio e coordenadas por filial',
+    img: 'assets/ps4-tab-geofence.webp', pos: 'center top', fit: 'cover',
+    placeholder: 'Cadastro de geofences: endereço, raio e coordenadas por filial',
   },
   {
     num: '02', title: 'A equipe bate o ponto',
     text: 'O funcionário registra pelo celular com biometria facial dentro do perímetro autorizado e recebe o comprovante da batida na hora.',
-    slotId: 'ps4-tab-app', placeholder: 'Tela do app: batida com biometria facial',
+    // Captura vertical de celular num quadro 4:3 — cover cortaria a tela
+    // ao meio (título ou câmera, nunca os dois); contain mostra a tela
+    // inteira, com a moldura de vidro do painel sobrando nas laterais.
+    img: 'assets/ps4-tab-app.webp', pos: 'center center', fit: 'contain',
+    placeholder: 'Tela do app: batida com biometria facial',
   },
   {
     num: '03', title: 'Feche o mês',
     text: 'O espelho de ponto sai consolidado por funcionário, com log de auditoria anexo, e vai direto para a folha de pagamento.',
-    slotId: 'ps4-tab-painel', placeholder: 'Painel do gestor: batidas do dia e geofences',
+    // Alinhado à esquerda pra manter os cards "Funcionários ativos" e
+    // "Marcações hoje" inteiros — center cortava o primeiro card ao meio.
+    img: 'assets/ps4-tab-painel.webp', pos: 'left center', fit: 'cover',
+    placeholder: 'Painel do gestor: batidas do dia e geofences',
   },
 ];
 
@@ -843,6 +832,7 @@ class Component extends DCLogic {
         // ele ficaria clicável por cima do visível.
         panelStyle: 'position:absolute;inset:0;transition:opacity .5s ease;' +
           (active ? 'opacity:1;pointer-events:auto' : 'opacity:0;pointer-events:none'),
+        imgStyle: 'width:100%;height:100%;object-fit:' + etapa.fit + ';object-position:' + etapa.pos + ';display:block',
         rowStyle: 'position:relative;display:flex;gap:16px;width:100%;text-align:left;' +
           'padding:20px 0 20px 26px;border:0;' + (i === 0 ? '' : 'border-top:1px solid var(--line);') +
           'background:transparent;cursor:pointer;font-family:inherit;' +
@@ -1033,58 +1023,6 @@ class Component extends DCLogic {
   }
 }
 
-</script>
-
-<script>
-/* — Trava a edição de ps4-tab-geofence, também via teclado —————————
-   O CSS acima (pointer-events:none) já tira hover e clique de mouse do
-   slot. Falta o caminho por teclado: dentro do editor do canvas, Tab
-   alcança o botão "Substituir" mesmo com pointer-events:none — a
-   propriedade só afeta ponteiro, não foco — e Enter/Espaço num <button>
-   disparam um evento `click` sintético que o image-slot.js aceita do
-   mesmo jeito (o handler interno só olha `data-editable`, nunca como o
-   clique chegou). Verificado batendo os dois caminhos separadamente
-   antes desta escrita.
-
-   A correção mora aqui, e não em image-slot.js, pelo mesmo motivo do
-   CSS: aquele arquivo é o runtime do canvas, sincronizado de fora — uma
-   mudança nele se perderia na próxima sincronização. Aqui, na própria
-   página, ela fica.
-
-   Intercepta na fase de CAPTURA (o terceiro argumento `true`), que roda
-   ANTES do listener que o componente registra no seu Shadow Root — então
-   o clique nunca chega lá dentro. `stopPropagation` sozinho bastaria
-   para isso; `stopImmediatePropagation` também barra um segundo listener
-   de captura que viesse a ser registrado neste MESMO nó (`document`),
-   o que deixa a trava resiliente a um script futuro que se registre do
-   mesmo jeito. */
-(function () {
-  'use strict';
-  var ALVO_ID = 'ps4-tab-geofence';
-
-  function travado(alvo, evento) {
-    if (!alvo) return false;
-    // composedPath() atravessa a fronteira do Shadow DOM — é como um
-    // listener em document enxerga o botão que está DENTRO do slot.
-    var caminho = evento.composedPath ? evento.composedPath() : [evento.target];
-    return caminho.indexOf(alvo) !== -1;
-  }
-
-  function bloquear(evento) {
-    var alvo = document.getElementById(ALVO_ID);
-    if (travado(alvo, evento)) {
-      evento.stopImmediatePropagation();
-      evento.preventDefault();
-    }
-  }
-
-  // click: cobre Substituir/Reenquadrar (mouse e teclado).
-  // dblclick: entra em modo de reenquadrar arrastando a imagem.
-  // pointerdown: início do arraste/redimensionamento dentro do reframe.
-  ['click', 'dblclick', 'pointerdown'].forEach(function (tipo) {
-    document.addEventListener(tipo, bloquear, true);
-  });
-})();
 </script>
 </body>
 </html>
