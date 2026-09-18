@@ -119,18 +119,27 @@ DATABASE_URL=postgres://…/pontoseven_teste npm test
    | `DATABASE_URL` | ✅ | URL do pooler do seu Postgres |
    | `STRIPE_SECRET_KEY` | ✅ | Developers → API keys |
    | `STRIPE_WEBHOOK_SECRET` | ✅ | Developers → Webhooks → Signing secret |
-   | `STRIPE_PRICE_BASICO` | ✅ | Products → Básico → Pricing |
-   | `STRIPE_PRICE_STANDARD` | ✅ | Products → Standard → Pricing |
+   | `STRIPE_PRICE_10` | ✅ | Products → Básico (até 10 funcionários) → Pricing |
+   | `STRIPE_PRICE_20` | ✅ | Products → Essencial (até 20 funcionários) → Pricing |
+   | `STRIPE_PRICE_40` | ✅ | Products → Profissional (até 40 funcionários) → Pricing |
+   | `STRIPE_PRICE_60` | ✅ | Products → Avançado (até 60 funcionários) → Pricing |
    | `PLATAFORMA_SEGREDO` | ⚠️ | `openssl rand -base64 48` — sem ele o login não emite o token de entrada |
    | `PLATAFORMA_URL`, `PLATAFORMA_ENTRADA` | — | destino do cliente depois de entrar |
    | `CRON_SECRET` | — | `openssl rand -hex 32` — sem ele a faxina diária fica desligada |
    | `URL_BASE`, `URL_SUCESSO`, `URL_CANCELAMENTO`, `URL_OBRIGADO_VENDAS` | — | sem elas, usa a origem da própria requisição |
    | `ORIGENS_PERMITIDAS` | — | só se a landing sair deste projeto |
 
-4. **Produtos e preços na Stripe** — dois produtos com preço
-   **recorrente mensal**: Básico R$ 100/mês e Standard R$ 200/mês. Copie
-   o **price ID** (`price_…`), não o product ID. Enterprise não tem
-   preço: cai no fluxo comercial sem passar pela Stripe.
+4. **Produtos e preços na Stripe** — quatro produtos com preço
+   **recorrente mensal**, todos com as mesmas funcionalidades e
+   diferindo só no limite de funcionários: Básico R$ 49,90/mês (10),
+   Essencial R$ 99,90/mês (20), Profissional R$ 149,90/mês (40) e
+   Avançado R$ 199,90/mês (60). Copie o **price ID** (`price_…`), não o
+   product ID, para a variável correspondente. Enterprise não tem preço:
+   cai no fluxo comercial sem passar pela Stripe.
+
+   Um price da Stripe é imutável — mudar o valor de um plano existente
+   exige criar um price novo (e arquivar o antigo), nunca editar o
+   price em uso.
 
 5. **Webhook** — Developers → Webhooks → Add endpoint →
    `https://SEU-DOMINIO/api/stripe/webhook`, assinando:
@@ -234,8 +243,8 @@ por 2 minutos, assinado com `PLATAFORMA_SEGREDO`:
 
 ```jsonc
 { "iss": "pontoseven-landing", "sub": "<id da conta>",
-  "email": "…", "nome": "…", "plano": "standard",
-  "status": "ativa", "maxFuncionarios": 25,
+  "email": "…", "nome": "…", "plano": "essencial",
+  "status": "ativa", "maxFuncionarios": 20,
   "iat": …, "nbf": …, "exp": …, "jti": "…" }
 ```
 
@@ -275,7 +284,7 @@ passa a ser sua responsabilidade.
 
 **Price ID nunca sai do servidor.** A landing manda só o slug do plano; o
 de‑para está em `lib/plans.js`. Se o cliente mandasse o price, bastaria
-abrir o devtools para assinar o Standard pagando o Básico.
+abrir o devtools para assinar o Avançado pagando o preço do Básico.
 
 **Checkout hospedado, não Elements.** Nenhum dado de cartão passa pelo
 domínio do PontoSeven, o que mantém o escopo PCI no SAQ‑A.

@@ -31,8 +31,10 @@ test('fluxo completo de assinatura', { skip: semBanco && 'defina DATABASE_URL pa
 
   process.env.STRIPE_SECRET_KEY = 'sk_test_pontoseven';
   process.env.STRIPE_WEBHOOK_SECRET = CHAVE_WEBHOOK;
-  process.env.STRIPE_PRICE_BASICO = 'price_basico_teste';
-  process.env.STRIPE_PRICE_STANDARD = 'price_standard_teste';
+  process.env.STRIPE_PRICE_10 = 'price_basico_teste';
+  process.env.STRIPE_PRICE_20 = 'price_essencial_teste';
+  process.env.STRIPE_PRICE_40 = 'price_profissional_teste';
+  process.env.STRIPE_PRICE_60 = 'price_avancado_teste';
   process.env.STRIPE_API_BASE = baseStripe;
   process.env.PLATAFORMA_SEGREDO = SEGREDO_PLATAFORMA;
   process.env.PLATAFORMA_URL = 'https://plataforma.teste';
@@ -118,7 +120,7 @@ test('fluxo completo de assinatura', { skip: semBanco && 'defina DATABASE_URL pa
   await t.test('cadastro cria conta pendente e devolve a URL do checkout', async () => {
     const r = await cliente.pedir('/api/checkout/session', {
       metodo: 'POST',
-      corpo: { nome: 'Maria Testes', email, senha: SENHA, plano: 'standard', aceiteLgpd: true, lgpdVersao: '1.0' },
+      corpo: { nome: 'Maria Testes', email, senha: SENHA, plano: 'essencial', aceiteLgpd: true, lgpdVersao: '1.0' },
     });
 
     assert.equal(r.status, 200);
@@ -126,8 +128,8 @@ test('fluxo completo de assinatura', { skip: semBanco && 'defina DATABASE_URL pa
 
     const conta = await contas.buscarPorEmail(email);
     assert.equal(conta.status, 'pendente', 'a conta NÃO pode nascer ativa');
-    assert.equal(conta.plano, 'standard');
-    assert.equal(conta.maxFuncionarios, 25);
+    assert.equal(conta.plano, 'essencial');
+    assert.equal(conta.maxFuncionarios, 20);
     assert.ok(conta.stripeCustomerId, 'o customer da Stripe fica gravado na conta');
     assert.notEqual(conta.senhaHash, SENHA, 'a senha é gravada como hash');
     assert.equal(conta.aceiteLgpd.versao, '1.0');
@@ -157,7 +159,7 @@ test('fluxo completo de assinatura', { skip: semBanco && 'defina DATABASE_URL pa
     const conta = await contas.buscarPorEmail(email);
     assert.equal(conta.status, 'ativa');
     assert.equal(conta.assinaturaStatus, 'active');
-    assert.equal(conta.assinaturaPriceId, 'price_standard_teste');
+    assert.equal(conta.assinaturaPriceId, 'price_essencial_teste');
     assert.ok(conta.stripeSubscriptionId);
     assert.ok(conta.ativadaEm, 'ativadaEm marca quando a empresa virou cliente');
     assert.ok(new Date(conta.periodoFim) > new Date(), 'o período pago vai para o futuro');
@@ -217,9 +219,9 @@ test('fluxo completo de assinatura', { skip: semBanco && 'defina DATABASE_URL pa
     const r = await cliente.pedir(`/api/checkout/status?session_id=${sessaoPaga.id}`);
     assert.equal(r.status, 200);
     assert.equal(r.dados.estado, 'ativa');
-    assert.equal(r.dados.plano.slug, 'standard');
+    assert.equal(r.dados.plano.slug, 'essencial');
     // \u00a0: o Intl separa "R$" do número com espaço inseparável.
-    assert.equal(r.dados.plano.preco.replace(/\u00a0/g, ' '), 'R$ 200,00');
+    assert.equal(r.dados.plano.preco.replace(/\u00a0/g, ' '), 'R$ 99,90');
     assert.ok(r.dados.email.includes('•'), 'o e-mail vai mascarado');
     assert.ok(!r.dados.email.includes(email.split('@')[0]), 'o usuário do e-mail não aparece inteiro');
 
@@ -242,7 +244,7 @@ test('fluxo completo de assinatura', { skip: semBanco && 'defina DATABASE_URL pa
     assert.ok(carga, 'o token é válido para o segredo combinado');
     assert.equal(carga.email, email);
     assert.equal(carga.status, 'ativa');
-    assert.equal(carga.plano, 'standard');
+    assert.equal(carga.plano, 'essencial');
 
     assert.equal(verificarJwt(url.searchParams.get('token'), { segredo: 'outro'.repeat(10) }), null);
   });
@@ -284,7 +286,7 @@ test('fluxo completo de assinatura', { skip: semBanco && 'defina DATABASE_URL pa
     const depois = await contas.buscarPorEmail(email);
     assert.equal(depois.senhaHash, antes.senhaHash, 'o hash da senha continua o mesmo');
     assert.equal(depois.nome, antes.nome);
-    assert.equal(depois.plano, 'standard', 'o plano pago não é rebaixado por um formulário anônimo');
+    assert.equal(depois.plano, 'essencial', 'o plano pago não é rebaixado por um formulário anônimo');
 
     const login = await cliente.pedir('/api/auth/login', {
       metodo: 'POST', corpo: { email, senha: 'SenhaDoInvasor1' },
@@ -335,7 +337,7 @@ test('fluxo completo de assinatura', { skip: semBanco && 'defina DATABASE_URL pa
     assert.equal(login.dados.acao, 'regularizar');
 
     // Inadimplente NÃO abre um segundo checkout: seriam duas cobranças.
-    const assinar = await cliente.pedir('/api/billing/assinar', { metodo: 'POST', corpo: { plano: 'standard' } });
+    const assinar = await cliente.pedir('/api/billing/assinar', { metodo: 'POST', corpo: { plano: 'essencial' } });
     assert.equal(assinar.status, 409);
     assert.equal(assinar.dados.acao, 'portal');
 
@@ -348,7 +350,7 @@ test('fluxo completo de assinatura', { skip: semBanco && 'defina DATABASE_URL pa
     const conta = await contas.buscarPorEmail(email);
     stripeFalsa.mudarAssinatura(conta.stripeSubscriptionId, {
       status: 'active',
-      items: { data: [{ price: { id: 'price_standard_teste' } }] },
+      items: { data: [{ price: { id: 'price_essencial_teste' } }] },
       current_period_end: Math.floor(Date.now() / 1000) + 30 * 86400,
     });
 
@@ -359,7 +361,7 @@ test('fluxo completo de assinatura', { skip: semBanco && 'defina DATABASE_URL pa
 
     const depois = await contas.buscarPorEmail(email);
     assert.equal(depois.status, 'ativa');
-    assert.equal(depois.plano, 'standard');
+    assert.equal(depois.plano, 'essencial');
   });
 
   await t.test('cancelamento bloqueia o acesso e derruba as sessões abertas', async () => {
@@ -388,7 +390,7 @@ test('fluxo completo de assinatura', { skip: semBanco && 'defina DATABASE_URL pa
     assert.equal(login.dados.acesso, false);
     assert.equal(login.dados.acao, 'reativar');
 
-    const r = await cliente.pedir('/api/billing/assinar', { metodo: 'POST', corpo: { plano: 'standard' } });
+    const r = await cliente.pedir('/api/billing/assinar', { metodo: 'POST', corpo: { plano: 'essencial' } });
     assert.equal(r.status, 200);
     assert.match(r.dados.url, /^https:\/\/checkout\.stripe\.test\//);
 
