@@ -153,6 +153,9 @@ export async function POST(request) {
     await contas.registrarAuditoria({
       contaId: conta.id, acao: 'Aceite Termo LGPD',
       entidade: email, ip, versao: lgpdVersao, plano: plano.slug,
+      // Campo opcional do formulário — ainda sem coluna própria em
+      // `contas`, então vive só aqui no detalhe da auditoria por ora.
+      celular: corpo.celular ? String(corpo.celular).trim().slice(0, 40) : undefined,
     });
 
     /* ── Enterprise: vira lead, sem passar pela Stripe ──────────────── */
