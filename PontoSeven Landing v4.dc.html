@@ -129,28 +129,51 @@
   </div>
 </nav>
 
-<section style="min-height:calc(100svh - 92px);display:flex;flex-direction:column;justify-content:center;padding:clamp(32px,5svh,72px) clamp(18px,4vw,52px)">
+<section style="min-height:calc(100svh - 92px);display:flex;flex-direction:column;justify-content:center;padding:clamp(32px,5svh,72px) clamp(18px,4vw,52px);overflow-x:clip">
   <div data-grid="hero" style="max-width:1240px;margin:0 auto;width:100%;display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(24px,4vw,64px);align-items:center">
   <div>
     <span style="display:inline-block;padding:8px 16px;border-radius:999px;font-size:13px;font-weight:600;letter-spacing:.02em;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);animation:ps-rise .7s ease-out .1s both">REP‑P · Portaria 671 · LGPD</span>
-    <h1 style="font-size:clamp(34px,min(6vw,9svh),84px);line-height:.96;letter-spacing:-0.035em;margin:clamp(16px,3svh,28px) 0 0;max-width:17ch;animation:ps-rise .8s ease-out .25s both">
-      <span style="display:block;font-weight:300">Identidade,</span>
-      <span style="display:block;font-weight:800">jornada</span>
-      <span style="display:block;font-weight:300;color:var(--red)">e prova.</span>
+    <h1 style="font-size:clamp(34px,min(6vw,9svh),80px);line-height:.98;letter-spacing:-0.035em;margin:clamp(16px,3svh,28px) 0 0;max-width:15ch;animation:ps-rise .8s ease-out .25s both">
+      <span style="display:block;font-weight:300">Controle de</span>
+      <span style="display:block;font-weight:800">ponto</span>
+      <span style="display:block;font-weight:300;color:var(--red)">online.</span>
     </h1>
-    <p style="font-size:clamp(15px,1.5vw,18px);line-height:1.65;color:var(--dim);margin:clamp(16px,2.6svh,26px) 0 0;max-width:56ch;animation:ps-rise .7s ease-out .45s both">
+    <p style="font-size:clamp(16px,1.7vw,20px);line-height:1.5;color:var(--ink);margin:clamp(16px,2.6svh,26px) 0 0;max-width:48ch;font-weight:600;animation:ps-rise .7s ease-out .4s both">
+      Sistema completo com módulos de RH.
+    </p>
+    <p style="font-size:clamp(15px,1.5vw,18px);line-height:1.65;color:var(--dim);margin:10px 0 0;max-width:56ch;animation:ps-rise .7s ease-out .5s both">
       Biometria facial, geofence e log de auditoria imutável em um só registro de ponto. Cada batida vira comprovante, cada mês vira espelho de ponto.
     </p>
-    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:clamp(20px,3svh,34px);animation:ps-rise .7s ease-out .6s both">
-      <button type="button" onClick="{{ openSignup }}" style="border:0;border-radius:999px;background:var(--red);color:#fff;font-size:15px;font-weight:600;padding:15px 30px;cursor:pointer;box-shadow:0 10px 30px rgba(236,48,19,.3);transition:transform .25s ease" style-hover="transform:translateY(-2px)">Criar conta</button>
-      <a href="#plataforma" style="border-radius:999px;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);color:var(--ink);font-size:15px;font-weight:600;padding:15px 30px;transition:transform .25s ease" style-hover="color:var(--ink);transform:translateY(-2px)">Ver a plataforma</a>
+    <!-- Sem número real de clientes ainda: quando houver um, troca o texto
+         abaixo por "Ajudamos mais de N empresas a...". Até lá, a frase não
+         promete uma contagem que ninguém pode conferir. -->
+    <p style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--dim);margin:20px 0 0;animation:ps-rise .7s ease-out .58s both">
+      <span style="display:flex;flex:none">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </span>
+      Ajudamos empresas de portes e setores diferentes a descomplicar a gestão de ponto, todos os dias.
+    </p>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:clamp(20px,3svh,34px);animation:ps-rise .7s ease-out .68s both">
+      <a href="#pilares" style="border:0;border-radius:999px;background:var(--red);color:#fff;font-size:15px;font-weight:600;padding:15px 30px;box-shadow:0 10px 30px rgba(236,48,19,.3);transition:transform .25s ease" style-hover="color:#fff;transform:translateY(-2px)">Saiba mais</a>
+      <button type="button" onClick="{{ openSignup }}" style="border-radius:999px;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);color:var(--ink);font-size:15px;font-weight:600;padding:15px 30px;cursor:pointer;transition:transform .25s ease" style-hover="transform:translateY(-2px)">Criar conta</button>
     </div>
   </div>
 
   <div style="display:flex;justify-content:center;animation:ps-rise 1s ease-out .35s both">
     <div style="position:relative;width:min(300px,72vw)">
+      <!-- Cartão do gestor, espiando atrás do celular: representa o
+           "gestor acompanhando em tempo real" ao lado de quem bate o
+           ponto, sem precisar de uma segunda ilustração do zero — reusa
+           a captura real do painel que já existe em assets/. -->
+      <div style="position:absolute;right:-38%;top:4%;width:62%;transform:rotate(6deg);border-radius:16px;overflow:hidden;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:0 24px 50px rgba(20,17,16,.22);z-index:0">
+        <img src="assets/ps4-tab-painel.webp" alt="" style="display:block;width:100%;aspect-ratio:4/3;object-fit:cover;object-position:left top">
+        <span style="position:absolute;right:10px;top:10px;display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.92);font-size:10.5px;font-weight:700;color:var(--ink);box-shadow:0 4px 10px rgba(20,17,16,.18)">
+          <span style="width:6px;height:6px;border-radius:50%;background:#1a9e52;display:block"></span>
+          Ao vivo
+        </span>
+      </div>
       <div style="position:absolute;left:6%;right:6%;bottom:-3%;height:14%;filter:blur(26px);background:rgba(20,17,16,.34);border-radius:50%"></div>
-      <div style="border-radius:13.4%/6.8%;padding:2.6%;background:linear-gradient(150deg,#f3f1f0 0%,#b9b4b1 22%,#6f6b69 48%,#c9c5c2 74%,#8c8886 100%);box-shadow:0 30px 70px rgba(20,17,16,.28), inset 0 0 0 1px rgba(255,255,255,.5)">
+      <div style="position:relative;border-radius:13.4%/6.8%;padding:2.6%;background:linear-gradient(150deg,#f3f1f0 0%,#b9b4b1 22%,#6f6b69 48%,#c9c5c2 74%,#8c8886 100%);box-shadow:0 30px 70px rgba(20,17,16,.28), inset 0 0 0 1px rgba(255,255,255,.5)">
         <div style="position:relative;width:100%;aspect-ratio:432/800;border-radius:11.4%/6%;background:#000;padding:1.4%;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)">
           <img src="./assets/app-screen.png" alt="Tela do app PontoSeven: bater ponto com biometria facial e geofence" style="display:block;width:100%;height:100%;object-fit:cover;object-position:top center;border-radius:10.4%/5.4%;image-rendering:-webkit-optimize-contrast">
           <div style="position:absolute;top:2.2%;left:50%;transform:translateX(-50%);width:30%;height:2.9%;border-radius:999px;background:#000"></div>
@@ -162,6 +185,35 @@
       <div style="position:absolute;right:-1.2%;top:28%;width:1.2%;height:14%;border-radius:2px;background:linear-gradient(#cdc9c6,#8c8886)"></div>
     </div>
   </div>
+  </div>
+</section>
+
+<div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
+
+<section id="pilares" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
+  <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Por que o PontoSeven</p>
+  <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 44px;max-width:26ch">Três motivos para trocar a planilha pelo sistema.</h2>
+  <div data-grid="three" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+    <sc-for list="{{ pilares }}" as="p" hint-placeholder-count="3">
+      <div style="padding:28px;border-radius:22px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)">
+        <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--red);margin:0">{{ p.num }}</p>
+        <h3 style="font-size:19px;font-weight:700;letter-spacing:-0.015em;margin:16px 0 0">{{ p.titulo }}</h3>
+        <p style="font-size:14.5px;line-height:1.7;color:var(--dim);margin:10px 0 0">{{ p.body }}</p>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section id="segmentos" data-reveal style="max-width:1240px;margin:0 auto;padding:0 clamp(18px,4vw,52px) clamp(56px,7vw,104px)">
+  <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Para quem é</p>
+  <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 44px;max-width:26ch">Uma jornada, várias formas de trabalhar.</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+    <sc-for list="{{ segmentos }}" as="s" hint-placeholder-count="5">
+      <div style="padding:24px;border-radius:20px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);transition:transform .3s cubic-bezier(.22,.75,.2,1)" style-hover="transform:translateY(-4px)">
+        <h3 style="font-size:16.5px;font-weight:700;letter-spacing:-0.01em;margin:0">{{ s.nome }}</h3>
+        <p style="font-size:13.5px;line-height:1.6;color:var(--dim);margin:10px 0 0">{{ s.body }}</p>
+      </div>
+    </sc-for>
   </div>
 </section>
 
@@ -209,6 +261,45 @@
 
 <div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
 
+<section id="detalhes" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(56px,7vw,104px) clamp(18px,4vw,52px)">
+  <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Em detalhe</p>
+  <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 clamp(40px,6vw,72px);max-width:26ch">O que o gestor vê no dia a dia.</h2>
+
+  <sc-for list="{{ detalhes }}" as="d" hint-placeholder-count="3">
+    <div style="{{ d.linhaStyle }}">
+      <div style="flex:1;min-width:0">
+        <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--red);margin:0">{{ d.num }}</p>
+        <h3 style="font-size:clamp(22px,2.4vw,30px);font-weight:700;letter-spacing:-0.02em;margin:14px 0 0">{{ d.titulo }}</h3>
+        <p style="font-size:15px;line-height:1.7;color:var(--dim);margin:14px 0 0;max-width:42ch">{{ d.body }}</p>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="border-radius:20px;overflow:hidden;border:1px solid var(--line);box-shadow:0 20px 50px rgba(20,17,16,.12)">
+          <img src="{{ d.img }}" alt="{{ d.alt }}" style="display:block;width:100%;aspect-ratio:4/3;object-fit:cover;object-position:{{ d.pos }}">
+        </div>
+      </div>
+    </div>
+  </sc-for>
+</section>
+
+<div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
+
+<section id="app" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
+  <div style="border-radius:32px;background:rgba(20,17,16,.78);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border:1px solid rgba(255,255,255,.16);box-shadow:0 30px 80px rgba(20,17,16,.28);color:var(--paper);padding:clamp(36px,5vw,72px);display:flex;flex-wrap:wrap;gap:32px;align-items:center;justify-content:space-between">
+    <div style="flex:1;min-width:260px">
+      <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.62);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>No bolso da equipe</p>
+      <h2 style="font-size:clamp(26px,3vw,40px);font-weight:700;line-height:1.05;letter-spacing:-0.03em;margin:16px 0 0;max-width:20ch">Todo funcionário pode bater o ponto pelo próprio celular.</h2>
+      <p style="font-size:15px;line-height:1.7;color:rgba(255,255,255,.72);margin:16px 0 0;max-width:48ch">Sem app para instalar: abre o navegador do celular, autoriza a câmera e a localização, e pronto — biometria facial e geofence direto do site, em segundos.</p>
+    </div>
+    <div style="flex:none;display:flex;gap:12px;align-items:center">
+      <div style="width:132px;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.22);box-shadow:0 20px 50px rgba(0,0,0,.35)">
+        <img src="assets/ps4-tab-app.webp" alt="Tela do app: batida com biometria facial" style="display:block;width:100%;aspect-ratio:455/751;object-fit:cover">
+      </div>
+    </div>
+  </div>
+</section>
+
+<div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
+
 <section id="recursos" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
   <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Recursos</p>
   <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 44px;max-width:22ch">Nove funções para uma jornada auditável de ponta a ponta.</h2>
@@ -222,6 +313,83 @@
     </sc-for>
   </div>
 </section>
+
+<div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
+
+<section id="comece" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(56px,7vw,104px) clamp(18px,4vw,52px)">
+  <div data-grid="split" style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,72px);align-items:start">
+    <div>
+      <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Comece agora</p>
+      <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:18px 0 0">Quatro passos até o primeiro ponto batido.</h2>
+      <ol style="list-style:none;margin:32px 0 0;padding:0;display:grid;gap:0">
+        <sc-for list="{{ passosOnboarding }}" as="o" hint-placeholder-count="4">
+          <li style="display:flex;gap:16px;padding:16px 0;border-top:1px solid var(--line)">
+            <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--red);flex:none;margin-top:3px">{{ o.num }}</span>
+            <span>
+              <span style="display:block;font-size:15.5px;font-weight:700;letter-spacing:-.01em">{{ o.titulo }}</span>
+              <span style="display:block;font-size:13.5px;line-height:1.6;color:var(--dim);margin-top:4px">{{ o.body }}</span>
+            </span>
+          </li>
+        </sc-for>
+        <li style="border-top:1px solid var(--line)"></li>
+      </ol>
+    </div>
+
+    <!-- Formulário embutido: mesmo estado e mesma validação do modal
+         ("Criar conta" no menu/planos), só que direto na página em vez
+         de sobrepor um overlay — os dois escrevem no mesmo state, então
+         preencher aqui ou no modal dá no mesmo cadastro. -->
+    <div style="padding:clamp(28px,4vw,40px);border-radius:26px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)">
+      <form onSubmit="{{ onSubmit }}" noValidate>
+        <div style="display:grid;gap:17px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:17px">
+            <div>
+              <label class="ps-label" for="ps-inline-nome">Nome completo</label>
+              <input id="ps-inline-nome" class="ps-input" type="text" name="name" autoComplete="name" placeholder="Seu nome" value="{{ nome }}" onInput="{{ onNome }}" onBlur="{{ onBlurNome }}" aria-invalid="{{ nomeInvalido }}" aria-describedby="ps-inline-nome-err">
+              <span class="ps-err" id="ps-inline-nome-err" style="{{ erroNomeStyle }}">{{ erroNome }}</span>
+            </div>
+            <div>
+              <label class="ps-label" for="ps-inline-celular">Celular <span style="font-weight:400;color:var(--faint,var(--dim))">(opcional)</span></label>
+              <input id="ps-inline-celular" class="ps-input" type="tel" name="tel" autoComplete="tel" inputMode="tel" placeholder="(00) 00000-0000" value="{{ celular }}" onInput="{{ onCelular }}">
+            </div>
+          </div>
+          <div>
+            <label class="ps-label" for="ps-inline-email">E‑mail corporativo</label>
+            <input id="ps-inline-email" class="ps-input" type="email" name="email" autoComplete="email" inputMode="email" placeholder="voce@suaempresa.com.br" value="{{ email }}" onInput="{{ onEmail }}" onBlur="{{ onBlurEmail }}" aria-invalid="{{ emailInvalido }}" aria-describedby="ps-inline-email-err">
+            <span class="ps-err" id="ps-inline-email-err" style="{{ erroEmailStyle }}">{{ erroEmail }}</span>
+          </div>
+          <div>
+            <label class="ps-label" for="ps-inline-senha">Senha</label>
+            <input id="ps-inline-senha" class="ps-input" type="{{ senhaType }}" name="new-password" autoComplete="new-password" placeholder="Mínimo de 8 caracteres" value="{{ senha }}" onInput="{{ onSenha }}" onBlur="{{ onBlurSenha }}" aria-invalid="{{ senhaInvalida }}" aria-describedby="ps-inline-senha-err">
+            <span class="ps-hint" style="{{ hintSenhaStyle }}">Mínimo de 8 caracteres, com pelo menos uma letra e um número.</span>
+            <span class="ps-err" id="ps-inline-senha-err" style="{{ erroSenhaStyle }}">{{ erroSenha }}</span>
+          </div>
+        </div>
+
+        <label style="display:flex;gap:11px;align-items:flex-start;cursor:pointer;margin:20px 0 0">
+          <input type="checkbox" checked="{{ aceite }}" onChange="{{ onAceite }}" aria-invalid="{{ aceiteInvalido }}" aria-describedby="ps-inline-aceite-err" style="margin-top:2px;width:17px;height:17px;flex:none;accent-color:#ec3013;cursor:pointer">
+          <span style="font-size:13px;line-height:1.55;color:var(--dim)">Li e aceito os <a href="{{ termosUrl }}" target="_blank" rel="noopener noreferrer" style="color:var(--red);font-weight:600">Termos de Uso</a> e a <a href="{{ privacidadeUrl }}" target="_blank" rel="noopener noreferrer" style="color:var(--red);font-weight:600">Política de Privacidade</a>.</span>
+        </label>
+        <span class="ps-err" id="ps-inline-aceite-err" style="{{ erroAceiteStyle }}">{{ erroAceite }}</span>
+
+        <div role="alert" style="{{ erroFormStyle }}">
+          <div style="display:flex;gap:10px;align-items:flex-start;margin-top:20px;padding:13px 15px;border-radius:14px;background:rgba(236,48,19,.07);border:1px solid rgba(236,48,19,.25)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a51d08" stroke-width="2" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+            <span style="font-size:13.5px;line-height:1.5;color:#a51d08">{{ erroForm }}</span>
+          </div>
+        </div>
+
+        <button type="submit" disabled="{{ submitDisabled }}" style="{{ submitStyle }}" style-hover="{{ submitHover }}">
+          <sc-if value="{{ submitting }}" hint-placeholder-val="{{ false }}"><span class="ps-spinner"></span></sc-if>
+          {{ submitLabel }}
+        </button>
+        <p style="font-size:12.5px;line-height:1.55;color:var(--dim);text-align:center;margin:14px 0 0">{{ submitNota }}</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
 
 <section id="juridico" data-reveal style="max-width:1240px;margin:0 auto;padding:0 clamp(18px,4vw,52px)">
   <div data-grid="split" style="border-radius:32px;background:rgba(20,17,16,.78);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border:1px solid rgba(255,255,255,.16);box-shadow:0 30px 80px rgba(20,17,16,.28);color:var(--paper);padding:clamp(36px,5vw,72px);display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(28px,5vw,72px);align-items:center">
@@ -287,6 +455,53 @@
     </div>
 
   </div>
+
+  <div style="margin-top:36px;padding:26px 28px;border-radius:20px;background:var(--surface,rgba(20,17,16,.03));border:1px solid var(--line)">
+    <p style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 0 16px">Em todos os planos</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px 24px">
+      <sc-for list="{{ inclusoTodos }}" as="i" hint-placeholder-count="5">
+        <span style="display:flex;gap:10px;align-items:baseline;font-size:14px;color:var(--dim)">
+          <span style="color:var(--red);font-size:12.5px;flex:none">✓</span>{{ i }}
+        </span>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
+
+<section id="upsell" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
+  <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Além do ponto</p>
+  <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 44px;max-width:26ch">O que sai pronto para o resto da operação.</h2>
+  <div data-grid="three" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+    <sc-for list="{{ upsell }}" as="u" hint-placeholder-count="3">
+      <div style="padding:26px;border-radius:22px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)">
+        <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--red);margin:0">{{ u.num }}</p>
+        <h3 style="font-size:17.5px;font-weight:700;letter-spacing:-0.01em;margin:16px 0 0">{{ u.titulo }}</h3>
+        <p style="font-size:14px;line-height:1.7;color:var(--dim);margin:10px 0 0">{{ u.body }}</p>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
+
+<section id="suporte" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
+  <div data-grid="split" style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,72px);align-items:center">
+    <div>
+      <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Confiança</p>
+      <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:18px 0 0">Pagamento, dados e suporte, sem letra miúda.</h2>
+      <p style="font-size:15px;line-height:1.7;color:var(--dim);margin:16px 0 0;max-width:48ch">Fale com a gente por e‑mail a qualquer momento; quem já é cliente também resolve fatura, plano e cancelamento sozinho, sem precisar esperar resposta.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+      <sc-for list="{{ confianca }}" as="c" hint-placeholder-count="4">
+        <div style="padding:22px;border-radius:18px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)">
+          <h3 style="font-size:15px;font-weight:700;letter-spacing:-.01em;margin:0">{{ c.titulo }}</h3>
+          <p style="font-size:13px;line-height:1.6;color:var(--dim);margin:8px 0 0">{{ c.body }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </div>
 </section>
 
 <div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
@@ -308,17 +523,42 @@
     <p style="font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.7;color:rgba(255,255,255,.86);margin:24px 0 0;max-width:60ch">Sem instalação de relógio, sem contrato longo. Configure a empresa e comece a registrar jornada no mesmo dia.</p>
     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:32px">
       <button type="button" onClick="{{ openSignup }}" style="border:0;border-radius:999px;background:#fff;color:var(--ink);font-size:15px;font-weight:600;padding:15px 30px;cursor:pointer;box-shadow:0 10px 30px rgba(20,17,16,.2)" style-hover="background:rgba(255,255,255,.88)">Criar conta</button>
-      <button type="button" onClick="{{ signupEnterprise }}" style="border:1px solid rgba(255,255,255,.5);border-radius:999px;background:rgba(255,255,255,.14);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;font-size:15px;font-weight:600;padding:15px 30px;cursor:pointer" style-hover="background:rgba(255,255,255,.26)">Falar com vendas</button>
+      <button type="button" onClick="{{ abrirDemo }}" style="border:1px solid rgba(255,255,255,.5);border-radius:999px;background:rgba(255,255,255,.14);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;font-size:15px;font-weight:600;padding:15px 30px;cursor:pointer" style-hover="background:rgba(255,255,255,.26)">Quero uma demonstração</button>
     </div>
   </div>
 </section>
 
-<footer style="max-width:1240px;margin:0 auto;padding:40px clamp(18px,4vw,52px) 56px;border-top:1px solid rgba(20,17,16,.1);display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--dim)">
-  <span>ponto · seven — ponto eletrônico digital</span>
-  <span style="display:flex;flex-wrap:wrap;gap:18px;align-items:center">
-    <a href="{{ loginUrl }}" style="color:var(--dim)" style-hover="color:var(--ink)">Entrar na plataforma</a>
-    <span>REP‑P · Portaria 671 · LGPD</span>
-  </span>
+<footer style="max-width:1240px;margin:0 auto;padding:56px clamp(18px,4vw,52px) 0">
+  <div style="display:grid;grid-template-columns:minmax(0,1.4fr) repeat(2,minmax(0,1fr));gap:32px;padding-bottom:40px">
+    <div>
+      <span style="display:flex;align-items:center;gap:10px;font-size:17px;font-weight:600;letter-spacing:-0.01em">
+        <img src="./assets/logo.png" alt="" style="width:22px;height:22px;display:block">
+        ponto · seven
+      </span>
+      <p style="font-size:13.5px;line-height:1.7;color:var(--dim);margin:14px 0 0;max-width:32ch">Ponto eletrônico digital com geofence, biometria facial e log de auditoria. REP‑P e LGPD desde a primeira batida.</p>
+    </div>
+    <div>
+      <p style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint,var(--dim));margin:0 0 14px">Produto</p>
+      <ul style="list-style:none;margin:0;padding:0;display:grid;gap:10px;font-size:13.5px">
+        <li><a href="#plataforma" style="color:var(--dim)" style-hover="color:var(--ink)">Como funciona</a></li>
+        <li><a href="#detalhes" style="color:var(--dim)" style-hover="color:var(--ink)">Dashboard e relatórios</a></li>
+        <li><a href="#recursos" style="color:var(--dim)" style-hover="color:var(--ink)">Recursos</a></li>
+        <li><a href="#planos" style="color:var(--dim)" style-hover="color:var(--ink)">Planos</a></li>
+      </ul>
+    </div>
+    <div>
+      <p style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint,var(--dim));margin:0 0 14px">Empresa</p>
+      <ul style="list-style:none;margin:0;padding:0;display:grid;gap:10px;font-size:13.5px">
+        <li><a href="{{ termosUrl }}" target="_blank" rel="noopener noreferrer" style="color:var(--dim)" style-hover="color:var(--ink)">Termos de Uso</a></li>
+        <li><a href="{{ privacidadeUrl }}" target="_blank" rel="noopener noreferrer" style="color:var(--dim)" style-hover="color:var(--ink)">Política de Privacidade</a></li>
+        <li><a href="{{ loginUrl }}" style="color:var(--dim)" style-hover="color:var(--ink)">Entrar na plataforma</a></li>
+      </ul>
+    </div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;padding:22px 0 32px;border-top:1px solid rgba(20,17,16,.1);font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--dim)">
+    <span>© {{ anoAtual }} ponto · seven</span>
+    <span>REP‑P · Portaria 671 · LGPD · Brasil</span>
+  </div>
 </footer>
 
 </div>
@@ -416,6 +656,70 @@
 </div>
 </sc-if>
 
+<!-- ══════════ Modal: solicitar demonstração ══════════
+     Segundo caminho do "modal de conversão", ao lado de "Criar conta":
+     quem ainda não quer assinar, só falar com alguém. Envia para
+     DEMO_ENDPOINT (api/leads/demo.js) — sem Stripe, sem senha. -->
+<sc-if value="{{ demoOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ onDemoBackdropClick }}" style="position:fixed;inset:0;z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:clamp(14px,4vh,56px) 16px;overflow-y:auto;background:rgba(20,17,16,.44);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:ps-backdrop-in .26s ease-out both">
+  <div ref="{{ demoSheetRef }}" role="dialog" aria-modal="true" aria-labelledby="ps-demo-title" class="ps-sheet" style="position:relative;width:100%;max-width:480px;margin:auto;padding:34px clamp(22px,4vw,38px);border-radius:26px;background:rgba(255,255,255,.9);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:0 40px 90px rgba(20,17,16,.3), inset 0 1px 0 rgba(255,255,255,.92);animation:ps-sheet-in .38s cubic-bezier(.22,.75,.2,1) both">
+
+    <button type="button" onClick="{{ fecharDemo }}" aria-label="Fechar" style="position:absolute;top:16px;right:16px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border:0;border-radius:999px;background:transparent;color:var(--dim);cursor:pointer" style-hover="background:rgba(20,17,16,.07);color:var(--ink)">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+
+    <sc-if value="{{ demoEnviado }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:12px 0 6px">
+        <div style="width:44px;height:44px;border-radius:999px;background:rgba(236,48,19,.1);color:var(--red);display:flex;align-items:center;justify-content:center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <h2 id="ps-demo-title" style="font-size:24px;font-weight:700;letter-spacing:-0.02em;margin:18px 0 0">Pedido recebido.</h2>
+        <p style="font-size:14.5px;line-height:1.65;color:var(--dim);margin:10px 0 0">Nosso time entra em contato no e‑mail que você deixou para combinar a demonstração.</p>
+        <button type="button" onClick="{{ fecharDemo }}" style="margin-top:24px;width:100%;border:0;border-radius:999px;background:var(--red);color:#fff;font-size:15px;font-weight:600;padding:14px 20px;cursor:pointer" style-hover="background:#c9260d">Fechar</button>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ demoForm }}" hint-placeholder-val="{{ true }}">
+      <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Demonstração</p>
+      <h2 id="ps-demo-title" style="font-size:clamp(22px,3vw,28px);font-weight:700;line-height:1.1;letter-spacing:-0.02em;margin:14px 0 0">Quer ver funcionando antes de decidir?</h2>
+      <p style="font-size:14px;color:var(--dim);margin:10px 0 0">Conte um pouco sobre sua empresa e a gente te mostra.</p>
+
+      <form onSubmit="{{ onDemoSubmit }}" noValidate style="margin-top:24px">
+        <div style="display:grid;gap:17px">
+          <div>
+            <label class="ps-label" for="ps-demo-nome">Nome</label>
+            <input id="ps-demo-nome" ref="{{ demoNomeRef }}" class="ps-input" type="text" name="name" autoComplete="name" placeholder="Seu nome" value="{{ demoNome }}" onInput="{{ onDemoNome }}" onBlur="{{ onBlurDemoNome }}" aria-invalid="{{ demoNomeInvalido }}" aria-describedby="ps-demo-nome-err">
+            <span class="ps-err" id="ps-demo-nome-err" style="{{ erroDemoNomeStyle }}">{{ erroDemoNome }}</span>
+          </div>
+          <div>
+            <label class="ps-label" for="ps-demo-email">E‑mail</label>
+            <input id="ps-demo-email" class="ps-input" type="email" name="email" autoComplete="email" inputMode="email" placeholder="voce@suaempresa.com.br" value="{{ demoEmail }}" onInput="{{ onDemoEmail }}" onBlur="{{ onBlurDemoEmail }}" aria-invalid="{{ demoEmailInvalido }}" aria-describedby="ps-demo-email-err">
+            <span class="ps-err" id="ps-demo-email-err" style="{{ erroDemoEmailStyle }}">{{ erroDemoEmail }}</span>
+          </div>
+          <div>
+            <label class="ps-label" for="ps-demo-telefone">Telefone <span style="font-weight:400;color:var(--dim)">(opcional)</span></label>
+            <input id="ps-demo-telefone" class="ps-input" type="tel" name="tel" autoComplete="tel" inputMode="tel" placeholder="(00) 00000-0000" value="{{ demoTelefone }}" onInput="{{ onDemoTelefone }}">
+          </div>
+        </div>
+
+        <div role="alert" style="{{ erroDemoFormStyle }}">
+          <div style="display:flex;gap:10px;align-items:flex-start;margin-top:20px;padding:13px 15px;border-radius:14px;background:rgba(236,48,19,.07);border:1px solid rgba(236,48,19,.25)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a51d08" stroke-width="2" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+            <span style="font-size:13.5px;line-height:1.5;color:#a51d08">{{ erroDemoForm }}</span>
+          </div>
+        </div>
+
+        <button type="submit" disabled="{{ demoSubmitDisabled }}" style="{{ demoSubmitStyle }}" style-hover="{{ demoSubmitHover }}">
+          <sc-if value="{{ demoSubmitting }}" hint-placeholder-val="{{ false }}"><span class="ps-spinner"></span></sc-if>
+          {{ demoSubmitLabel }}
+        </button>
+      </form>
+    </sc-if>
+
+  </div>
+</div>
+</sc-if>
+
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{
   &quot;highlightedPlan&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;standard&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;basico&quot;, &quot;standard&quot;, &quot;enterprise&quot;], &quot;section&quot;: &quot;Planos&quot;}
@@ -441,6 +745,10 @@ const PLATFORM_LOGIN_URL = '/entrar';
 // CORS. Só vire URL absoluta se a landing for servida de outro domínio
 // que não o da API — aí preencha ORIGENS_PERMITIDAS no backend.
 const SIGNUP_ENDPOINT = '/api/checkout/session';
+
+// Pedido de demonstração — segundo braço do modal de conversão.
+// Implementação: api/leads/demo.js
+const DEMO_ENDPOINT = '/api/leads/demo';
 
 const TERMOS_URL = 'https://seteponto.cloud/termos';
 const PRIVACIDADE_URL = 'https://seteponto.cloud/privacidade';
@@ -514,23 +822,36 @@ class Component extends DCLogic {
     stepIndex: 0,
     stepProgress: 0,
     stepPaused: false,
-    // — modal de criar conta —
+    // — modal de criar conta (e formulário embutido de "Comece agora",
+    //   que lê e escreve nos mesmos campos) —
     signupOpen: false,
     plano: 'standard',
     nome: '',
     email: '',
     senha: '',
+    celular: '',        // opcional; ainda não persiste no banco — ver nota no envio
     aceite: false,
     senhaVisivel: false,
     tocado: {},        // campo só mostra erro depois do blur ou do 1º submit
     submitting: false,
     erroForm: '',
+    // — modal de solicitar demonstração —
+    demoOpen: false,
+    demoEnviado: false,
+    demoNome: '',
+    demoEmail: '',
+    demoTelefone: '',
+    demoTocado: {},
+    demoSubmitting: false,
+    demoErroForm: '',
   };
 
   waveHost = React.createRef();
   waveCanvas = React.createRef();
   sheetRef = React.createRef();
   nomeRef = React.createRef();
+  demoSheetRef = React.createRef();
+  demoNomeRef = React.createRef();
   pointer = { x: -2000, y: -2000, targetX: -2000, targetY: -2000 };
 
   componentDidMount() {
@@ -568,11 +889,19 @@ class Component extends DCLogic {
     window.addEventListener('mousemove', this.onMove);
     window.addEventListener('mouseleave', this.onLeave);
 
-    // Teclado do modal: Escape fecha, Tab circula dentro do diálogo.
+    // Teclado dos modais: Escape fecha, Tab circula dentro do diálogo
+    // aberto. Os dois modais nunca abrem juntos, então "qual está aberto"
+    // é suficiente pra saber qual fechar/prender.
     this.onKeyDown = (e) => {
-      if (!this.state.signupOpen) return;
-      if (e.key === 'Escape') { e.preventDefault(); this.fechar(); return; }
-      if (e.key === 'Tab') this.prenderFoco(e);
+      if (this.state.signupOpen) {
+        if (e.key === 'Escape') { e.preventDefault(); this.fechar(); return; }
+        if (e.key === 'Tab') this.prenderFoco(e, this.sheetRef);
+        return;
+      }
+      if (this.state.demoOpen) {
+        if (e.key === 'Escape') { e.preventDefault(); this.fecharDemo(); return; }
+        if (e.key === 'Tab') this.prenderFoco(e, this.demoSheetRef);
+      }
     };
     window.addEventListener('keydown', this.onKeyDown);
 
@@ -680,9 +1009,11 @@ class Component extends DCLogic {
     });
   }
 
-  // Mantém o Tab dentro do diálogo enquanto ele está aberto.
-  prenderFoco(e) {
-    const raiz = this.sheetRef.current;
+  // Mantém o Tab dentro do diálogo enquanto ele está aberto. Recebe o
+  // ref porque agora são dois modais (criar conta e demonstração), e
+  // nunca os dois ao mesmo tempo — quem chama já sabe qual está aberto.
+  prenderFoco(e, ref) {
+    const raiz = ref.current;
     if (!raiz) return;
     const foco = Array.prototype.slice
       .call(raiz.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'))
@@ -747,6 +1078,7 @@ class Component extends DCLogic {
           email: this.state.email.trim().toLowerCase(),
           senha: this.state.senha,
           plano: this.state.plano,
+          celular: this.state.celular.trim() || undefined,
           aceiteLgpd: true,
           lgpdVersao: LGPD_VERSAO,
           origem: 'landing-v4',
@@ -787,6 +1119,7 @@ class Component extends DCLogic {
   onNome = (e) => this.setState({ nome: e.target.value });
   onEmail = (e) => this.setState({ email: e.target.value });
   onSenha = (e) => this.setState({ senha: e.target.value });
+  onCelular = (e) => this.setState({ celular: e.target.value });
   onBlurNome = () => this.tocar('nome');
   onBlurEmail = () => this.tocar('email');
   onBlurSenha = () => this.tocar('senha');
@@ -799,6 +1132,106 @@ class Component extends DCLogic {
       return { aceite: v, tocado: t };
     });
   };
+
+  /* ─────────────────────────────────────────────────────────────────
+     Solicitar demonstração — segundo braço do modal de conversão.
+     Formulário curto de propósito (nome, e‑mail, telefone): quem clica
+     aqui ainda não decidiu assinar, então pedir senha ou plano seria
+     atrito demais para o que é, no fundo, "me liga depois".
+     ───────────────────────────────────────────────────────────────── */
+
+  abrirDemo = () => {
+    this.voltarFoco = document.activeElement;
+    document.body.style.overflow = 'hidden';
+    this.setState(
+      { demoOpen: true, demoEnviado: false, demoErroForm: '' },
+      () => requestAnimationFrame(() => {
+        const campo = this.demoNomeRef.current;
+        if (campo) campo.focus();
+      }),
+    );
+  };
+
+  fecharDemo = () => {
+    document.body.style.overflow = '';
+    this.setState({ demoOpen: false, demoSubmitting: false }, () => {
+      const alvo = this.voltarFoco;
+      if (alvo && typeof alvo.focus === 'function') alvo.focus();
+    });
+  };
+
+  onDemoBackdropClick = (e) => { if (e.target === e.currentTarget) this.fecharDemo(); };
+  onDemoNome = (e) => this.setState({ demoNome: e.target.value });
+  onDemoEmail = (e) => this.setState({ demoEmail: e.target.value });
+  onDemoTelefone = (e) => this.setState({ demoTelefone: e.target.value });
+  onBlurDemoNome = () => this.tocarDemo('nome');
+  onBlurDemoEmail = () => this.tocarDemo('email');
+
+  tocarDemo(campo) {
+    this.setState((s) => {
+      const t = Object.assign({}, s.demoTocado);
+      t[campo] = true;
+      return { demoTocado: t };
+    });
+  }
+
+  validarDemo(s) {
+    const e = {};
+    const nome = (s.demoNome || '').trim();
+    if (!nome) e.nome = 'Informe seu nome.';
+    else if (nome.length < 3) e.nome = 'O nome precisa ter pelo menos 3 caracteres.';
+
+    const email = (s.demoEmail || '').trim();
+    if (!email) e.email = 'Informe um e‑mail.';
+    else if (!EMAIL_RE.test(email)) e.email = 'Esse e‑mail não parece válido.';
+
+    return e;
+  }
+
+  onDemoSubmit = (e) => this.enviarDemo(e);
+
+  async enviarDemo(ev) {
+    if (ev && ev.preventDefault) ev.preventDefault();
+    if (this.state.demoSubmitting) return;
+
+    const erros = this.validarDemo(this.state);
+    if (Object.keys(erros).length) {
+      this.setState({ demoTocado: { nome: true, email: true }, demoErroForm: '' });
+      return;
+    }
+
+    this.setState({ demoSubmitting: true, demoErroForm: '' });
+
+    try {
+      const res = await fetch(DEMO_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'omit',
+        body: JSON.stringify({
+          nome: this.state.demoNome.trim(),
+          email: this.state.demoEmail.trim().toLowerCase(),
+          telefone: this.state.demoTelefone.trim() || undefined,
+          origem: 'landing-v4',
+        }),
+      });
+
+      let dados = {};
+      try { dados = await res.json(); } catch (_) { /* corpo vazio ou não-JSON */ }
+
+      if (!res.ok) {
+        throw erroAmigavel(dados.mensagem || 'Não foi possível enviar agora. Tente de novo em instantes.');
+      }
+
+      this.setState({ demoSubmitting: false, demoEnviado: true });
+    } catch (err) {
+      this.setState({
+        demoSubmitting: false,
+        demoErroForm: err && err.amigavel
+          ? err.message
+          : 'Não conseguimos falar com o servidor. Verifique sua conexão e tente de novo.',
+      });
+    }
+  }
 
   irParaEtapa(i) {
     this.setState({ stepIndex: i, stepProgress: 0 });
@@ -931,6 +1364,92 @@ class Component extends DCLogic {
       ? 'Nosso time comercial responde em até 1 dia útil para desenhar o plano da sua operação.'
       : 'Você segue para o ambiente seguro da Stripe para concluir a assinatura. Cancele quando quiser.';
 
+    /* ── Modal de solicitar demonstração — mesmo padrão do de criar conta,
+       um formulário mais curto e sem Stripe do outro lado. ────────────── */
+    const errosDemo = this.validarDemo(st);
+    const erroDemoDe = (campo) => (st.demoTocado[campo] ? errosDemo[campo] || '' : '');
+    const errDemoNome = erroDemoDe('nome');
+    const errDemoEmail = erroDemoDe('email');
+
+    const demoBotaoBase =
+      'width:100%;display:flex;align-items:center;justify-content:center;gap:9px;' +
+      'margin-top:22px;border:0;border-radius:999px;font-family:inherit;font-size:15px;' +
+      'font-weight:600;padding:15px 22px;color:#fff;background:var(--red);' +
+      'transition:background .2s ease, opacity .2s ease;';
+    const demoSubmitStyle = demoBotaoBase + (st.demoSubmitting
+      ? 'opacity:.72;cursor:progress;'
+      : 'cursor:pointer;box-shadow:0 10px 28px rgba(236,48,19,.3);');
+
+    /* ── Pilares, segmentos, features em detalhe e demais listas ────────
+       Conteúdo novo desta reestruturação. Tudo ancorado no que o produto
+       realmente tem hoje — nada de canal de atendimento, selo ou app que
+       ainda não existem (ver o resumo da mudança para a lista completa
+       do que ficou de fora e por quê). */
+    const pilares = [
+      { num: '01', titulo: 'Controle em tempo real', body: 'Colaboradores batem o ponto pelo app ou pelo navegador do celular, e o gestor acompanha cada marcação no painel assim que ela acontece.' },
+      { num: '02', titulo: 'Produtividade', body: 'Menos planilha e menos conferência manual no fechamento — o espelho de ponto sai consolidado e pronto para a folha.' },
+      { num: '03', titulo: '100% dentro da lei', body: 'Conformidade com a Portaria 671 (REP‑P) e a LGPD desde a primeira batida, com log de auditoria imutável.' },
+    ];
+
+    const segmentos = [
+      { nome: 'Terceirizações de serviços', body: 'Um geofence por posto ou cliente atendido — a batida só vale dentro do endereço certo, mesmo com a equipe espalhada.' },
+      { nome: 'Startups e TI', body: 'Cadastro em minutos, sem relógio para instalar. Cresce junto com a equipe, plano por plano.' },
+      { nome: 'Home office', body: 'Ponto por biometria facial pelo próprio celular, de qualquer lugar autorizado — sem crachá, sem relógio físico.' },
+      { nome: 'Clínicas e hospitais', body: 'Escalas e plantões com controle por unidade, e trilha de auditoria para cada ajuste de horário.' },
+      { nome: 'Todos os tipos de equipe', body: 'Presencial, híbrida ou remota: o mesmo sistema cobre jornada, geofence e fechamento para qualquer formato.' },
+    ];
+
+    const linhaDetalhe = (i) =>
+      'display:flex;flex-wrap:wrap;align-items:center;gap:clamp(28px,5vw,56px);' +
+      'padding:clamp(32px,4vw,48px) 0;' + (i === 0 ? '' : 'border-top:1px solid var(--line);') +
+      'flex-direction:' + (i % 2 === 0 ? 'row' : 'row-reverse') + ';';
+
+    const detalhes = [
+      {
+        num: '01', titulo: 'Dashboard de acompanhamento',
+        body: 'Jornada, atrasos e faltas em tempo real, por funcionário ou por unidade — sem esperar o fim do mês para saber o que está acontecendo.',
+        img: 'assets/ps4-tab-painel.webp', alt: 'Painel do gestor com marcações do dia e assiduidade', pos: 'left top',
+      },
+      {
+        num: '02', titulo: 'Aprovação sem burocracia',
+        body: 'Ajustes de ponto, abono de horas e ausências ficam registrados com quem pediu e quem aprovou — sem papel, sem planilha paralela.',
+        img: 'assets/ps4-tab-geofence.webp', alt: 'Painel administrativo de configuração', pos: 'center top',
+      },
+      {
+        num: '03', titulo: 'Relatórios prontos para a folha',
+        body: 'Espelho de ponto consolidado, com log de auditoria anexo — exportável e pronto para conferência a qualquer momento.',
+        img: 'assets/ps4-auditoria.webp', alt: 'Log de auditoria com ações registradas', pos: 'center top',
+      },
+    ].map((d, i) => ({ ...d, linhaStyle: linhaDetalhe(i) }));
+
+    const inclusoTodos = [
+      'Geofence e biometria facial',
+      'Comprovante de batida automático',
+      'Log de auditoria imutável',
+      'Conformidade REP‑P e LGPD',
+      'Suporte por e‑mail',
+    ];
+
+    const upsell = [
+      { num: '01', titulo: 'Relatórios personalizados', body: 'Espelho de ponto e painéis de acompanhamento, exportáveis para conferência ou para o setor de folha.' },
+      { num: '02', titulo: 'Integrações de RH', body: 'No plano Enterprise, integrações dedicadas com folha de pagamento e sistemas de RH.' },
+      { num: '03', titulo: 'Múltiplos geofences', body: 'Uma cerca virtual por unidade, obra ou cliente atendido, a partir do plano Standard.' },
+    ];
+
+    const confianca = [
+      { titulo: 'Pagamento pela Stripe', body: 'Cartão processado no ambiente seguro da Stripe — nenhum dado de cartão passa pelo nosso servidor.' },
+      { titulo: 'Cancele quando quiser', body: 'Sem fidelidade. Mude de plano ou cancele direto pela área de cobrança, sem precisar ligar para ninguém.' },
+      { titulo: 'Dados sob a LGPD', body: 'Acesso por perfil e trilha de auditoria para qualquer consulta ou alteração nos dados dos colaboradores.' },
+      { titulo: 'Suporte por e‑mail', body: 'Fale com a gente quando precisar — sem robô decidindo se a sua dúvida é importante.' },
+    ];
+
+    const passosOnboarding = [
+      { num: '01', titulo: 'Cadastro', body: 'Crie a conta com e‑mail e senha, e escolha o plano do tamanho da sua equipe.' },
+      { num: '02', titulo: 'Defina os horários', body: 'Configure jornadas, escalas e feriados — o sistema usa isso para calcular atraso e hora extra.' },
+      { num: '03', titulo: 'Inclua os funcionários', body: 'Cadastre a equipe e defina os geofences de cada unidade ou obra.' },
+      { num: '04', titulo: 'Divulgue', body: 'Compartilhe o acesso: a equipe bate o ponto pelo app ou pelo navegador do celular, no mesmo dia.' },
+    ];
+
     return {
       waveHost: this.waveHost,
       waveCanvas: this.waveCanvas,
@@ -949,6 +1468,7 @@ class Component extends DCLogic {
       onNome: this.onNome,
       onEmail: this.onEmail,
       onSenha: this.onSenha,
+      onCelular: this.onCelular,
       onBlurNome: this.onBlurNome,
       onBlurEmail: this.onBlurEmail,
       onBlurSenha: this.onBlurSenha,
@@ -957,11 +1477,44 @@ class Component extends DCLogic {
       sheetRef: this.sheetRef,
       nomeRef: this.nomeRef,
 
+      // — modal de solicitar demonstração —
+      abrirDemo: this.abrirDemo,
+      fecharDemo: this.fecharDemo,
+      onDemoBackdropClick: this.onDemoBackdropClick,
+      onDemoSubmit: this.onDemoSubmit,
+      onDemoNome: this.onDemoNome,
+      onDemoEmail: this.onDemoEmail,
+      onDemoTelefone: this.onDemoTelefone,
+      onBlurDemoNome: this.onBlurDemoNome,
+      onBlurDemoEmail: this.onBlurDemoEmail,
+      demoSheetRef: this.demoSheetRef,
+      demoNomeRef: this.demoNomeRef,
+      demoOpen: st.demoOpen,
+      demoEnviado: st.demoEnviado,
+      demoForm: !st.demoEnviado,
+      demoNome: st.demoNome,
+      demoEmail: st.demoEmail,
+      demoTelefone: st.demoTelefone,
+      demoNomeInvalido: !!errDemoNome,
+      demoEmailInvalido: !!errDemoEmail,
+      erroDemoNome: errDemoNome,
+      erroDemoEmail: errDemoEmail,
+      erroDemoNomeStyle: errDemoNome ? mostra : esconde,
+      erroDemoEmailStyle: errDemoEmail ? mostra : esconde,
+      erroDemoForm: st.demoErroForm,
+      erroDemoFormStyle: st.demoErroForm ? mostra : esconde,
+      demoSubmitting: st.demoSubmitting,
+      demoSubmitDisabled: !!st.demoSubmitting,
+      demoSubmitStyle,
+      demoSubmitHover: st.demoSubmitting ? 'background:var(--red)' : 'background:#c9260d',
+      demoSubmitLabel: st.demoSubmitting ? 'Enviando…' : 'Pedir demonstração',
+
       // — estado do formulário —
       signupOpen: st.signupOpen,
       nome: st.nome,
       email: st.email,
       senha: st.senha,
+      celular: st.celular,
       aceite: st.aceite,
       senhaType: st.senhaVisivel ? 'text' : 'password',
       senhaVisivel: st.senhaVisivel,
@@ -1012,12 +1565,26 @@ class Component extends DCLogic {
         'Log de auditoria imutável, com trilha completa',
         'Comprovante de batida entregue ao funcionário',
       ],
+      pilares,
+      segmentos,
+      detalhes,
+      inclusoTodos,
+      upsell,
+      confianca,
+      passosOnboarding,
+      anoAtual: new Date().getFullYear(),
       faq: [
         { q: 'O PontoSeven atende à Portaria 671 (REP‑P)?', a: 'Sim. O sistema segue as regras da Portaria 671 do Ministério do Trabalho para o Registro Eletrônico de Ponto por Programa.' },
         { q: 'Como funciona o geofence?', a: 'Você define uma ou mais áreas autorizadas por unidade ou obra. A batida só é aceita quando o funcionário está dentro do perímetro configurado.' },
         { q: 'A biometria facial é obrigatória para todos?', a: 'A biometria pode ser ativada por unidade ou perfil, conforme a política da sua empresa.' },
         { q: 'Como os dados dos colaboradores são tratados?', a: 'Segundo a LGPD, com acesso restrito por perfil e trilha de auditoria para qualquer consulta ou alteração.' },
         { q: 'Posso mudar de plano depois?', a: 'Sim. O plano acompanha o número de funcionários da empresa e pode ser ajustado quando a equipe crescer.' },
+        { q: 'Quanto tempo leva para implantar?', a: 'O cadastro é imediato. Configure jornadas e geofences, inclua a equipe e o sistema já está pronto para uso — a maioria das empresas começa a bater ponto no mesmo dia.' },
+        { q: 'Como funciona a implantação, passo a passo?', a: 'Cadastro → definir horários de jornada → incluir funcionários → divulgar o acesso à equipe. Sem instalação de relógio nem visita técnica.' },
+        { q: 'Que tipo de suporte vocês oferecem?', a: 'Suporte por e‑mail. Quem já é cliente também resolve fatura, plano e cancelamento sozinho, pela área de cobrança, sem precisar abrir chamado.' },
+        { q: 'O PontoSeven atende empresas fora do Brasil?', a: 'Não — o sistema segue especificamente a legislação trabalhista brasileira (REP‑P e LGPD), então a cobertura é só Brasil.' },
+        { q: 'Preciso de contrato de fidelidade?', a: 'Não. A assinatura é mês a mês (ou o ciclo escolhido no checkout) e pode ser cancelada quando quiser, direto pela área de cobrança.' },
+        { q: 'Dá para migrar dados de outro sistema de ponto?', a: 'Depende do formato de origem. Fale com a gente antes de assinar para avaliar a migração do seu caso.' },
       ],
     };
   }
