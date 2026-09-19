@@ -1,17 +1,86 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- ═══ SEO — título, descrição, canônica ═══════════════════════════
+     De propósito no <head> estático, e não dentro do <helmet> mais
+     abaixo: <helmet> só é aplicado por JavaScript, no browser, e a
+     maioria dos crawlers que geram preview em redes sociais e no
+     WhatsApp NÃO executa JS — eles leem só o HTML que o servidor
+     manda. Título/description/OG só em <helmet> significaria link
+     compartilhado sem preview nenhum. -->
+<title>PontoSeven — Ponto Eletrônico Digital para Franquias | Conforme Portaria 671/2021</title>
+<meta name="description" content="Ponto eletrônico digital para franquias: geofence, biometria facial e log de auditoria, em conformidade com a Portaria 671/2021 (REP‑P) e a LGPD.">
+<link rel="canonical" href="https://seteponto.cloud/">
+
+<!-- ═══ Open Graph (Facebook, WhatsApp, LinkedIn, Slack…) ═══════════ -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PontoSeven">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:url" content="https://seteponto.cloud/">
+<meta property="og:title" content="PontoSeven — Ponto Eletrônico Digital para Franquias">
+<meta property="og:description" content="Geofence, biometria facial e log de auditoria — ponto eletrônico digital para franquias, em conformidade com a Portaria 671/2021 e a LGPD.">
+<meta property="og:image" content="https://seteponto.cloud/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="PontoSeven — ponto eletrônico digital para franquias">
+
+<!-- ═══ Twitter/X Card ═══════════════════════════════════════════════
+     summary_large_image reaproveita og:title/description — o Twitter
+     cai neles quando as tags twitter:* específicas não existem, mas
+     ficam explícitas aqui para não depender desse fallback. -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="PontoSeven — Ponto Eletrônico Digital para Franquias">
+<meta name="twitter:description" content="Geofence, biometria facial e log de auditoria — ponto eletrônico digital para franquias, em conformidade com a Portaria 671/2021 e a LGPD.">
+<meta name="twitter:image" content="https://seteponto.cloud/assets/og-image.png">
+
+<!-- ═══ Favicon e ícones (gerados de assets/logo.png) ═══════════════ -->
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#ec3013">
+
+<!-- ═══ Dados estruturados (schema.org/JSON-LD) ═══════════════════════
+     Preços/planos abaixo têm que ficar em sincronia manual com
+     lib/plans.js (fonte da verdade do que é cobrado) e com o array
+     PLANOS mais adiante neste arquivo (fonte da verdade do que é
+     exibido) — não há um único lugar que gere as três coisas. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "PontoSeven",
+  "description": "Ponto eletrônico digital para franquias, com geofence, biometria facial e log de auditoria, em conformidade com a Portaria 671/2021 (REP-P) e a LGPD.",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "url": "https://seteponto.cloud/",
+  "image": "https://seteponto.cloud/assets/og-image.png",
+  "inLanguage": "pt-BR",
+  "offers": [
+    { "@type": "Offer", "name": "Básico", "price": "49.90", "priceCurrency": "BRL", "url": "https://seteponto.cloud/#planos", "description": "Até 10 funcionários, todas as funcionalidades incluídas." },
+    { "@type": "Offer", "name": "Essencial", "price": "99.90", "priceCurrency": "BRL", "url": "https://seteponto.cloud/#planos", "description": "Até 20 funcionários, todas as funcionalidades incluídas." },
+    { "@type": "Offer", "name": "Profissional", "price": "149.90", "priceCurrency": "BRL", "url": "https://seteponto.cloud/#planos", "description": "Até 40 funcionários, todas as funcionalidades incluídas." },
+    { "@type": "Offer", "name": "Avançado", "price": "199.90", "priceCurrency": "BRL", "url": "https://seteponto.cloud/#planos", "description": "Até 60 funcionários, todas as funcionalidades incluídas." }
+  ]
+}
+</script>
+
 <script src="./support.js"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
-  <link rel="icon" href="./assets/logo.png">
   <link rel="stylesheet" href="_ds/modernist-f2ad93fd-ad75-4927-9002-9d4b19946590/styles.css">
   <script src="_ds/modernist-f2ad93fd-ad75-4927-9002-9d4b19946590/_ds_bundle.js"></script>
-  <title>PontoSeven — Identidade, jornada e prova</title>
+  <!-- title, ícones, description, Open Graph, Twitter Card e JSON-LD
+       ficam no <head> estático (topo do arquivo), não aqui: <helmet>
+       só é aplicado por JS, no browser (ver support.js/helmet.ts) — um
+       crawler que não executa JS (a maioria dos unfurlers de
+       WhatsApp/redes sociais, por exemplo) nunca veria essas tags se
+       elas só existissem aqui dentro. -->
   <style>
     @font-face {
       font-family: 'Overused Grotesk';
@@ -415,45 +484,19 @@
 <section id="planos" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(56px,7vw,104px) clamp(18px,4vw,52px)">
   <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Planos</p>
   <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 44px;max-width:22ch">Preço por tamanho de equipe. Nada por função.</h2>
-  <div data-grid="three" style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
-
-    <div style="padding:32px;display:flex;flex-direction:column;{{ basicoStyle }}">
-      <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0">Básico</p>
-      <p style="font-size:42px;font-weight:800;letter-spacing:-0.035em;margin:14px 0 0">R$ 100<span style="font-size:15px;font-weight:400;color:var(--dim);letter-spacing:0">/mês</span></p>
-      <p style="font-size:14.5px;color:var(--dim);margin:6px 0 0">Até 10 funcionários</p>
-      <ul style="list-style:none;margin:24px 0 0;padding:0;display:grid;gap:11px;font-size:14.5px;color:var(--dim)">
-        <li>Geofence e biometria facial</li>
-        <li>Comprovantes e relatório mensal</li>
-        <li>Conformidade REP‑P e LGPD</li>
-      </ul>
-      <div style="margin-top:auto;padding-top:32px"><button type="button" onClick="{{ signupBasico }}" style="width:100%;border-radius:999px;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);color:var(--ink);font-size:15px;font-weight:600;padding:13px 20px;cursor:pointer" style-hover="background:#fff">Criar conta</button></div>
-    </div>
-
-    <div style="padding:36px 32px;display:flex;flex-direction:column;position:relative;{{ standardStyle }}">
-      <span style="position:absolute;top:-11px;left:32px;background:var(--red);color:#fff;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 13px;border-radius:999px;box-shadow:0 6px 16px rgba(236,48,19,.3)">Mais escolhido</span>
-      <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--red);margin:0">Standard</p>
-      <p style="font-size:42px;font-weight:800;letter-spacing:-0.035em;margin:14px 0 0">R$ 200<span style="font-size:15px;font-weight:400;color:var(--dim);letter-spacing:0">/mês</span></p>
-      <p style="font-size:14.5px;color:var(--dim);margin:6px 0 0">Até 25 funcionários</p>
-      <ul style="list-style:none;margin:24px 0 0;padding:0;display:grid;gap:11px;font-size:14.5px;color:var(--dim)">
-        <li>Tudo do plano Básico</li>
-        <li>Múltiplos geofences</li>
-        <li>Log de auditoria completo</li>
-      </ul>
-      <div style="margin-top:auto;padding-top:32px"><button type="button" onClick="{{ signupStandard }}" style="width:100%;border:0;border-radius:999px;background:var(--red);color:#fff;font-size:15px;font-weight:600;padding:14px 20px;cursor:pointer;box-shadow:0 10px 28px rgba(236,48,19,.3)" style-hover="background:#c9260d">Criar conta</button></div>
-    </div>
-
-    <div style="padding:32px;display:flex;flex-direction:column;{{ enterpriseStyle }}">
-      <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0">Enterprise</p>
-      <p style="font-size:30px;font-weight:800;letter-spacing:-0.03em;white-space:nowrap;margin:20px 0 4px">Sob consulta</p>
-      <p style="font-size:14.5px;color:var(--dim);margin:6px 0 0">Acima de 25 funcionários</p>
-      <ul style="list-style:none;margin:24px 0 0;padding:0;display:grid;gap:11px;font-size:14.5px;color:var(--dim)">
-        <li>Tudo do plano Standard</li>
-        <li>Integrações dedicadas de folha e RH</li>
-        <li>Atendimento e SLA dedicados</li>
-      </ul>
-      <div style="margin-top:auto;padding-top:32px"><button type="button" onClick="{{ signupEnterprise }}" style="width:100%;border-radius:999px;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);color:var(--ink);font-size:15px;font-weight:600;padding:13px 20px;cursor:pointer" style-hover="background:#fff">Falar com vendas</button></div>
-    </div>
-
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
+    <sc-for list="{{ planosPagina }}" as="pl" hint-placeholder-count="5">
+      <div style="padding:26px 22px;display:flex;flex-direction:column;position:relative;{{ pl.cardStyle }}">
+        <sc-if value="{{ pl.destaque }}" hint-placeholder-val="{{ false }}">
+          <span style="position:absolute;top:-11px;left:26px;background:var(--red);color:#fff;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:999px;box-shadow:0 6px 16px rgba(236,48,19,.3)">Mais escolhido</span>
+        </sc-if>
+        <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:0;color:{{ pl.corNome }}">{{ pl.nome }}</p>
+        <p style="font-weight:800;letter-spacing:-0.035em;margin:14px 0 0;font-size:{{ pl.tamPreco }};white-space:nowrap">{{ pl.preco }}<span style="font-size:15px;font-weight:400;color:var(--dim);letter-spacing:0">{{ pl.precoSufixo }}</span></p>
+        <p style="font-size:14.5px;color:var(--dim);margin:6px 0 0">{{ pl.limite }}</p>
+        <p style="font-size:13.5px;color:var(--dim);margin:20px 0 0;line-height:1.6">{{ pl.nota }}</p>
+        <div style="margin-top:auto;padding-top:28px"><button type="button" onClick="{{ pl.select }}" style="{{ pl.botaoStyle }}" style-hover="{{ pl.botaoHover }}">{{ pl.botaoLabel }}</button></div>
+      </div>
+    </sc-for>
   </div>
 
   <div style="margin-top:36px;padding:26px 28px;border-radius:20px;background:var(--surface,rgba(20,17,16,.03));border:1px solid var(--line)">
@@ -617,8 +660,8 @@
 
       <fieldset style="border:0;padding:0;margin:26px 0 0;min-width:0">
         <legend class="ps-label" style="padding:0;margin:0 0 10px">Plano</legend>
-        <div class="ps-plan-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
-          <sc-for list="{{ planos }}" as="p" hint-placeholder-count="3">
+        <div class="ps-plan-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+          <sc-for list="{{ planos }}" as="p" hint-placeholder-count="5">
             <label class="ps-plan" style="{{ p.style }}">
               <input type="radio" name="ps-plano" value="{{ p.id }}" checked="{{ p.checked }}" onChange="{{ p.select }}">
               <span class="ps-plan-box" style="display:block">
@@ -722,7 +765,7 @@
 
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{
-  &quot;highlightedPlan&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;standard&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;basico&quot;, &quot;standard&quot;, &quot;enterprise&quot;], &quot;section&quot;: &quot;Planos&quot;}
+  &quot;highlightedPlan&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;essencial&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;basico&quot;, &quot;essencial&quot;, &quot;profissional&quot;, &quot;avancado&quot;, &quot;enterprise&quot;], &quot;section&quot;: &quot;Planos&quot;}
 }">
 /* ══════════════════════════════════════════════════════════════════════
    INTEGRAÇÃO — pontos de configuração
@@ -762,9 +805,11 @@ const LGPD_VERSAO = '1.0';
 // cliente manda só o slug e o servidor faz o de-para (stripe/plans.js),
 // para que ninguém troque o preço cobrado pelo devtools.
 const PLANOS = [
-  { id: 'basico',     nome: 'Básico',     preco: 'R$ 100', limite: 'por mês · até 10 pessoas',   cobranca: 'stripe' },
-  { id: 'standard',   nome: 'Standard',   preco: 'R$ 200', limite: 'por mês · até 25 pessoas',   cobranca: 'stripe' },
-  { id: 'enterprise', nome: 'Enterprise', preco: 'Sob consulta', limite: 'acima de 25 pessoas',  cobranca: 'vendas' },
+  { id: 'basico',       nome: 'Básico',       preco: 'R$ 49,90',  limite: 'por mês · até 10 pessoas',  cobranca: 'stripe' },
+  { id: 'essencial',    nome: 'Essencial',    preco: 'R$ 99,90',  limite: 'por mês · até 20 pessoas',  cobranca: 'stripe' },
+  { id: 'profissional', nome: 'Profissional', preco: 'R$ 149,90', limite: 'por mês · até 40 pessoas',  cobranca: 'stripe' },
+  { id: 'avancado',     nome: 'Avançado',     preco: 'R$ 199,90', limite: 'por mês · até 60 pessoas',  cobranca: 'stripe' },
+  { id: 'enterprise',   nome: 'Enterprise',   preco: 'Sob consulta', limite: 'acima de 60 pessoas',    cobranca: 'vendas' },
 ];
 
 // Erro com mensagem já escrita para o usuário. Sem esta marca, o catch
@@ -825,7 +870,7 @@ class Component extends DCLogic {
     // — modal de criar conta (e formulário embutido de "Comece agora",
     //   que lê e escreve nos mesmos campos) —
     signupOpen: false,
-    plano: 'standard',
+    plano: 'essencial',
     nome: '',
     email: '',
     senha: '',
@@ -1110,9 +1155,6 @@ class Component extends DCLogic {
 
   // Handlers ligados ao template (arrow fields para manter o `this`).
   openSignup = () => this.abrir(null);
-  signupBasico = () => this.abrir('basico');
-  signupStandard = () => this.abrir('standard');
-  signupEnterprise = () => this.abrir('enterprise');
   closeSignup = () => this.fechar();
   onBackdropClick = (e) => { if (e.target === e.currentTarget) this.fechar(); };
   onSubmit = (e) => this.enviar(e);
@@ -1289,7 +1331,7 @@ class Component extends DCLogic {
   }
 
   renderVals() {
-    const highlighted = this.props.highlightedPlan ?? 'standard';
+    const highlighted = this.props.highlightedPlan ?? 'essencial';
     const glass = 'border-radius:26px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);';
     const hot = glass + 'background:linear-gradient(150deg, rgba(255,255,255,.66), rgba(236,48,19,.1));border-color:rgba(236,48,19,.34);';
 
@@ -1433,7 +1475,7 @@ class Component extends DCLogic {
     const upsell = [
       { num: '01', titulo: 'Relatórios personalizados', body: 'Espelho de ponto e painéis de acompanhamento, exportáveis para conferência ou para o setor de folha.' },
       { num: '02', titulo: 'Integrações de RH', body: 'No plano Enterprise, integrações dedicadas com folha de pagamento e sistemas de RH.' },
-      { num: '03', titulo: 'Múltiplos geofences', body: 'Uma cerca virtual por unidade, obra ou cliente atendido, a partir do plano Standard.' },
+      { num: '03', titulo: 'Múltiplos geofences', body: 'Uma cerca virtual por unidade, obra ou cliente atendido — em todos os planos, do Básico ao Avançado.' },
     ];
 
     const confianca = [
@@ -1450,6 +1492,38 @@ class Component extends DCLogic {
       { num: '04', titulo: 'Divulgue', body: 'Compartilhe o acesso: a equipe bate o ponto pelo app ou pelo navegador do celular, no mesmo dia.' },
     ];
 
+    /* ── Cards de preço (#planos) ────────────────────────────────────
+       Os 4 planos pagos têm o mesmo conjunto de funcionalidades — o que
+       muda entre eles é só o preço e o limite de funcionários. Por isso
+       um único texto de `nota` serve para os quatro, em vez de listar
+       diferenciais que não existem. */
+    const planosPagina = [
+      { id: 'basico', nome: 'Básico', preco: 'R$ 49,90', limite: 'Até 10 funcionários', vendas: false },
+      { id: 'essencial', nome: 'Essencial', preco: 'R$ 99,90', limite: 'Até 20 funcionários', vendas: false },
+      { id: 'profissional', nome: 'Profissional', preco: 'R$ 149,90', limite: 'Até 40 funcionários', vendas: false },
+      { id: 'avancado', nome: 'Avançado', preco: 'R$ 199,90', limite: 'Até 60 funcionários', vendas: false },
+      { id: 'enterprise', nome: 'Enterprise', preco: 'Sob consulta', limite: 'Acima de 60 funcionários', vendas: true },
+    ].map((p) => {
+      const destaque = p.id === highlighted;
+      return {
+        ...p,
+        destaque,
+        precoSufixo: p.vendas ? '' : '/mês',
+        nota: p.vendas
+          ? 'Tudo dos demais planos, mais integrações dedicadas de folha e RH e atendimento com SLA dedicado.'
+          : 'Todas as funcionalidades incluídas, sem limite de recursos.',
+        cardStyle: destaque ? hot : glass,
+        corNome: destaque ? 'var(--red)' : 'var(--dim)',
+        tamPreco: p.vendas ? '22px' : '23px',
+        botaoStyle: destaque
+          ? 'width:100%;border:0;border-radius:999px;background:var(--red);color:#fff;font-size:15px;font-weight:600;padding:14px 20px;cursor:pointer;box-shadow:0 10px 28px rgba(236,48,19,.3)'
+          : 'width:100%;border-radius:999px;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);color:var(--ink);font-size:15px;font-weight:600;padding:13px 20px;cursor:pointer',
+        botaoHover: destaque ? 'background:#c9260d' : 'background:#fff',
+        botaoLabel: p.vendas ? 'Falar com vendas' : 'Criar conta',
+        select: () => this.abrir(p.id),
+      };
+    });
+
     return {
       waveHost: this.waveHost,
       waveCanvas: this.waveCanvas,
@@ -1460,9 +1534,6 @@ class Component extends DCLogic {
       privacidadeUrl: PRIVACIDADE_URL,
       openSignup: this.openSignup,
       closeSignup: this.closeSignup,
-      signupBasico: this.signupBasico,
-      signupStandard: this.signupStandard,
-      signupEnterprise: this.signupEnterprise,
       onBackdropClick: this.onBackdropClick,
       onSubmit: this.onSubmit,
       onNome: this.onNome,
@@ -1556,9 +1627,7 @@ class Component extends DCLogic {
         '-webkit-backdrop-filter:var(--glass-blur);color:var(--ink);cursor:pointer;box-shadow:var(--glass-shadow);' +
         'transition:transform .2s ease',
       features,
-      basicoStyle: highlighted === 'basico' ? hot : glass,
-      standardStyle: highlighted === 'standard' ? hot : glass,
-      enterpriseStyle: highlighted === 'enterprise' ? hot : glass,
+      planosPagina,
       compliance: [
         'Conformidade com a Portaria 671 (REP‑P)',
         'Tratamento de dados alinhado à LGPD',

@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /bem-vindo
+Disallow: /entrar
+Disallow: /obrigado-vendas
+
+Sitemap: https://seteponto.cloud/sitemap.xml
