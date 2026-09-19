@@ -28,6 +28,12 @@ const PAGINA = 'PontoSeven Landing v4.dc.html';
 // Copiados como estão: runtime e os assets que a página pede.
 const COPIAR = ['support.js', '_ds', 'assets'];
 
+// Arquivos que precisam estar na RAIZ do site (não em /assets/): browser
+// e crawlers pedem /favicon.ico e /robots.txt direto por convenção, sem
+// olhar <link>/<meta> nenhum, e o robots.txt só encontra o sitemap se
+// ele estiver onde o próprio robots.txt disse que estaria.
+const COPIAR_RAIZ = ['favicon.ico', 'robots.txt', 'sitemap.xml', 'site.webmanifest'];
+
 // Páginas de fluxo: origem em paginas/, destino já como rota.
 const PAGINAS = [
   { origem: 'paginas/bem-vindo.html',       destino: 'bem-vindo/index.html' },
@@ -146,6 +152,10 @@ for (const nome of COPIAR) {
   await cp(await exigir(nome), path.join(SAIDA, nome), { recursive: true });
 }
 
+for (const nome of COPIAR_RAIZ) {
+  await cp(await exigir(nome), path.join(SAIDA, nome));
+}
+
 await cp(await exigir(CSS_PAGINAS.origem), path.join(SAIDA, CSS_PAGINAS.destino));
 
 const htmlDasPaginas = [];
@@ -196,7 +206,7 @@ if (quebradas.length) {
 }
 
 console.log(
-  `public/ pronto — ${documentos.length} páginas, ${COPIAR.length + 1} recursos, ` +
+  `public/ pronto — ${documentos.length} páginas, ${COPIAR.length + 1 + COPIAR_RAIZ.length} recursos, ` +
   `${VENDOR.length} arquivos de vendor com SRI conferido, ` +
   `${conferidas} referências conferidas`,
 );
