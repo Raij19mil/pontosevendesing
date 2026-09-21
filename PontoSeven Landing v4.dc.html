@@ -107,7 +107,6 @@
     h1, h2, h3, h4, .btn, .tag, .card-title, .card-kicker, .nav-brand { font-family: 'Overused Grotesk', system-ui, sans-serif; }
     a { color: var(--red); text-decoration: none; }
     a:hover { color: #b8250c; }
-    html { scroll-behavior: smooth; }
     :focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
     summary::-webkit-details-marker { display: none; }
     @keyframes ps-rise { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
@@ -115,10 +114,7 @@
     @keyframes ps-smoke-a { 0% { transform: translate3d(-4%,2%,0) scale(1.05); } 50% { transform: translate3d(5%,-3%,0) scale(1.18); } 100% { transform: translate3d(-4%,2%,0) scale(1.05); } }
     @keyframes ps-smoke-b { 0% { transform: translate3d(4%,-2%,0) scale(1.12); } 50% { transform: translate3d(-5%,4%,0) scale(1); } 100% { transform: translate3d(4%,-2%,0) scale(1.12); } }
     @keyframes ps-smoke-c { 0% { transform: translate3d(0,3%,0) scale(1); } 50% { transform: translate3d(-3%,-4%,0) scale(1.14); } 100% { transform: translate3d(0,3%,0) scale(1); } }
-    @keyframes ps-reveal { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
     @keyframes ps4-step-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-    [data-reveal] { opacity: 0; }
-    [data-reveal].is-in { animation: ps-reveal .8s cubic-bezier(.22,.75,.2,1) both; }
     ::selection { background: rgba(236,48,19,.18); }
     summary { position: relative; }
     summary::after {
@@ -166,7 +162,7 @@
       .ps-sheet { border-radius: 22px !important; padding: 24px 20px !important; }
       .ps-plan-grid { grid-template-columns: minmax(0,1fr) !important; }
     }
-    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } [data-reveal] { opacity: 1 !important; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } }
   </style>
 </helmet>
 
@@ -259,7 +255,7 @@
 
 <div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
 
-<section id="pilares" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
+<section id="pilares" style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
   <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Por que o PontoSeven</p>
   <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 44px;max-width:26ch">Três motivos para trocar a planilha pelo sistema.</h2>
   <div data-grid="three" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
@@ -273,7 +269,7 @@
   </div>
 </section>
 
-<section id="segmentos" data-reveal style="max-width:1240px;margin:0 auto;padding:0 clamp(18px,4vw,52px) clamp(56px,7vw,104px)">
+<section id="segmentos" style="max-width:1240px;margin:0 auto;padding:0 clamp(18px,4vw,52px) clamp(56px,7vw,104px)">
   <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Para quem é</p>
   <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 44px;max-width:26ch">Uma jornada, várias formas de trabalhar.</h2>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
@@ -288,7 +284,7 @@
 
 <div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
 
-<section id="plataforma" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(56px,7vw,104px) clamp(18px,4vw,52px)">
+<section id="plataforma" style="max-width:1240px;margin:0 auto;padding:clamp(56px,7vw,104px) clamp(18px,4vw,52px)">
   <div data-grid="split" style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,72px);align-items:start">
     <div>
       <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Como funciona</p>
@@ -330,7 +326,7 @@
 
 <div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
 
-<section id="detalhes" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(56px,7vw,104px) clamp(18px,4vw,52px)">
+<section id="detalhes" style="max-width:1240px;margin:0 auto;padding:clamp(56px,7vw,104px) clamp(18px,4vw,52px)">
   <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Em detalhe</p>
   <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 clamp(40px,6vw,72px);max-width:26ch">O que o gestor vê no dia a dia.</h2>
 
@@ -352,7 +348,7 @@
 
 <div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
 
-<section id="app" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
+<section id="app" style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
   <div style="border-radius:32px;background:rgba(20,17,16,.78);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border:1px solid rgba(255,255,255,.16);box-shadow:0 30px 80px rgba(20,17,16,.28);color:var(--paper);padding:clamp(36px,5vw,72px);display:flex;flex-wrap:wrap;gap:32px;align-items:center;justify-content:space-between">
     <div style="flex:1;min-width:260px">
       <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.62);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>No bolso da equipe</p>
@@ -369,7 +365,7 @@
 
 <div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
 
-<section id="recursos" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
+<section id="recursos" style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
   <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Recursos</p>
   <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 44px;max-width:22ch">Nove funções para uma jornada auditável de ponta a ponta.</h2>
   <div data-grid="three" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
@@ -385,7 +381,7 @@
 
 <div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
 
-<section id="comece" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(56px,7vw,104px) clamp(18px,4vw,52px)">
+<section id="comece" style="max-width:1240px;margin:0 auto;padding:clamp(56px,7vw,104px) clamp(18px,4vw,52px)">
   <div data-grid="split" style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,72px);align-items:start">
     <div>
       <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Comece agora</p>
@@ -460,7 +456,7 @@
 
 <div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
 
-<section id="juridico" data-reveal style="max-width:1240px;margin:0 auto;padding:0 clamp(18px,4vw,52px)">
+<section id="juridico" style="max-width:1240px;margin:0 auto;padding:0 clamp(18px,4vw,52px)">
   <div data-grid="split" style="border-radius:32px;background:rgba(20,17,16,.78);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border:1px solid rgba(255,255,255,.16);box-shadow:0 30px 80px rgba(20,17,16,.28);color:var(--paper);padding:clamp(36px,5vw,72px);display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(28px,5vw,72px);align-items:center">
     <div>
       <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.62);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Segurança e conformidade</p>
@@ -481,7 +477,7 @@
   </div>
 </section>
 
-<section id="planos" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(56px,7vw,104px) clamp(18px,4vw,52px)">
+<section id="planos" style="max-width:1240px;margin:0 auto;padding:clamp(56px,7vw,104px) clamp(18px,4vw,52px)">
   <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Planos</p>
   <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 44px;max-width:22ch">Preço por tamanho de equipe. Nada por função.</h2>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
@@ -513,7 +509,7 @@
 
 <div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
 
-<section id="upsell" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
+<section id="upsell" style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
   <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Além do ponto</p>
   <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 44px;max-width:26ch">O que sai pronto para o resto da operação.</h2>
   <div data-grid="three" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
@@ -529,7 +525,7 @@
 
 <div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
 
-<section id="suporte" data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
+<section id="suporte" style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
   <div data-grid="split" style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,72px);align-items:center">
     <div>
       <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Confiança</p>
@@ -549,7 +545,7 @@
 
 <div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
 
-<section id="faq" data-reveal style="max-width:900px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
+<section id="faq" style="max-width:900px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
   <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>FAQ</p>
   <h2 style="font-size:clamp(26px,3vw,42px);font-weight:700;line-height:1.03;letter-spacing:-0.03em;margin:0 0 32px">Antes de criar a conta.</h2>
   <sc-for list="{{ faq }}" as="q" hint-placeholder-count="5">
@@ -560,7 +556,7 @@
   </sc-for>
 </section>
 
-<section data-reveal style="max-width:1240px;margin:0 auto;padding:clamp(32px,4vw,56px) clamp(18px,4vw,52px)">
+<section style="max-width:1240px;margin:0 auto;padding:clamp(32px,4vw,56px) clamp(18px,4vw,52px)">
   <div style="border-radius:32px;background:linear-gradient(140deg, rgba(236,48,19,.9), rgba(184,37,12,.86));backdrop-filter:blur(26px) saturate(160%);-webkit-backdrop-filter:blur(26px) saturate(160%);border:1px solid rgba(255,255,255,.28);box-shadow:0 30px 80px rgba(236,48,19,.28);color:#fff;padding:clamp(40px,6vw,96px)">
     <h3 style="font-size:clamp(32px,5vw,72px);font-weight:800;line-height:.98;letter-spacing:-0.035em;margin:0;max-width:18ch">Crie a conta hoje. Bata o ponto amanhã.</h3>
     <p style="font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.7;color:rgba(255,255,255,.86);margin:24px 0 0;max-width:60ch">Sem instalação de relógio, sem contrato longo. Configure a empresa e comece a registrar jornada no mesmo dia.</p>
@@ -995,13 +991,6 @@ class Component extends DCLogic {
       this.animId = requestAnimationFrame(render);
     };
     this.animId = requestAnimationFrame(render);
-
-    this.io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) { e.target.classList.add('is-in'); this.io.unobserve(e.target); }
-      });
-    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.05 });
-    document.querySelectorAll('[data-reveal]').forEach((n) => this.io.observe(n));
 
     // Autoplay da galeria "Como funciona". Some com prefers-reduced-motion:
     // quem pediu menos movimento continua trocando de etapa clicando ou
