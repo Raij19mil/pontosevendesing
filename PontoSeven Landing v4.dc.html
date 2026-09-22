@@ -250,8 +250,8 @@
       Ajudamos empresas de portes e setores diferentes a descomplicar a gestão de ponto, todos os dias.
     </p>
     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:clamp(20px,3svh,34px);animation:ps-rise .7s ease-out .68s both">
-      <a href="#pilares" style="border:0;border-radius:999px;background:var(--red);color:#fff;font-size:15px;font-weight:600;padding:15px 30px;box-shadow:0 10px 30px rgba(236,48,19,.3);transition:transform .25s ease" style-hover="color:#fff;transform:translateY(-2px)">Saiba mais</a>
-      <button type="button" onClick="{{ openSignup }}" style="border-radius:999px;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);color:var(--ink);font-size:15px;font-weight:600;padding:15px 30px;cursor:pointer;transition:transform .25s ease" style-hover="transform:translateY(-2px)">Criar conta</button>
+      <button type="button" onClick="{{ openSignup }}" style="border:0;border-radius:999px;background:var(--red);color:#fff;font-size:15px;font-weight:600;padding:15px 30px;cursor:pointer;box-shadow:0 10px 30px rgba(236,48,19,.3);transition:transform .25s ease" style-hover="color:#fff;transform:translateY(-2px)">Criar conta</button>
+      <a href="#pilares" style="border-radius:999px;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);color:var(--ink);font-size:15px;font-weight:600;padding:15px 30px;transition:transform .25s ease" style-hover="transform:translateY(-2px)">Saiba mais</a>
     </div>
   </div>
 
@@ -262,7 +262,7 @@
            ponto, sem precisar de uma segunda ilustração do zero — reusa
            a captura real do painel que já existe em assets/. -->
       <div style="position:absolute;right:-38%;top:4%;width:62%;transform:rotate(6deg);border-radius:16px;overflow:hidden;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:0 24px 50px rgba(20,17,16,.22);z-index:0">
-        <img src="assets/ps4-tab-painel.webp" alt="" style="display:block;width:100%;aspect-ratio:4/3;object-fit:cover;object-position:left top">
+        <img src="assets/ps4-tab-painel.webp" alt="Painel do gestor com marcações do dia em tempo real" style="display:block;width:100%;aspect-ratio:4/3;object-fit:cover;object-position:left top">
         <span style="position:absolute;right:10px;top:10px;display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.92);font-size:10.5px;font-weight:700;color:var(--ink);box-shadow:0 4px 10px rgba(20,17,16,.18)">
           <span style="width:6px;height:6px;border-radius:50%;background:#1a9e52;display:block"></span>
           Ao vivo
@@ -790,6 +790,22 @@
 </div>
 </sc-if>
 
+<!-- ══════════ Aviso de cookies ══════════
+     Único cookie real do site: a sessão (HttpOnly, gravada em
+     /api/auth/login) — não há analytics nem cookie de rastreamento
+     aqui, então não é uma grade de consentimento por categoria, só um
+     aviso. Aparece uma vez; "Entendi" grava a escolha no localStorage. -->
+<sc-if value="{{ cookiesVisivel }}" hint-placeholder-val="{{ false }}">
+<div role="region" aria-label="Aviso de cookies" style="position:fixed;left:0;right:0;bottom:0;z-index:90;display:flex;justify-content:center;padding:16px;pointer-events:none">
+  <div style="pointer-events:auto;max-width:720px;width:100%;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;padding:16px 22px;border-radius:20px;background:rgba(255,255,255,.92);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:0 20px 50px rgba(20,17,16,.22)">
+    <p style="margin:0;font-size:13.5px;line-height:1.55;color:var(--dim);flex:1;min-width:220px">
+      Usamos um cookie essencial só para manter você conectado depois do login — nada de rastreamento ou publicidade. Detalhes na <a href="{{ privacidadeUrl }}" target="_blank" rel="noopener noreferrer" style="color:var(--red);font-weight:600">Política de Privacidade</a>.
+    </p>
+    <button type="button" onClick="{{ fecharCookies }}" style="flex:none;border:0;border-radius:999px;background:var(--red);color:#fff;font-size:13.5px;font-weight:600;padding:10px 20px;cursor:pointer;white-space:nowrap" style-hover="background:#c9260d">Entendi</button>
+  </div>
+</div>
+</sc-if>
+
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{
   &quot;highlightedPlan&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;essencial&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;basico&quot;, &quot;essencial&quot;, &quot;profissional&quot;, &quot;avancado&quot;, &quot;enterprise&quot;], &quot;section&quot;: &quot;Planos&quot;}
@@ -916,6 +932,8 @@ class Component extends DCLogic {
     demoTocado: {},
     demoSubmitting: false,
     demoErroForm: '',
+    // — aviso de cookies —
+    cookiesVisivel: false,
   };
 
   waveHost = React.createRef();
@@ -927,6 +945,14 @@ class Component extends DCLogic {
   pointer = { x: -2000, y: -2000, targetX: -2000, targetY: -2000 };
 
   componentDidMount() {
+    // Aviso de cookies: mostra uma vez, "Entendi" grava a escolha no
+    // localStorage. Fecha em try/catch e trata qualquer falha como
+    // "ainda não aceitou" — modo anônimo de alguns navegadores bloqueia
+    // localStorage, e o padrão seguro aí é mostrar o aviso, não escondê-lo.
+    let jaAceitouCookies = false;
+    try { jaAceitouCookies = localStorage.getItem('ps_cookies_ok') === '1'; } catch { /* sem storage */ }
+    if (!jaAceitouCookies) this.setState({ cookiesVisivel: true });
+
     const container = this.waveHost.current;
     const canvas = this.waveCanvas.current;
     if (!container || !canvas) return;
@@ -1176,6 +1202,10 @@ class Component extends DCLogic {
   // Handlers ligados ao template (arrow fields para manter o `this`).
   openSignup = () => this.abrir(null);
   closeSignup = () => this.fechar();
+  fecharCookies = () => {
+    try { localStorage.setItem('ps_cookies_ok', '1'); } catch { /* melhor esforço */ }
+    this.setState({ cookiesVisivel: false });
+  };
   onBackdropClick = (e) => { if (e.target === e.currentTarget) this.fechar(); };
   onSubmit = (e) => this.enviar(e);
   onNome = (e) => this.setState({ nome: e.target.value });
@@ -1554,6 +1584,8 @@ class Component extends DCLogic {
       privacidadeUrl: PRIVACIDADE_URL,
       openSignup: this.openSignup,
       closeSignup: this.closeSignup,
+      cookiesVisivel: st.cookiesVisivel,
+      fecharCookies: this.fecharCookies,
       onBackdropClick: this.onBackdropClick,
       onSubmit: this.onSubmit,
       onNome: this.onNome,
