@@ -13,6 +13,9 @@
      compartilhado sem preview nenhum. -->
 <title>PontoSeven — Ponto Eletrônico Digital para Franquias | Conforme Portaria 671/2021</title>
 <meta name="description" content="Ponto eletrônico digital para franquias: geofence, biometria facial e log de auditoria, em conformidade com a Portaria 671/2021 (REP‑P) e a LGPD.">
+<!-- O Google não usa esta tag para ranquear desde ~2009 (confirmado
+     pela própria empresa) — fica só porque foi pedida, e é inofensiva. -->
+<meta name="keywords" content="ponto eletrônico, ponto, eletrônico, biometria facial, geofence, REP‑P, LGPD, franquias">
 <link rel="canonical" href="https://seteponto.cloud/">
 
 <!-- ═══ Open Graph (Facebook, WhatsApp, LinkedIn, Slack…) ═══════════ -->
@@ -47,23 +50,51 @@
      Preços/planos abaixo têm que ficar em sincronia manual com
      lib/plans.js (fonte da verdade do que é cobrado) e com o array
      PLANOS mais adiante neste arquivo (fonte da verdade do que é
-     exibido) — não há um único lugar que gere as três coisas. -->
+     exibido) — não há um único lugar que gere as três coisas.
+
+     `slogan` é propriedade de Organization (mesma família de `logo`),
+     não de SoftwareApplication — por isso vira uma entidade própria
+     aqui dentro, em vez de um campo solto no bloco do produto.
+
+     Os três SiteNavigationElement (Entrar/Criar conta/Planos) são um
+     sinal para buscadores sobre a estrutura do site — não uma forma
+     de forçar o Google a mostrar esses links como sitelinks debaixo
+     do resultado de busca. Isso quem decide é o algoritmo deles, com
+     base em como o site é rastreado e linkado de verdade; o schema
+     aqui só ajuda, não garante. "Entrar" aponta para /entrar, que é
+     noindex de propósito (mostra estado de sessão) — o Google deve
+     ignorar esse link específico para fins de indexação, o que é o
+     comportamento esperado. -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "PontoSeven",
-  "description": "Ponto eletrônico digital para franquias, com geofence, biometria facial e log de auditoria, em conformidade com a Portaria 671/2021 (REP-P) e a LGPD.",
-  "applicationCategory": "BusinessApplication",
-  "operatingSystem": "Web",
-  "url": "https://seteponto.cloud/",
-  "image": "https://seteponto.cloud/assets/og-image.png",
-  "inLanguage": "pt-BR",
-  "offers": [
-    { "@type": "Offer", "name": "Básico", "price": "49.90", "priceCurrency": "BRL", "url": "https://seteponto.cloud/#planos", "description": "Até 10 funcionários, todas as funcionalidades incluídas." },
-    { "@type": "Offer", "name": "Essencial", "price": "99.90", "priceCurrency": "BRL", "url": "https://seteponto.cloud/#planos", "description": "Até 20 funcionários, todas as funcionalidades incluídas." },
-    { "@type": "Offer", "name": "Profissional", "price": "149.90", "priceCurrency": "BRL", "url": "https://seteponto.cloud/#planos", "description": "Até 40 funcionários, todas as funcionalidades incluídas." },
-    { "@type": "Offer", "name": "Avançado", "price": "199.90", "priceCurrency": "BRL", "url": "https://seteponto.cloud/#planos", "description": "Até 60 funcionários, todas as funcionalidades incluídas." }
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "PontoSeven",
+      "description": "Ponto eletrônico digital para franquias, com geofence, biometria facial e log de auditoria, em conformidade com a Portaria 671/2021 (REP-P) e a LGPD.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "url": "https://seteponto.cloud/",
+      "image": "https://seteponto.cloud/assets/og-image.png",
+      "inLanguage": "pt-BR",
+      "offers": [
+        { "@type": "Offer", "name": "Básico", "price": "49.90", "priceCurrency": "BRL", "url": "https://seteponto.cloud/#planos", "description": "Até 10 funcionários, todas as funcionalidades incluídas." },
+        { "@type": "Offer", "name": "Essencial", "price": "99.90", "priceCurrency": "BRL", "url": "https://seteponto.cloud/#planos", "description": "Até 20 funcionários, todas as funcionalidades incluídas." },
+        { "@type": "Offer", "name": "Profissional", "price": "149.90", "priceCurrency": "BRL", "url": "https://seteponto.cloud/#planos", "description": "Até 40 funcionários, todas as funcionalidades incluídas." },
+        { "@type": "Offer", "name": "Avançado", "price": "199.90", "priceCurrency": "BRL", "url": "https://seteponto.cloud/#planos", "description": "Até 60 funcionários, todas as funcionalidades incluídas." }
+      ]
+    },
+    {
+      "@type": "Organization",
+      "name": "PontoSeven",
+      "url": "https://seteponto.cloud/",
+      "logo": "https://seteponto.cloud/assets/logo.png",
+      "slogan": "Ponto eletrônico completo, ideal para quem quer simplicidade e robustez!"
+    },
+    { "@type": "SiteNavigationElement", "name": "Entrar", "url": "https://seteponto.cloud/entrar" },
+    { "@type": "SiteNavigationElement", "name": "Criar conta", "url": "https://seteponto.cloud/#comece" },
+    { "@type": "SiteNavigationElement", "name": "Planos", "url": "https://seteponto.cloud/#planos" }
   ]
 }
 </script>
