@@ -39,6 +39,13 @@ const PAGINAS = [
   { origem: 'paginas/bem-vindo.html',       destino: 'bem-vindo/index.html' },
   { origem: 'paginas/entrar.html',          destino: 'entrar/index.html' },
   { origem: 'paginas/obrigado-vendas.html', destino: 'obrigado-vendas/index.html' },
+  { origem: 'paginas/termos.html',          destino: 'termos/index.html' },
+  { origem: 'paginas/privacidade.html',     destino: 'privacidade/index.html' },
+  // Arquivo solto, não pasta com index.html: a Vercel serve 404.html
+  // (com status 404 de verdade) automaticamente para qualquer rota
+  // sem match, só por estar nesse caminho exato na raiz do output —
+  // convenção da própria plataforma, sem precisar de rewrite.
+  { origem: 'paginas/404.html',             destino: '404.html' },
 ];
 
 // Folha compartilhada pelas páginas acima, na raiz porque elas a pedem

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Política de Privacidade — PontoSeven</title>
+<meta name="description" content="Como o PontoSeven trata dados pessoais e biométricos, conforme a LGPD: o que coletamos, por quê, com quem compartilhamos e os seus direitos.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/pagina.css">
+<style>
+  main { max-width: 760px; }
+  h2 { font-size: 20px; font-weight: 700; margin: 36px 0 12px; letter-spacing: -.01em; }
+  h2:first-of-type { margin-top: 28px; }
+  ul { margin: 0 0 18px; padding-left: 20px; color: var(--dim); font-size: 15.5px; line-height: 1.6; }
+  li { margin: 0 0 6px; }
+  .rascunho {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: rgba(236, 48, 19, .06); border: 1px solid rgba(236, 48, 19, .28);
+    border-radius: 14px; padding: 16px 18px; margin: 0 0 32px;
+    font-size: 14px; line-height: 1.6; color: var(--ink);
+  }
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <img src="/assets/logo.png" alt="">
+  <strong>PontoSeven</strong>
+</header>
+
+<main>
+  <div class="rascunho">
+    <span>⚠️</span>
+    <span><strong>Rascunho, não revisado por advogado.</strong> Este texto foi escrito com base no que o sistema realmente faz, para tirar o link do ar, mas não substitui revisão jurídica — principalmente por envolver dado biométrico de funcionário, categoria sensível pela LGPD (art. 5º, XIII). Recomendamos revisão por um profissional antes de tratar este texto como definitivo, e a designação formal de um encarregado de dados (DPO).</span>
+  </div>
+
+  <h1>Política de Privacidade</h1>
+  <p>Última atualização: 22 de setembro de 2026.</p>
+
+  <h2>1. Quem trata os dados</h2>
+  <p>Esta política descreve como o PontoSeven trata dados pessoais na landing de contratação (seteponto.cloud) e na plataforma de gestão de ponto. Para os dados da sua própria conta (quem contrata o sistema), somos controladores. Para os dados dos seus funcionários, cadastrados por você no sistema, a sua empresa é a controladora e o PontoSeven atua como operador — ver detalhes na seção 3 dos <a href="/termos">Termos de Uso</a>.</p>
+
+  <h2>2. Quais dados coletamos</h2>
+  <p><strong>Da conta (quem contrata):</strong></p>
+  <ul>
+    <li>Nome, e‑mail e senha (armazenada como hash, nunca em texto puro);</li>
+    <li>Telefone, se informado no cadastro;</li>
+    <li>Dados de cobrança — processados diretamente pela Stripe; não guardamos número de cartão;</li>
+    <li>Registro do aceite dos Termos e desta Política: versão aceita, data/hora, IP e navegador usado.</li>
+  </ul>
+  <p><strong>Da operação (funcionários cadastrados pela empresa contratante):</strong></p>
+  <ul>
+    <li>Biometria facial, para confirmar identidade na batida de ponto — dado sensível pela LGPD;</li>
+    <li>Localização, para validar a batida dentro do geofence configurado;</li>
+    <li>Horários de entrada, saída e intervalo, e ajustes feitos por gestores;</li>
+    <li>Trilha de auditoria: quem fez o quê, quando, e a partir de qual IP.</li>
+  </ul>
+
+  <h2>3. Para que usamos</h2>
+  <ul>
+    <li>Viabilizar o registro de ponto eletrônico e a gestão de jornada;</li>
+    <li>Processar pagamento e gerenciar a assinatura;</li>
+    <li>Cumprir a Portaria 671/2021 (REP‑P), que exige registro auditável das batidas;</li>
+    <li>Segurança: identificar acessos indevidos e manter a trilha de auditoria.</li>
+  </ul>
+
+  <h2>4. Com quem compartilhamos</h2>
+  <p>Não vendemos dados pessoais. Compartilhamos apenas o necessário para operar o serviço:</p>
+  <ul>
+    <li><strong>Stripe</strong> — processamento de pagamento (dados de cobrança, nunca o de cartão completo);</li>
+    <li><strong>Provedor de banco de dados</strong> — hospeda as informações da conta e da operação;</li>
+    <li>Autoridades, quando exigido por lei ou ordem judicial.</li>
+  </ul>
+
+  <h2>5. Cookies</h2>
+  <p>Usamos um único cookie, de sessão, gravado apenas quando você faz login — necessário para manter você autenticado. Ele é <code>HttpOnly</code> (não pode ser lido por script) e expira automaticamente. Não usamos cookies de rastreamento, analytics ou publicidade.</p>
+
+  <h2>6. Seus direitos (LGPD, art. 18)</h2>
+  <p>Você pode solicitar, a qualquer momento: confirmação de que tratamos seus dados, acesso a eles, correção de dados incompletos ou desatualizados, anonimização ou exclusão de dados desnecessários, portabilidade, informação sobre com quem compartilhamos, e revogação do consentimento dado. Hoje esses pedidos são atendidos por e‑mail — ainda não há um formulário de autoatendimento no sistema.</p>
+
+  <h2>7. Segurança</h2>
+  <ul>
+    <li>Senhas com hash scrypt, nunca em texto puro;</li>
+    <li>Pagamento no checkout hospedado pela Stripe — nenhum dado de cartão passa pelos nossos servidores;</li>
+    <li>Conexão sempre por HTTPS;</li>
+    <li>Trilha de auditoria imutável para ações sobre a conta e sobre os dados de ponto.</li>
+  </ul>
+
+  <h2>8. Retenção</h2>
+  <p>Mantemos os dados enquanto a conta estiver ativa e pelo prazo necessário para cumprir obrigações legais (fiscais, trabalhistas) e resolver eventuais disputas. Ao cancelar, entre em contato para tratar da exclusão dos dados que não precisem ser retidos por obrigação legal.</p>
+
+  <h2>9. Alterações nesta Política</h2>
+  <p>Podemos atualizar esta Política para refletir mudanças no produto ou na legislação. Mudanças relevantes são comunicadas por e‑mail ou aviso na plataforma antes de entrarem em vigor.</p>
+
+  <h2>10. Contato</h2>
+  <p>Dúvidas sobre esta Política ou pedidos relacionados aos seus dados: <a href="mailto:suporte@seteponto.cloud">suporte@seteponto.cloud</a>.</p>
+
+  <div class="botoes">
+    <a class="btn secundario" href="/">Voltar ao início</a>
+  </div>
+</main>
+
+<footer class="rodape">
+  <span>PontoSeven · ponto eletrônico REP‑P</span>
+  <span>Dúvidas? <a href="mailto:suporte@seteponto.cloud">suporte@seteponto.cloud</a></span>
+</footer>
+
+</body>
+</html>
