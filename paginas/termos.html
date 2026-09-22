@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Termos de Uso — PontoSeven</title>
+<meta name="description" content="Termos de Uso do PontoSeven: cadastro, cobrança, uso aceitável e responsabilidades sobre os dados da sua equipe.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/pagina.css">
+<!-- Página de documento, não de fluxo: mais larga e com hierarquia de
+     título maior do que o padrão de pagina.css (pensado para os
+     cartões estreitos de bem-vindo/entrar/obrigado-vendas). -->
+<style>
+  main { max-width: 760px; }
+  h2 { font-size: 20px; font-weight: 700; margin: 36px 0 12px; letter-spacing: -.01em; }
+  h2:first-of-type { margin-top: 28px; }
+  ul { margin: 0 0 18px; padding-left: 20px; color: var(--dim); font-size: 15.5px; line-height: 1.6; }
+  li { margin: 0 0 6px; }
+  .rascunho {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: rgba(236, 48, 19, .06); border: 1px solid rgba(236, 48, 19, .28);
+    border-radius: 14px; padding: 16px 18px; margin: 0 0 32px;
+    font-size: 14px; line-height: 1.6; color: var(--ink);
+  }
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <img src="/assets/logo.png" alt="">
+  <strong>PontoSeven</strong>
+</header>
+
+<main>
+  <div class="rascunho">
+    <span>⚠️</span>
+    <span><strong>Rascunho, não revisado por advogado.</strong> Este texto foi escrito com base no que o sistema realmente faz, para tirar o link do ar, mas não substitui revisão jurídica — principalmente por envolver dado biométrico de funcionário, categoria sensível pela LGPD. Recomendamos revisão por um profissional antes de tratar este texto como definitivo.</span>
+  </div>
+
+  <h1>Termos de Uso</h1>
+  <p>Última atualização: 22 de setembro de 2026.</p>
+
+  <h2>1. O que é o PontoSeven</h2>
+  <p>O PontoSeven é um sistema de ponto eletrônico digital, no modelo REP‑P (Registro Eletrônico de Ponto por Programa, conforme a Portaria 671/2021 do Ministério do Trabalho), com biometria facial, geofence e log de auditoria. Estes Termos regem o uso da landing de contratação (seteponto.cloud) e da plataforma de gestão de ponto acessada após o cadastro.</p>
+
+  <h2>2. Cadastro e conta</h2>
+  <p>Para contratar, você informa nome, e‑mail e senha, e escolhe um plano. Você é responsável por manter a senha em sigilo e por manter os dados da conta atualizados. A senha é armazenada como hash (scrypt) — nunca em texto puro — e nunca é enviada à Stripe nem a qualquer outro terceiro.</p>
+
+  <h2>3. Planos e cobrança</h2>
+  <p>Os planos pagos são cobrados mensalmente, via Stripe, em ambiente de checkout hospedado pela própria Stripe — nenhum dado de cartão passa pelos nossos servidores. Não há fidelidade: a assinatura pode ser cancelada a qualquer momento pela área de cobrança, sem multa. O plano Enterprise é negociado diretamente com o time comercial e não passa por checkout automático.</p>
+
+  <h2>4. Uso aceitável</h2>
+  <ul>
+    <li>Usar o sistema apenas para os fins de controle de jornada da sua própria empresa;</li>
+    <li>Não tentar acessar contas, dados ou áreas do sistema que não sejam seus;</li>
+    <li>Não usar o sistema para fins ilícitos ou para violar direitos de terceiros;</li>
+    <li>Ter base legal própria, perante os seus funcionários, para coletar os dados que cadastrar no sistema (ver seção 5).</li>
+  </ul>
+
+  <h2>5. Dados dos seus funcionários</h2>
+  <p>O PontoSeven processa dados de identificação e de jornada — incluindo biometria facial, localização (geofence) e registros de ponto — que a sua empresa cadastra sobre os próprios funcionários. Para esses dados, a sua empresa é a controladora, na forma da LGPD: é responsabilidade da sua empresa ter a base legal e informar os seus funcionários sobre essa coleta. O PontoSeven atua como operador, tratando esses dados conforme as instruções da sua empresa e para viabilizar o serviço contratado.</p>
+
+  <h2>6. Disponibilidade e suporte</h2>
+  <p>Nos esforçamos para manter o sistema disponível, mas não garantimos operação ininterrupta — instabilidades de infraestrutura (nossa ou de terceiros, como a Stripe ou o provedor de banco de dados) podem ocorrer. O suporte é feito por e‑mail.</p>
+
+  <h2>7. Alterações nestes Termos</h2>
+  <p>Podemos atualizar estes Termos para refletir mudanças no produto ou na legislação. Mudanças relevantes são comunicadas por e‑mail ou aviso na plataforma antes de entrarem em vigor.</p>
+
+  <h2>8. Contato</h2>
+  <p>Dúvidas sobre estes Termos: <a href="mailto:suporte@seteponto.cloud">suporte@seteponto.cloud</a>.</p>
+
+  <div class="botoes">
+    <a class="btn secundario" href="/">Voltar ao início</a>
+  </div>
+</main>
+
+<footer class="rodape">
+  <span>PontoSeven · ponto eletrônico REP‑P</span>
+  <span>Dúvidas? <a href="mailto:suporte@seteponto.cloud">suporte@seteponto.cloud</a></span>
+</footer>
+
+</body>
+</html>
