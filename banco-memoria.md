@@ -3,6 +3,7 @@
 > Relatório completo de análise da estrutura do repositório.
 > Gerado em 09/09/2026 · branch `claude/affectionate-dirac-j07u33` · commit base `8f59882`
 > **Atualizado em 09/09/2026** — inclui o fluxo de Entrar / Criar conta, a integração Stripe e o deploy na Vercel (§11).
+> **Atualizado em 08/10/2026** — a v4 trocou de sistema visual (§12).
 
 ---
 
@@ -749,6 +750,121 @@ repositório sem ir ao ar.
       e usa `<style>` inline, então a política precisa ser montada com cuidado
       (§8.7). Os headers `nosniff`, `Referrer-Policy` e `X-Frame-Options` já estão
 - [ ] O `.zip` continua versionado e agora duplica o que está na árvore
+
+---
+
+## 12. Troca do sistema visual — "terminal tipografado sobre papel branco"
+
+> 08/10/2026. A v4 e as páginas de fluxo saíram do glassmorphism vermelho e
+> passaram a seguir a referência de estilo da Vercel. Estrutura, textos e
+> propósito foram preservados — só a linguagem visual mudou.
+
+### 12.1 Mensagem principal
+
+| | |
+|---|---|
+| Antes | "Controle de / **ponto** / online." (três linhas, pesos 300/800/300, última em vermelho) |
+| Agora | **"Seu ponto funcionando hoje"** — peso 450, 64px, entrelinha 1.0, tracking −0.06em |
+
+### 12.2 O sistema, em uma linha
+
+Duas famílias, nenhuma cor. Profundidade por fio de cabelo, nunca por
+sombra. Raio de 6px em tudo, exceto pílulas de navegação.
+
+| Papel | Antes | Agora |
+|---|---|---|
+| Tela da página | `#ffffff` | `--paper: #fafafa` |
+| Cartão | vidro translúcido + blur | `--surface: #ffffff` + anel de 1px |
+| Borda | `rgba(20,17,16,.16)` | `--line: #ebebeb` |
+| Corpo de texto | `rgba(20,17,16,.62)` | `--dim: #4d4d4d` |
+| Títulos / ênfase | `#141110` + acento `#ec3013` | `--ink: #171717` (sem acento cromático) |
+| Confirmação | — | `--green: #297a3a` — **o único matiz do sistema** |
+| Tipografia | Overused Grotesk | Geist (texto) + Geist Mono (rótulo, metadado) |
+
+A binária Geist/Geist Mono é a regra mais visível: rótulo de formulário,
+eyebrow, legenda e metadado são **sempre** monoespaçados, 11px, caixa alta,
+tracking 0.071em.
+
+### 12.3 O que mudou na prática
+
+| Transformação | Alcance |
+|---|---|
+| `var(--red)` → `var(--ink)` | 50 usos |
+| Raios normalizados para 6px | 55 declarações (999px, 32px, 26px, 22px, 20px…) |
+| Pesos 600–800 → 400–500 | 54 declarações |
+| Sombras projetadas removidas | 19 declarações |
+| Eyebrows normalizados para a escala mono | 19 rótulos |
+| Fundo decorativo (fumaça + ondas em canvas) | 9 linhas de markup + 83 de JS |
+| `_ds/` (design system Modernist) | desligado da v4 e retirado do build |
+| `paginas/pagina.css` | reescrita inteira no mesmo sistema |
+
+Os tokens de vidro (`--glass`, `--glass-line`, `--glass-blur`,
+`--glass-shadow`) **foram mantidos pelo nome** e repontados para superfície
+plana e anel de fio de cabelo. Isso converteu ~80 usos espalhados no markup
+sem tocar em nenhum deles — e deixa o nome antigo como pista de onde o
+vidro existia.
+
+### 12.4 Três declarações que a varredura quebrou
+
+A troca em massa removeu o prefixo `box-shadow:` e deixou o resto colado na
+propriedade anterior, produzindo CSS inválido e silencioso:
+
+```css
+/* bezel do celular — o gradiente inteiro era descartado */
+background:linear-gradient(…), inset 0 0 0 1px rgba(255,255,255,.5)
+/* os dois modais — ficariam sem borda nenhuma */
+border:1px solid var(--glass-line), inset 0 1px 0 rgba(255,255,255,.92)
+```
+
+Encontradas por varredura de fragmentos órfãos (`, inset`) e corrigidas.
+**Lição:** remoção em massa de uma propriedade CSS precisa casar a
+declaração inteira, do nome ao `;` — não só o valor.
+
+### 12.5 O que foi verificado
+
+Build servido localmente e medido no Chromium, sobre o DOM computado:
+
+| Verificação | Resultado |
+|---|---|
+| H1 | "Seu ponto funcionando hoje" ✅ |
+| `body` | `rgb(250,250,250)` sobre `rgb(23,23,23)` ✅ |
+| H1 computado | peso 450 · 64px · tracking −3.84px ✅ (bate com `--text-display`) |
+| Barra de navegação | 64px ✅ |
+| Eyebrow | Geist Mono · 11px · tracking 0.781px (= 0.071em) ✅ |
+| **Cores com matiz na página inteira** | **1** — o verde de confirmação `#297a3a` ✅ |
+| Raios | 74× 6px · 6× 2px · 3× 9999px (pílulas do nav) · 2× 50% · restante são % do mockup ✅ |
+| Modal de cadastro | abre, foca o 1º campo, valida os 8 campos, Escape fecha ✅ |
+| `/termos`, `/entrar`, `/404` | mesma tela e mesma fonte da landing ✅ |
+| Erros de JS no console | nenhum ✅ |
+
+### 12.6 Decisões que valem preservar
+
+**Sem triângulo.** A referência trata o ▲ como "o elemento mais
+implantado da marca" — mas aquela marca é a Vercel. O papel de glifo da
+marca aqui é do logo do PontoSeven; copiar o triângulo seria vestir a
+identidade de outra empresa.
+
+**Sem painel de CLI.** A referência diz que "o terminal É o marketing" —
+verdade para ferramenta de desenvolvedor, não para software de RH. O que
+foi adotado foi a *linguagem visual*; a estrutura da página continua a que
+já existia.
+
+**Erro sem cor.** A regra de 0% de cromatismo vale também para estado de
+erro: quem carrega o significado é o ícone e o texto, não o matiz. Isso
+também é melhor para acessibilidade, já que cor sozinha nunca deveria
+comunicar estado.
+
+**Banda final invertida.** O bloco de fechamento era um painel vermelho;
+virou a *Inverted Card* do sistema (`#171717`, texto branco) — a única
+superfície escura da página, usada como pontuação visual.
+
+### 12.7 Pendências
+
+- [ ] O screenshot do app no hero é uma tela escura; o sistema pede
+      capturas em modo claro dentro de cartões com borda de fio de cabelo
+- [ ] Sem CSP ainda (§8.7) — agora com uma origem a menos, já que o
+      `_ds/` saiu e a fonte vem do Google Fonts
+- [ ] As versões v1–v3 seguem no sistema antigo; só a v4 é publicada
 
 ---
 
