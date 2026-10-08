@@ -26,7 +26,7 @@ const SAIDA = path.join(RAIZ, 'public');
 const PAGINA = 'PontoSeven Landing v4.dc.html';
 
 // Copiados como estão: runtime e os assets que a página pede.
-const COPIAR = ['support.js', '_ds', 'assets'];
+const COPIAR = ['support.js', 'assets'];
 
 // Arquivos que precisam estar na RAIZ do site (não em /assets/): browser
 // e crawlers pedem /favicon.ico e /robots.txt direto por convenção, sem

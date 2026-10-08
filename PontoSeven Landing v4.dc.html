@@ -44,7 +44,7 @@
 <link rel="icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#ec3013">
+<meta name="theme-color" content="#fafafa">
 
 <!-- ═══ Dados estruturados (schema.org/JSON-LD) ═══════════════════════
      Preços/planos abaixo têm que ficar em sincronia manual com
@@ -104,56 +104,88 @@
 <body>
 <x-dc>
 <helmet>
-  <link rel="stylesheet" href="_ds/modernist-f2ad93fd-ad75-4927-9002-9d4b19946590/styles.css">
-  <script src="_ds/modernist-f2ad93fd-ad75-4927-9002-9d4b19946590/_ds_bundle.js"></script>
   <!-- title, ícones, description, Open Graph, Twitter Card e JSON-LD
        ficam no <head> estático (topo do arquivo), não aqui: <helmet>
        só é aplicado por JS, no browser (ver support.js/helmet.ts) — um
        crawler que não executa JS (a maioria dos unfurlers de
        WhatsApp/redes sociais, por exemplo) nunca veria essas tags se
        elas só existissem aqui dentro. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap">
   <style>
-    @font-face {
-      font-family: 'Overused Grotesk';
-      src: url('https://cdn.jsdelivr.net/gh/RandomMaerks/Overused-Grotesk@0.5-alpha.2/fonts/variable/OverusedGroteskRoman-VF.woff2') format('woff2-variations');
-      font-weight: 300 900; font-style: normal; font-display: swap;
-    }
+    /* ════════════════════════════════════════════════════════════════
+       Sistema visual: terminal tipografado sobre papel branco.
+       Duas famílias, nenhuma cor. Profundidade vem de fio de cabelo,
+       nunca de sombra. Raio máximo de 6px, exceto pílulas de navegação.
+       ════════════════════════════════════════════════════════════════ */
     :root {
-      --font-heading: 'Overused Grotesk', system-ui, sans-serif;
-      --font-body: 'Overused Grotesk', system-ui, sans-serif;
-      --ink: #141110;
-      --paper: #ffffff;
-      --line: rgba(20,17,16,.16);
-      --dim: rgba(20,17,16,.62);
-      --red: #ec3013;
-      --glass: rgba(255,255,255,.52);
-      --glass-strong: rgba(255,255,255,.72);
-      --glass-line: rgba(255,255,255,.7);
-      --glass-blur: blur(26px) saturate(180%);
-      --glass-shadow: 0 18px 50px rgba(20,17,16,.10), inset 0 1px 0 rgba(255,255,255,.85);
+      --font-sans: 'Geist', Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      /* Compatibilidade com o markup existente, que chama estes nomes. */
+      --font-heading: var(--font-sans);
+      --font-body: var(--font-sans);
+
+      /* Escala de valor — do papel ao obsidiano. Nenhum matiz. */
+      --paper: #fafafa;        /* tela da página */
+      --surface: #ffffff;      /* cartão, um passo acima do papel */
+      --line: #ebebeb;         /* fio de cabelo */
+      --ash: #c9c9c9;
+      --faint: #8f8f8f;
+      --muted: #666666;
+      --dim: #4d4d4d;          /* corpo de texto */
+      --ink: #171717;          /* títulos, botão sólido, ênfase */
+      --carbon: #000000;       /* só glifo de marca */
+      --green: #297a3a;        /* único acento cromático: confirmação */
+
+      /* A "borda" do cartão é um anel duplo, não uma sombra: sobrevive a
+         qualquer fundo e não cria profundidade falsa. */
+      --ring: 0 0 0 1px rgba(0,0,0,.08), 0 0 0 2px #fafafa;
+      --ring-line: 0 0 0 1px #ebebeb;
+
+      /* Os nomes de vidro continuam porque o markup os usa em dezenas de
+         lugares; agora resolvem para superfície plana e fio de cabelo. */
+      --glass: var(--surface);
+      --glass-strong: var(--surface);
+      --glass-line: var(--line);
+      --glass-blur: none;
+      --glass-shadow: var(--ring);
     }
+
     * { box-sizing: border-box; }
-    body { margin: 0; background: var(--paper); color: var(--ink); font-family: 'Overused Grotesk', system-ui, sans-serif; -webkit-font-smoothing: antialiased; text-wrap: pretty; }
-    button, summary { font-family: inherit; }
-    h1, h2, h3, h4, .btn, .tag, .card-title, .card-kicker, .nav-brand { font-family: 'Overused Grotesk', system-ui, sans-serif; }
-    a { color: var(--red); text-decoration: none; }
-    a:hover { color: #b8250c; }
-    :focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+
+    body {
+      margin: 0; background: var(--paper); color: var(--ink);
+      font-family: var(--font-sans); font-size: 16px; line-height: 1.5;
+      -webkit-font-smoothing: antialiased; text-wrap: pretty;
+      font-feature-settings: "calt" 0, "rlig", "ss11";
+    }
+    button, summary, input, textarea, select { font-family: inherit; }
+    h1, h2, h3, h4 { font-family: var(--font-sans); font-weight: 450; }
+
+    /* Rótulo, metadado e código são território exclusivo do monoespaçado. */
+    .ps-mono, .ps-label { font-family: var(--font-mono); }
+
+    a { color: var(--ink); text-decoration: none; }
+    a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+    :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+    ::selection { background: rgba(23,23,23,.12); }
+
     summary::-webkit-details-marker { display: none; }
-    @keyframes ps-rise { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
-    @keyframes ps-spin { to { transform: rotate(360deg); } }
-    @keyframes ps-smoke-a { 0% { transform: translate3d(-4%,2%,0) scale(1.05); } 50% { transform: translate3d(5%,-3%,0) scale(1.18); } 100% { transform: translate3d(-4%,2%,0) scale(1.05); } }
-    @keyframes ps-smoke-b { 0% { transform: translate3d(4%,-2%,0) scale(1.12); } 50% { transform: translate3d(-5%,4%,0) scale(1); } 100% { transform: translate3d(4%,-2%,0) scale(1.12); } }
-    @keyframes ps-smoke-c { 0% { transform: translate3d(0,3%,0) scale(1); } 50% { transform: translate3d(-3%,-4%,0) scale(1.14); } 100% { transform: translate3d(0,3%,0) scale(1); } }
-    @keyframes ps4-step-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-    ::selection { background: rgba(236,48,19,.18); }
     summary { position: relative; }
     summary::after {
-      content: ''; position: absolute; right: 2px; top: 50%; width: 11px; height: 11px;
-      border-right: 2px solid var(--red); border-bottom: 2px solid var(--red);
-      transform: translateY(-70%) rotate(45deg); transition: transform .3s cubic-bezier(.22,.75,.2,1);
+      content: ''; position: absolute; right: 2px; top: 50%; width: 9px; height: 9px;
+      border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted);
+      transform: translateY(-70%) rotate(45deg); transition: transform .2s ease;
     }
     details[open] > summary::after { transform: translateY(-20%) rotate(-135deg); }
+
+    @keyframes ps-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    @keyframes ps-spin { to { transform: rotate(360deg); } }
+    @keyframes ps4-step-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    @keyframes ps-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes ps-sheet-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
     @media (max-width: 1000px) {
       [data-grid="hero"], [data-grid="split"] { grid-template-columns: minmax(0,1fr) !important; }
       [data-grid="hero"] { gap: 40px !important; }
@@ -163,95 +195,100 @@
     @media (max-width: 640px) {
       [data-grid="three"] { grid-template-columns: minmax(0,1fr) !important; }
     }
-    /* — Autenticação: modal de criar conta ————————————————————— */
-    @keyframes ps-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes ps-sheet-in { from { opacity: 0; transform: translateY(20px) scale(.985); } to { opacity: 1; transform: none; } }
-    .ps-label { display: block; font-size: 12.5px; font-weight: 600; color: var(--dim); margin: 0 0 7px; }
-    .ps-input {
-      width: 100%; box-sizing: border-box; padding: 13px 15px; border-radius: 14px;
-      border: 1px solid rgba(20,17,16,.16); background: rgba(255,255,255,.72);
-      font-family: inherit; font-size: 15px; color: var(--ink);
-      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+
+    /* ── Formulários ──────────────────────────────────────────────── */
+    .ps-label {
+      display: block; font-size: 11px; font-weight: 400; line-height: 1.5;
+      letter-spacing: 0.071em; text-transform: uppercase;
+      color: var(--ink); margin: 0 0 8px;
     }
-    .ps-input::placeholder { color: rgba(20,17,16,.38); }
-    .ps-input:hover { background: rgba(255,255,255,.88); }
-    .ps-input:focus { outline: none; border-color: var(--red); background: #fff; box-shadow: 0 0 0 3px rgba(236,48,19,.16); }
-    .ps-input[aria-invalid="true"] { border-color: #c9260d; background: rgba(236,48,19,.04); }
-    .ps-input[aria-invalid="true"]:focus { box-shadow: 0 0 0 3px rgba(201,38,13,.18); }
-    .ps-err { display: block; font-size: 12.5px; line-height: 1.45; color: #a51d08; margin: 7px 0 0; }
-    .ps-hint { display: block; font-size: 12.5px; line-height: 1.45; color: var(--dim); margin: 7px 0 0; }
-    .ps-plan { display: block; cursor: pointer; padding: 14px 16px; border-radius: 16px; transition: border-color .18s ease, background .18s ease; }
-    .ps-plan:hover { background: rgba(255,255,255,.9); }
+    .ps-input {
+      width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 6px;
+      border: 1px solid var(--line); background: var(--surface);
+      font-family: var(--font-sans); font-size: 14px; color: var(--ink);
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    .ps-input::placeholder { color: var(--ash); }
+    .ps-input:hover { border-color: var(--ash); }
+    .ps-input:focus { outline: none; border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+    .ps-input[aria-invalid="true"] { border-color: var(--ink); background: var(--paper); }
+    .ps-input[aria-invalid="true"]:focus { box-shadow: 0 0 0 1px var(--ink); }
+
+    /* Sem cor cromática no erro: quem carrega o significado é o texto e o
+       ícone. O monoespaçado marca a mensagem como metadado do campo. */
+    .ps-err {
+      display: block; font-family: var(--font-mono); font-size: 12px; line-height: 1.5;
+      color: var(--ink); margin: 8px 0 0;
+    }
+    .ps-hint {
+      display: block; font-family: var(--font-mono); font-size: 12px; line-height: 1.5;
+      color: var(--muted); margin: 8px 0 0;
+    }
+
+    .ps-plan {
+      display: block; cursor: pointer; padding: 12px 14px; border-radius: 6px;
+      background: var(--surface); transition: border-color .15s ease;
+    }
+    .ps-plan:hover { border-color: var(--ash) !important; }
     .ps-plan input { position: absolute; opacity: 0; width: 0; height: 0; }
-    .ps-plan input:focus-visible + .ps-plan-box { outline: 2px solid var(--red); outline-offset: 3px; }
+    .ps-plan input:focus-visible + .ps-plan-box { outline: 2px solid var(--ink); outline-offset: 3px; }
+
     .ps-spinner {
-      width: 15px; height: 15px; border-radius: 50%; flex: none;
-      border: 2px solid rgba(255,255,255,.34); border-top-color: #fff;
+      width: 13px; height: 13px; border-radius: 50%; flex: none;
+      border: 1.5px solid rgba(255,255,255,.35); border-top-color: #fff;
       animation: ps-spin .7s linear infinite;
     }
+
     @media (max-width: 560px) {
-      .ps-sheet { border-radius: 22px !important; padding: 24px 20px !important; }
+      .ps-sheet { padding: 24px 20px !important; }
       .ps-plan-grid { grid-template-columns: minmax(0,1fr) !important; }
     }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } }
   </style>
 </helmet>
 
-<div style="position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden">
-  <div style="position:absolute;inset:-14%;filter:blur(60px);opacity:.75;will-change:transform;animation:ps-smoke-a 38s ease-in-out infinite;background-image:radial-gradient(42% 38% at 18% 26%, rgba(236,48,19,.16) 0%, rgba(236,48,19,0) 68%),radial-gradient(46% 40% at 76% 20%, rgba(20,17,16,.07) 0%, rgba(20,17,16,0) 70%)"></div>
-  <div style="position:absolute;inset:-14%;filter:blur(70px);opacity:.7;will-change:transform;animation:ps-smoke-b 46s ease-in-out infinite;background-image:radial-gradient(44% 40% at 28% 80%, rgba(236,48,19,.13) 0%, rgba(236,48,19,0) 68%),radial-gradient(40% 36% at 86% 72%, rgba(255,255,255,.9) 0%, rgba(255,255,255,0) 72%)"></div>
-  <div style="position:absolute;inset:-14%;filter:blur(54px);opacity:.6;will-change:transform;animation:ps-smoke-c 32s ease-in-out infinite;background-image:radial-gradient(36% 32% at 56% 48%, rgba(255,255,255,.95) 0%, rgba(255,255,255,0) 70%),radial-gradient(30% 28% at 8% 56%, rgba(236,48,19,.1) 0%, rgba(236,48,19,0) 72%)"></div>
-  <div ref="{{ waveHost }}" style="position:absolute;inset:0">
-    <canvas ref="{{ waveCanvas }}" style="position:absolute;inset:0;display:block;width:100%;height:100%"></canvas>
-  </div>
-</div>
-
 <div style="position:relative;z-index:1">
 
-<nav style="position:sticky;top:12px;z-index:20;margin:12px clamp(12px,3vw,28px) 0;display:flex;align-items:center;gap:16px;padding:12px clamp(16px,2.4vw,26px);border-radius:22px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)">
-  <span style="display:flex;align-items:center;gap:10px;font-size:17px;font-weight:600;letter-spacing:-0.01em">
-    <img src="./assets/logo.png" alt="" style="width:24px;height:24px;display:block">
-    ponto · seven
-  </span>
-  <div data-nav-links style="display:flex;gap:22px;margin:0 auto;font-size:14.5px">
-    <a href="#plataforma" style="color:var(--dim)" style-hover="color:var(--ink)">Plataforma</a>
-    <a href="#recursos" style="color:var(--dim)" style-hover="color:var(--ink)">Recursos</a>
-    <a href="#planos" style="color:var(--dim)" style-hover="color:var(--ink)">Planos</a>
-    <a href="#faq" style="color:var(--dim)" style-hover="color:var(--ink)">FAQ</a>
+<nav style="position:sticky;top:0;z-index:20;height:64px;display:flex;align-items:center;gap:16px;padding:0 clamp(18px,4vw,48px);background:rgba(250,250,250,.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)">
+  <a href="#" style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500;letter-spacing:-0.01em;color:var(--ink)" style-hover="text-decoration:none">
+    <img src="./assets/logo.png" alt="" style="width:18px;height:18px;display:block">
+    PontoSeven
+  </a>
+  <div data-nav-links style="display:flex;gap:24px;margin-left:32px;font-size:14px">
+    <a href="#plataforma" style="color:var(--dim)" style-hover="color:var(--ink);text-decoration:none">Plataforma</a>
+    <a href="#recursos" style="color:var(--dim)" style-hover="color:var(--ink);text-decoration:none">Recursos</a>
+    <a href="#planos" style="color:var(--dim)" style-hover="color:var(--ink);text-decoration:none">Planos</a>
+    <a href="#faq" style="color:var(--dim)" style-hover="color:var(--ink);text-decoration:none">FAQ</a>
   </div>
-  <div style="display:flex;align-items:center;gap:10px">
-    <a href="{{ loginUrl }}" style="color:var(--ink);font-size:14px;font-weight:600;white-space:nowrap;padding:11px 16px;border-radius:999px" style-hover="color:var(--ink);background:rgba(255,255,255,.7);text-decoration:none">Entrar</a>
-    <button type="button" onClick="{{ openSignup }}" style="border:0;border-radius:999px;background:var(--red);color:#fff;font-size:14px;font-weight:600;white-space:nowrap;padding:11px 22px;cursor:pointer;box-shadow:0 6px 18px rgba(236,48,19,.28)" style-hover="background:#c9260d">Criar conta</button>
+  <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
+    <button type="button" onClick="{{ abrirDemo }}" style="border:0;box-shadow:var(--ring-line);border-radius:9999px;background:transparent;color:var(--dim);font-size:14px;font-weight:400;white-space:nowrap;padding:0 14px;height:32px;cursor:pointer" style-hover="color:var(--ink)">Ver demonstração</button>
+    <a href="{{ loginUrl }}" style="display:flex;align-items:center;box-shadow:var(--ring-line);border-radius:9999px;color:var(--dim);font-size:14px;font-weight:400;white-space:nowrap;padding:0 14px;height:32px" style-hover="color:var(--ink);text-decoration:none">Entrar</a>
+    <button type="button" onClick="{{ openSignup }}" style="border:0;border-radius:9999px;background:var(--ink);color:#fff;font-size:14px;font-weight:400;white-space:nowrap;padding:0 14px;height:32px;cursor:pointer" style-hover="background:#000">Criar conta</button>
   </div>
 </nav>
 
 <section style="min-height:calc(100svh - 92px);display:flex;flex-direction:column;justify-content:center;padding:clamp(32px,5svh,72px) clamp(18px,4vw,52px);overflow-x:clip">
   <div data-grid="hero" style="max-width:1240px;margin:0 auto;width:100%;display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:clamp(24px,4vw,64px);align-items:center">
   <div>
-    <span style="display:inline-block;padding:8px 16px;border-radius:999px;font-size:13px;font-weight:600;letter-spacing:.02em;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);animation:ps-rise .7s ease-out .1s both">REP‑P · Portaria 671 · LGPD</span>
-    <h1 style="font-size:clamp(34px,min(6vw,9svh),80px);line-height:.98;letter-spacing:-0.035em;margin:clamp(16px,3svh,28px) 0 0;max-width:15ch;animation:ps-rise .8s ease-out .25s both">
-      <span style="display:block;font-weight:300">Controle de</span>
-      <span style="display:block;font-weight:800">ponto</span>
-      <span style="display:block;font-weight:300;color:var(--red)">online.</span>
+    <p class="ps-mono" style="font-size:11px;font-weight:400;line-height:1.5;letter-spacing:.071em;text-transform:uppercase;color:var(--ink);margin:0 0 12px;animation:ps-rise .5s ease-out .05s both">REP‑P · Portaria 671 · LGPD</p>
+    <h1 style="font-size:clamp(40px,min(6.4vw,9svh),64px);font-weight:450;line-height:1;letter-spacing:-0.06em;margin:0;max-width:14ch;animation:ps-rise .5s ease-out .1s both">
+      Seu ponto funcionando hoje
     </h1>
-    <p style="font-size:clamp(16px,1.7vw,20px);line-height:1.5;color:var(--ink);margin:clamp(16px,2.6svh,26px) 0 0;max-width:48ch;font-weight:600;animation:ps-rise .7s ease-out .4s both">
-      Sistema completo com módulos de RH.
-    </p>
-    <p style="font-size:clamp(15px,1.5vw,18px);line-height:1.65;color:var(--dim);margin:10px 0 0;max-width:56ch;animation:ps-rise .7s ease-out .5s both">
-      Biometria facial, geofence e log de auditoria imutável em um só registro de ponto. Cada batida vira comprovante, cada mês vira espelho de ponto.
+    <p style="font-size:16px;line-height:1.5;color:var(--dim);margin:24px 0 0;max-width:52ch;animation:ps-rise .5s ease-out .18s both">
+      Biometria facial, geofence e log de auditoria imutável em um só registro de ponto. Cada batida vira comprovante, cada mês vira espelho de ponto — com os módulos de RH junto.
     </p>
     <!-- Sem número real de clientes ainda: quando houver um, troca o texto
          abaixo por "Ajudamos mais de N empresas a...". Até lá, a frase não
          promete uma contagem que ninguém pode conferir. -->
-    <p style="display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--dim);margin:20px 0 0;animation:ps-rise .7s ease-out .58s both">
-      <span style="display:flex;flex:none">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+    <p class="ps-mono" style="display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.5;color:var(--muted);margin:16px 0 0;max-width:56ch;animation:ps-rise .5s ease-out .24s both">
+      <span style="display:flex;flex:none;margin-top:2px">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
       </span>
-      Ajudamos empresas de portes e setores diferentes a descomplicar a gestão de ponto, todos os dias.
+      Empresas de portes e setores diferentes descomplicam a gestão de ponto todos os dias.
     </p>
-    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:clamp(20px,3svh,34px);animation:ps-rise .7s ease-out .68s both">
-      <button type="button" onClick="{{ openSignup }}" style="border:0;border-radius:999px;background:var(--red);color:#fff;font-size:15px;font-weight:600;padding:15px 30px;cursor:pointer;box-shadow:0 10px 30px rgba(236,48,19,.3);transition:transform .25s ease" style-hover="color:#fff;transform:translateY(-2px)">Criar conta</button>
-      <a href="#pilares" style="border-radius:999px;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);color:var(--ink);font-size:15px;font-weight:600;padding:15px 30px;transition:transform .25s ease" style-hover="transform:translateY(-2px)">Saiba mais</a>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:32px;animation:ps-rise .5s ease-out .3s both">
+      <button type="button" onClick="{{ openSignup }}" style="border:0;border-radius:6px;background:var(--ink);color:#fff;font-size:14px;font-weight:400;padding:0 20px;height:40px;cursor:pointer" style-hover="background:#000">Criar conta</button>
+      <a href="#pilares" style="display:flex;align-items:center;border-radius:6px;box-shadow:var(--ring-line);background:transparent;color:var(--dim);font-size:14px;font-weight:400;padding:0 20px;height:40px" style-hover="color:var(--ink);text-decoration:none">Saiba mais</a>
     </div>
   </div>
 
@@ -261,18 +298,18 @@
            "gestor acompanhando em tempo real" ao lado de quem bate o
            ponto, sem precisar de uma segunda ilustração do zero — reusa
            a captura real do painel que já existe em assets/. -->
-      <div style="position:absolute;right:-38%;top:4%;width:62%;transform:rotate(6deg);border-radius:16px;overflow:hidden;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:0 24px 50px rgba(20,17,16,.22);z-index:0">
+      <div style="position:absolute;right:-38%;top:4%;width:62%;transform:rotate(6deg);border-radius:6px;overflow:hidden;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);z-index:0">
         <img src="assets/ps4-tab-painel.webp" alt="Painel do gestor com marcações do dia em tempo real" style="display:block;width:100%;aspect-ratio:4/3;object-fit:cover;object-position:left top">
-        <span style="position:absolute;right:10px;top:10px;display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.92);font-size:10.5px;font-weight:700;color:var(--ink);box-shadow:0 4px 10px rgba(20,17,16,.18)">
-          <span style="width:6px;height:6px;border-radius:50%;background:#1a9e52;display:block"></span>
+        <span style="position:absolute;right:10px;top:10px;display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:6px;background:rgba(255,255,255,.92);font-size:10.5px;font-weight:500;color:var(--ink)">
+          <span style="width:6px;height:6px;border-radius:50%;background:#297a3a;display:block"></span>
           Ao vivo
         </span>
       </div>
       <div style="position:absolute;left:6%;right:6%;bottom:-3%;height:14%;filter:blur(26px);background:rgba(20,17,16,.34);border-radius:50%"></div>
-      <div style="position:relative;border-radius:13.4%/6.8%;padding:2.6%;background:linear-gradient(150deg,#f3f1f0 0%,#b9b4b1 22%,#6f6b69 48%,#c9c5c2 74%,#8c8886 100%);box-shadow:0 30px 70px rgba(20,17,16,.28), inset 0 0 0 1px rgba(255,255,255,.5)">
+      <div style="position:relative;border-radius:13.4%/6.8%;padding:2.6%;background:linear-gradient(150deg,#f3f1f0 0%,#b9b4b1 22%,#6f6b69 48%,#c9c5c2 74%,#8c8886 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.5)">
         <div style="position:relative;width:100%;aspect-ratio:432/800;border-radius:11.4%/6%;background:#000;padding:1.4%;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)">
           <img src="./assets/app-screen.png" alt="Tela do app PontoSeven: bater ponto com biometria facial e geofence" style="display:block;width:100%;height:100%;object-fit:cover;object-position:top center;border-radius:10.4%/5.4%;image-rendering:-webkit-optimize-contrast">
-          <div style="position:absolute;top:2.2%;left:50%;transform:translateX(-50%);width:30%;height:2.9%;border-radius:999px;background:#000"></div>
+          <div style="position:absolute;top:2.2%;left:50%;transform:translateX(-50%);width:30%;height:2.9%;border-radius:6px;background:#000"></div>
           <div style="position:absolute;inset:0;border-radius:10.4%/5.4%;pointer-events:none;background:linear-gradient(122deg, rgba(255,255,255,.34) 0%, rgba(255,255,255,.06) 26%, rgba(255,255,255,0) 46%, rgba(255,255,255,.1) 74%, rgba(255,255,255,.03) 100%)"></div>
         </div>
       </div>
@@ -287,13 +324,13 @@
 <div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
 
 <section id="pilares" style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
-  <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Por que o PontoSeven</p>
-  <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 44px;max-width:26ch">Três motivos para trocar a planilha pelo sistema.</h2>
+  <p style="display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:.071em;text-transform:uppercase;color:var(--ink);margin:0 0 18px"><span style="width:14px;height:1px;background:var(--ink);display:block"></span>Por que o PontoSeven</p>
+  <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:500;line-height:1.02;letter-spacing:-0.045em;margin:0 0 44px;max-width:26ch">Três motivos para trocar a planilha pelo sistema.</h2>
   <div data-grid="three" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
     <sc-for list="{{ pilares }}" as="p" hint-placeholder-count="3">
-      <div style="padding:28px;border-radius:22px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)">
-        <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--red);margin:0">{{ p.num }}</p>
-        <h3 style="font-size:19px;font-weight:700;letter-spacing:-0.015em;margin:16px 0 0">{{ p.titulo }}</h3>
+      <div style="padding:28px;border-radius:6px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)">
+        <p style="font-family:var(--font-mono);font-size:12px;color:var(--ink);margin:0">{{ p.num }}</p>
+        <h3 style="font-size:19px;font-weight:500;letter-spacing:-0.015em;margin:16px 0 0">{{ p.titulo }}</h3>
         <p style="font-size:14.5px;line-height:1.7;color:var(--dim);margin:10px 0 0">{{ p.body }}</p>
       </div>
     </sc-for>
@@ -301,12 +338,12 @@
 </section>
 
 <section id="segmentos" style="max-width:1240px;margin:0 auto;padding:0 clamp(18px,4vw,52px) clamp(56px,7vw,104px)">
-  <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Para quem é</p>
-  <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 44px;max-width:26ch">Uma jornada, várias formas de trabalhar.</h2>
+  <p style="display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:.071em;text-transform:uppercase;color:var(--ink);margin:0 0 18px"><span style="width:14px;height:1px;background:var(--ink);display:block"></span>Para quem é</p>
+  <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:500;line-height:1.02;letter-spacing:-0.045em;margin:0 0 44px;max-width:26ch">Uma jornada, várias formas de trabalhar.</h2>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
     <sc-for list="{{ segmentos }}" as="s" hint-placeholder-count="5">
-      <div style="padding:24px;border-radius:20px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);transition:transform .3s cubic-bezier(.22,.75,.2,1)" style-hover="transform:translateY(-4px)">
-        <h3 style="font-size:16.5px;font-weight:700;letter-spacing:-0.01em;margin:0">{{ s.nome }}</h3>
+      <div style="padding:24px;border-radius:6px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);transition:transform .3s cubic-bezier(.22,.75,.2,1)" style-hover="transform:translateY(-4px)">
+        <h3 style="font-size:16.5px;font-weight:500;letter-spacing:-0.01em;margin:0">{{ s.nome }}</h3>
         <p style="font-size:13.5px;line-height:1.6;color:var(--dim);margin:10px 0 0">{{ s.body }}</p>
       </div>
     </sc-for>
@@ -318,8 +355,8 @@
 <section id="plataforma" style="max-width:1240px;margin:0 auto;padding:clamp(56px,7vw,104px) clamp(18px,4vw,52px)">
   <div data-grid="split" style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,72px);align-items:start">
     <div>
-      <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Como funciona</p>
-      <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:18px 0 0">Da configuração ao fechamento da folha.</h2>
+      <p style="display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:.071em;text-transform:uppercase;color:var(--ink);margin:0"><span style="width:14px;height:1px;background:var(--ink);display:block"></span>Como funciona</p>
+      <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:500;line-height:1.02;letter-spacing:-0.045em;margin:18px 0 0">Da configuração ao fechamento da folha.</h2>
       <div style="margin-top:36px" role="tablist" aria-label="Como funciona, em três etapas">
         <sc-for list="{{ steps }}" as="s" hint-placeholder-count="3">
           <button type="button" role="tab" aria-selected="{{ s.active }}" onClick="{{ s.select }}" style="{{ s.rowStyle }}">
@@ -336,7 +373,7 @@
       </div>
     </div>
     <div>
-      <div style="position:relative;border-radius:24px;overflow:hidden;aspect-ratio:4/3;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)" role="tabpanel" onMouseEnter="{{ pausarAutoplay }}" onMouseLeave="{{ retomarAutoplay }}">
+      <div style="position:relative;border-radius:6px;overflow:hidden;aspect-ratio:4/3;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)" role="tabpanel" onMouseEnter="{{ pausarAutoplay }}" onMouseLeave="{{ retomarAutoplay }}">
         <sc-for list="{{ steps }}" as="s" hint-placeholder-count="1">
           <div style="{{ s.panelStyle }}">
             <img src="{{ s.img }}" alt="{{ s.placeholder }}" style="{{ s.imgStyle }}" loading="lazy">
@@ -358,18 +395,18 @@
 <div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
 
 <section id="detalhes" style="max-width:1240px;margin:0 auto;padding:clamp(56px,7vw,104px) clamp(18px,4vw,52px)">
-  <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Em detalhe</p>
-  <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 clamp(40px,6vw,72px);max-width:26ch">O que o gestor vê no dia a dia.</h2>
+  <p style="display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:.071em;text-transform:uppercase;color:var(--ink);margin:0 0 18px"><span style="width:14px;height:1px;background:var(--ink);display:block"></span>Em detalhe</p>
+  <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:500;line-height:1.02;letter-spacing:-0.045em;margin:0 0 clamp(40px,6vw,72px);max-width:26ch">O que o gestor vê no dia a dia.</h2>
 
   <sc-for list="{{ detalhes }}" as="d" hint-placeholder-count="3">
     <div style="{{ d.linhaStyle }}">
       <div style="flex:1;min-width:0">
-        <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--red);margin:0">{{ d.num }}</p>
-        <h3 style="font-size:clamp(22px,2.4vw,30px);font-weight:700;letter-spacing:-0.02em;margin:14px 0 0">{{ d.titulo }}</h3>
+        <p style="font-family:var(--font-mono);font-size:12px;color:var(--ink);margin:0">{{ d.num }}</p>
+        <h3 style="font-size:clamp(22px,2.4vw,30px);font-weight:500;letter-spacing:-0.02em;margin:14px 0 0">{{ d.titulo }}</h3>
         <p style="font-size:15px;line-height:1.7;color:var(--dim);margin:14px 0 0;max-width:42ch">{{ d.body }}</p>
       </div>
       <div style="flex:1;min-width:0">
-        <div style="border-radius:20px;overflow:hidden;border:1px solid var(--line);box-shadow:0 20px 50px rgba(20,17,16,.12)">
+        <div style="border-radius:6px;overflow:hidden;border:1px solid var(--line)">
           <img src="{{ d.img }}" alt="{{ d.alt }}" style="display:block;width:100%;aspect-ratio:4/3;object-fit:cover;object-position:{{ d.pos }}" loading="lazy">
         </div>
       </div>
@@ -380,14 +417,14 @@
 <div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
 
 <section id="app" style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
-  <div style="border-radius:32px;background:rgba(20,17,16,.78);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border:1px solid rgba(255,255,255,.16);box-shadow:0 30px 80px rgba(20,17,16,.28);color:var(--paper);padding:clamp(36px,5vw,72px);display:flex;flex-wrap:wrap;gap:32px;align-items:center;justify-content:space-between">
+  <div style="border-radius:6px;background:rgba(20,17,16,.78);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border:1px solid rgba(255,255,255,.16);color:var(--paper);padding:clamp(36px,5vw,72px);display:flex;flex-wrap:wrap;gap:32px;align-items:center;justify-content:space-between">
     <div style="flex:1;min-width:260px">
-      <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.62);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>No bolso da equipe</p>
-      <h2 style="font-size:clamp(26px,3vw,40px);font-weight:700;line-height:1.05;letter-spacing:-0.03em;margin:16px 0 0;max-width:20ch">Todo funcionário pode bater o ponto pelo próprio celular.</h2>
+      <p style="font-family:var(--font-mono);font-size:11px;letter-spacing:.071em;text-transform:uppercase;color:rgba(255,255,255,.62);margin:0"><span style="width:14px;height:1px;background:var(--ink);display:block"></span>No bolso da equipe</p>
+      <h2 style="font-size:clamp(26px,3vw,40px);font-weight:500;line-height:1.05;letter-spacing:-0.045em;margin:16px 0 0;max-width:20ch">Todo funcionário pode bater o ponto pelo próprio celular.</h2>
       <p style="font-size:15px;line-height:1.7;color:rgba(255,255,255,.72);margin:16px 0 0;max-width:48ch">Sem app para instalar: abre o navegador do celular, autoriza a câmera e a localização, e pronto — biometria facial e geofence direto do site, em segundos.</p>
     </div>
     <div style="flex:none;display:flex;gap:12px;align-items:center">
-      <div style="width:132px;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.22);box-shadow:0 20px 50px rgba(0,0,0,.35)">
+      <div style="width:132px;border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,.22)">
         <img src="assets/ps4-tab-app.webp" alt="Tela do app: batida com biometria facial" style="display:block;width:100%;aspect-ratio:455/751;object-fit:cover" loading="lazy">
       </div>
     </div>
@@ -397,13 +434,13 @@
 <div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
 
 <section id="recursos" style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
-  <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Recursos</p>
-  <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 44px;max-width:22ch">Nove funções para uma jornada auditável de ponta a ponta.</h2>
+  <p style="display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:.071em;text-transform:uppercase;color:var(--ink);margin:0 0 18px"><span style="width:14px;height:1px;background:var(--ink);display:block"></span>Recursos</p>
+  <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:500;line-height:1.02;letter-spacing:-0.045em;margin:0 0 44px;max-width:22ch">Nove funções para uma jornada auditável de ponta a ponta.</h2>
   <div data-grid="three" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
     <sc-for list="{{ features }}" as="f" hint-placeholder-count="9">
       <div style="{{ f.cellStyle }}" style-hover="{{ f.cellHover }}">
-        <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--red);margin:0">{{ f.num }}</p>
-        <h3 style="font-size:19px;font-weight:700;letter-spacing:-0.015em;margin:16px 0 0">{{ f.title }}</h3>
+        <p style="font-family:var(--font-mono);font-size:12px;color:var(--ink);margin:0">{{ f.num }}</p>
+        <h3 style="font-size:19px;font-weight:500;letter-spacing:-0.015em;margin:16px 0 0">{{ f.title }}</h3>
         <p style="font-size:14.5px;line-height:1.7;color:var(--dim);margin:10px 0 0">{{ f.body }}</p>
       </div>
     </sc-for>
@@ -415,14 +452,14 @@
 <section id="comece" style="max-width:1240px;margin:0 auto;padding:clamp(56px,7vw,104px) clamp(18px,4vw,52px)">
   <div data-grid="split" style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,72px);align-items:start">
     <div>
-      <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Comece agora</p>
-      <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:18px 0 0">Quatro passos até o primeiro ponto batido.</h2>
+      <p style="display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:.071em;text-transform:uppercase;color:var(--ink);margin:0"><span style="width:14px;height:1px;background:var(--ink);display:block"></span>Comece agora</p>
+      <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:500;line-height:1.02;letter-spacing:-0.045em;margin:18px 0 0">Quatro passos até o primeiro ponto batido.</h2>
       <ol style="list-style:none;margin:32px 0 0;padding:0;display:grid;gap:0">
         <sc-for list="{{ passosOnboarding }}" as="o" hint-placeholder-count="4">
           <li style="display:flex;gap:16px;padding:16px 0;border-top:1px solid var(--line)">
-            <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--red);flex:none;margin-top:3px">{{ o.num }}</span>
+            <span style="font-family:var(--font-mono);font-size:12px;color:var(--ink);flex:none;margin-top:3px">{{ o.num }}</span>
             <span>
-              <span style="display:block;font-size:15.5px;font-weight:700;letter-spacing:-.01em">{{ o.titulo }}</span>
+              <span style="display:block;font-size:15.5px;font-weight:500;letter-spacing:-.01em">{{ o.titulo }}</span>
               <span style="display:block;font-size:13.5px;line-height:1.6;color:var(--dim);margin-top:4px">{{ o.body }}</span>
             </span>
           </li>
@@ -435,7 +472,7 @@
          ("Criar conta" no menu/planos), só que direto na página em vez
          de sobrepor um overlay — os dois escrevem no mesmo state, então
          preencher aqui ou no modal dá no mesmo cadastro. -->
-    <div style="padding:clamp(28px,4vw,40px);border-radius:26px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)">
+    <div style="padding:clamp(28px,4vw,40px);border-radius:6px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)">
       <form onSubmit="{{ onSubmit }}" noValidate>
         <div style="display:grid;gap:17px">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:17px">
@@ -463,15 +500,15 @@
         </div>
 
         <label style="display:flex;gap:11px;align-items:flex-start;cursor:pointer;margin:20px 0 0">
-          <input type="checkbox" checked="{{ aceite }}" onChange="{{ onAceite }}" aria-invalid="{{ aceiteInvalido }}" aria-describedby="ps-inline-aceite-err" style="margin-top:2px;width:17px;height:17px;flex:none;accent-color:#ec3013;cursor:pointer">
-          <span style="font-size:13px;line-height:1.55;color:var(--dim)">Li e aceito os <a href="{{ termosUrl }}" target="_blank" rel="noopener noreferrer" style="color:var(--red);font-weight:600">Termos de Uso</a> e a <a href="{{ privacidadeUrl }}" target="_blank" rel="noopener noreferrer" style="color:var(--red);font-weight:600">Política de Privacidade</a>.</span>
+          <input type="checkbox" checked="{{ aceite }}" onChange="{{ onAceite }}" aria-invalid="{{ aceiteInvalido }}" aria-describedby="ps-inline-aceite-err" style="margin-top:2px;width:17px;height:17px;flex:none;accent-color:#171717;cursor:pointer">
+          <span style="font-size:13px;line-height:1.55;color:var(--dim)">Li e aceito os <a href="{{ termosUrl }}" target="_blank" rel="noopener noreferrer" style="color:var(--ink);font-weight:500">Termos de Uso</a> e a <a href="{{ privacidadeUrl }}" target="_blank" rel="noopener noreferrer" style="color:var(--ink);font-weight:500">Política de Privacidade</a>.</span>
         </label>
         <span class="ps-err" id="ps-inline-aceite-err" style="{{ erroAceiteStyle }}">{{ erroAceite }}</span>
 
         <div role="alert" style="{{ erroFormStyle }}">
-          <div style="display:flex;gap:10px;align-items:flex-start;margin-top:20px;padding:13px 15px;border-radius:14px;background:rgba(236,48,19,.07);border:1px solid rgba(236,48,19,.25)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a51d08" stroke-width="2" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
-            <span style="font-size:13.5px;line-height:1.5;color:#a51d08">{{ erroForm }}</span>
+          <div style="display:flex;gap:10px;align-items:flex-start;margin-top:20px;padding:13px 15px;border-radius:6px;background:#fafafa;border:1px solid #171717">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#171717" stroke-width="2" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+            <span style="font-size:13.5px;line-height:1.5;color:#171717">{{ erroForm }}</span>
           </div>
         </div>
 
@@ -488,37 +525,37 @@
 <div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
 
 <section id="juridico" style="max-width:1240px;margin:0 auto;padding:0 clamp(18px,4vw,52px)">
-  <div data-grid="split" style="border-radius:32px;background:rgba(20,17,16,.78);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border:1px solid rgba(255,255,255,.16);box-shadow:0 30px 80px rgba(20,17,16,.28);color:var(--paper);padding:clamp(36px,5vw,72px);display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(28px,5vw,72px);align-items:center">
+  <div data-grid="split" style="border-radius:6px;background:rgba(20,17,16,.78);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border:1px solid rgba(255,255,255,.16);color:var(--paper);padding:clamp(36px,5vw,72px);display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(28px,5vw,72px);align-items:center">
     <div>
-      <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.62);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Segurança e conformidade</p>
-      <h2 style="font-size:clamp(26px,3vw,42px);font-weight:700;line-height:1.03;letter-spacing:-0.03em;margin:18px 0 0">Feito para resistir a uma fiscalização.</h2>
+      <p style="font-family:var(--font-mono);font-size:11px;letter-spacing:.071em;text-transform:uppercase;color:rgba(255,255,255,.62);margin:0"><span style="width:14px;height:1px;background:var(--ink);display:block"></span>Segurança e conformidade</p>
+      <h2 style="font-size:clamp(26px,3vw,42px);font-weight:500;line-height:1.03;letter-spacing:-0.045em;margin:18px 0 0">Feito para resistir a uma fiscalização.</h2>
       <p style="font-size:15.5px;line-height:1.7;color:rgba(255,255,255,.76);margin:20px 0 0;max-width:48ch">O PontoSeven segue a Portaria 671 do Ministério do Trabalho para o REP‑P e trata os dados dos colaboradores conforme a LGPD. Batidas, ajustes e acessos ficam gravados em trilha imutável.</p>
       <ul style="list-style:none;margin:28px 0 0;padding:0">
         <sc-for list="{{ compliance }}" as="c" hint-placeholder-count="4">
           <li style="display:flex;gap:14px;align-items:baseline;font-size:15px;padding:14px 0;border-top:2px solid rgba(255,255,255,.22)">
-            <span style="color:var(--red);font-size:13px">✓</span>{{ c }}
+            <span style="color:var(--ink);font-size:13px">✓</span>{{ c }}
           </li>
         </sc-for>
         <li style="border-top:2px solid rgba(255,255,255,.22)"></li>
       </ul>
     </div>
-    <div style="border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.28)">
+    <div style="border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,.28)">
       <img src="assets/ps4-auditoria.webp" alt="Log de auditoria: ações registradas com usuário, IP e data/hora" style="width:100%;aspect-ratio:16/11;object-fit:cover;object-position:center top;display:block" loading="lazy">
     </div>
   </div>
 </section>
 
 <section id="planos" style="max-width:1240px;margin:0 auto;padding:clamp(56px,7vw,104px) clamp(18px,4vw,52px)">
-  <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Planos</p>
-  <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 44px;max-width:22ch">Preço por tamanho de equipe. Nada por função.</h2>
+  <p style="display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:.071em;text-transform:uppercase;color:var(--ink);margin:0 0 18px"><span style="width:14px;height:1px;background:var(--ink);display:block"></span>Planos</p>
+  <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:500;line-height:1.02;letter-spacing:-0.045em;margin:0 0 44px;max-width:22ch">Preço por tamanho de equipe. Nada por função.</h2>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
     <sc-for list="{{ planosPagina }}" as="pl" hint-placeholder-count="5">
       <div style="padding:26px 22px;display:flex;flex-direction:column;position:relative;{{ pl.cardStyle }}">
         <sc-if value="{{ pl.destaque }}" hint-placeholder-val="{{ false }}">
-          <span style="position:absolute;top:-11px;left:26px;background:var(--red);color:#fff;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:999px;box-shadow:0 6px 16px rgba(236,48,19,.3)">Mais escolhido</span>
+          <span style="position:absolute;top:-11px;left:26px;background:var(--ink);color:#fff;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:5px 12px;border-radius:6px">Mais escolhido</span>
         </sc-if>
-        <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:0;color:{{ pl.corNome }}">{{ pl.nome }}</p>
-        <p style="font-weight:800;letter-spacing:-0.035em;margin:14px 0 0;font-size:{{ pl.tamPreco }};white-space:nowrap">{{ pl.preco }}<span style="font-size:15px;font-weight:400;color:var(--dim);letter-spacing:0">{{ pl.precoSufixo }}</span></p>
+        <p style="font-family:var(--font-mono);font-size:11px;letter-spacing:.071em;text-transform:uppercase;margin:0;color:{{ pl.corNome }}">{{ pl.nome }}</p>
+        <p style="font-weight:450;letter-spacing:-0.035em;margin:14px 0 0;font-size:{{ pl.tamPreco }};white-space:nowrap">{{ pl.preco }}<span style="font-size:15px;font-weight:400;color:var(--dim);letter-spacing:0">{{ pl.precoSufixo }}</span></p>
         <p style="font-size:14.5px;color:var(--dim);margin:6px 0 0">{{ pl.limite }}</p>
         <p style="font-size:13.5px;color:var(--dim);margin:20px 0 0;line-height:1.6">{{ pl.nota }}</p>
         <div style="margin-top:auto;padding-top:28px"><button type="button" onClick="{{ pl.select }}" style="{{ pl.botaoStyle }}" style-hover="{{ pl.botaoHover }}">{{ pl.botaoLabel }}</button></div>
@@ -526,12 +563,12 @@
     </sc-for>
   </div>
 
-  <div style="margin-top:36px;padding:26px 28px;border-radius:20px;background:var(--surface,rgba(20,17,16,.03));border:1px solid var(--line)">
-    <p style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 0 16px">Em todos os planos</p>
+  <div style="margin-top:36px;padding:26px 28px;border-radius:6px;background:var(--surface,rgba(20,17,16,.03));border:1px solid var(--line)">
+    <p style="font-family:var(--font-mono);font-size:11px;letter-spacing:.071em;text-transform:uppercase;color:var(--ink);margin:0 0 16px">Em todos os planos</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px 24px">
       <sc-for list="{{ inclusoTodos }}" as="i" hint-placeholder-count="5">
         <span style="display:flex;gap:10px;align-items:baseline;font-size:14px;color:var(--dim)">
-          <span style="color:var(--red);font-size:12.5px;flex:none">✓</span>{{ i }}
+          <span style="color:var(--ink);font-size:12.5px;flex:none">✓</span>{{ i }}
         </span>
       </sc-for>
     </div>
@@ -541,13 +578,13 @@
 <div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
 
 <section id="upsell" style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
-  <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Além do ponto</p>
-  <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:0 0 44px;max-width:26ch">O que sai pronto para o resto da operação.</h2>
+  <p style="display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:.071em;text-transform:uppercase;color:var(--ink);margin:0 0 18px"><span style="width:14px;height:1px;background:var(--ink);display:block"></span>Além do ponto</p>
+  <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:500;line-height:1.02;letter-spacing:-0.045em;margin:0 0 44px;max-width:26ch">O que sai pronto para o resto da operação.</h2>
   <div data-grid="three" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
     <sc-for list="{{ upsell }}" as="u" hint-placeholder-count="3">
-      <div style="padding:26px;border-radius:22px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)">
-        <p style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--red);margin:0">{{ u.num }}</p>
-        <h3 style="font-size:17.5px;font-weight:700;letter-spacing:-0.01em;margin:16px 0 0">{{ u.titulo }}</h3>
+      <div style="padding:26px;border-radius:6px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)">
+        <p style="font-family:var(--font-mono);font-size:12px;color:var(--ink);margin:0">{{ u.num }}</p>
+        <h3 style="font-size:17.5px;font-weight:500;letter-spacing:-0.01em;margin:16px 0 0">{{ u.titulo }}</h3>
         <p style="font-size:14px;line-height:1.7;color:var(--dim);margin:10px 0 0">{{ u.body }}</p>
       </div>
     </sc-for>
@@ -559,14 +596,14 @@
 <section id="suporte" style="max-width:1240px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
   <div data-grid="split" style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:clamp(28px,5vw,72px);align-items:center">
     <div>
-      <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Confiança</p>
-      <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:700;line-height:1.02;letter-spacing:-0.03em;margin:18px 0 0">Pagamento, dados e suporte, sem letra miúda.</h2>
+      <p style="display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:.071em;text-transform:uppercase;color:var(--ink);margin:0"><span style="width:14px;height:1px;background:var(--ink);display:block"></span>Confiança</p>
+      <h2 style="font-size:clamp(28px,3.4vw,48px);font-weight:500;line-height:1.02;letter-spacing:-0.045em;margin:18px 0 0">Pagamento, dados e suporte, sem letra miúda.</h2>
       <p style="font-size:15px;line-height:1.7;color:var(--dim);margin:16px 0 0;max-width:48ch">Fale com a gente por e‑mail a qualquer momento; quem já é cliente também resolve fatura, plano e cancelamento sozinho, sem precisar esperar resposta.</p>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
       <sc-for list="{{ confianca }}" as="c" hint-placeholder-count="4">
-        <div style="padding:22px;border-radius:18px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)">
-          <h3 style="font-size:15px;font-weight:700;letter-spacing:-.01em;margin:0">{{ c.titulo }}</h3>
+        <div style="padding:22px;border-radius:6px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)">
+          <h3 style="font-size:15px;font-weight:500;letter-spacing:-.01em;margin:0">{{ c.titulo }}</h3>
           <p style="font-size:13px;line-height:1.6;color:var(--dim);margin:8px 0 0">{{ c.body }}</p>
         </div>
       </sc-for>
@@ -577,23 +614,23 @@
 <div style="height:1px;background:linear-gradient(to right, transparent, rgba(20,17,16,.14), transparent);max-width:1240px;margin:0 auto"></div>
 
 <section id="faq" style="max-width:900px;margin:0 auto;padding:clamp(48px,6vw,88px) clamp(18px,4vw,52px)">
-  <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0 0 18px"><span style="width:18px;height:2px;background:var(--red);display:block"></span>FAQ</p>
-  <h2 style="font-size:clamp(26px,3vw,42px);font-weight:700;line-height:1.03;letter-spacing:-0.03em;margin:0 0 32px">Antes de criar a conta.</h2>
+  <p style="display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:.071em;text-transform:uppercase;color:var(--ink);margin:0 0 18px"><span style="width:14px;height:1px;background:var(--ink);display:block"></span>FAQ</p>
+  <h2 style="font-size:clamp(26px,3vw,42px);font-weight:500;line-height:1.03;letter-spacing:-0.045em;margin:0 0 32px">Antes de criar a conta.</h2>
   <sc-for list="{{ faq }}" as="q" hint-placeholder-count="5">
-    <details style="margin-bottom:10px;padding:0 22px;border-radius:18px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)">
-      <summary style="padding:20px 0;font-size:17px;font-weight:600;cursor:pointer;list-style:none">{{ q.q }}</summary>
+    <details style="margin-bottom:10px;padding:0 22px;border-radius:6px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)">
+      <summary style="padding:20px 0;font-size:17px;font-weight:500;cursor:pointer;list-style:none">{{ q.q }}</summary>
       <p style="font-size:14.5px;line-height:1.75;color:var(--dim);margin:0 0 22px;max-width:62ch">{{ q.a }}</p>
     </details>
   </sc-for>
 </section>
 
 <section style="max-width:1240px;margin:0 auto;padding:clamp(32px,4vw,56px) clamp(18px,4vw,52px)">
-  <div style="border-radius:32px;background:linear-gradient(140deg, rgba(236,48,19,.9), rgba(184,37,12,.86));backdrop-filter:blur(26px) saturate(160%);-webkit-backdrop-filter:blur(26px) saturate(160%);border:1px solid rgba(255,255,255,.28);box-shadow:0 30px 80px rgba(236,48,19,.28);color:#fff;padding:clamp(40px,6vw,96px)">
-    <h3 style="font-size:clamp(32px,5vw,72px);font-weight:800;line-height:.98;letter-spacing:-0.035em;margin:0;max-width:18ch">Crie a conta hoje. Bata o ponto amanhã.</h3>
-    <p style="font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.7;color:rgba(255,255,255,.86);margin:24px 0 0;max-width:60ch">Sem instalação de relógio, sem contrato longo. Configure a empresa e comece a registrar jornada no mesmo dia.</p>
+  <div style="border-radius:6px;background:#171717;border:1px solid rgba(255,255,255,.28);color:#fff;padding:clamp(40px,6vw,96px)">
+    <h3 style="font-size:clamp(32px,5vw,72px);font-weight:450;line-height:.98;letter-spacing:-0.035em;margin:0;max-width:18ch">Crie a conta hoje. Bata o ponto amanhã.</h3>
+    <p style="font-family:var(--font-mono);font-size:13px;line-height:1.7;color:rgba(255,255,255,.86);margin:24px 0 0;max-width:60ch">Sem instalação de relógio, sem contrato longo. Configure a empresa e comece a registrar jornada no mesmo dia.</p>
     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:32px">
-      <button type="button" onClick="{{ openSignup }}" style="border:0;border-radius:999px;background:#fff;color:var(--ink);font-size:15px;font-weight:600;padding:15px 30px;cursor:pointer;box-shadow:0 10px 30px rgba(20,17,16,.2)" style-hover="background:rgba(255,255,255,.88)">Criar conta</button>
-      <button type="button" onClick="{{ abrirDemo }}" style="border:1px solid rgba(255,255,255,.5);border-radius:999px;background:rgba(255,255,255,.14);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;font-size:15px;font-weight:600;padding:15px 30px;cursor:pointer" style-hover="background:rgba(255,255,255,.26)">Quero uma demonstração</button>
+      <button type="button" onClick="{{ openSignup }}" style="border:0;border-radius:6px;background:#fff;color:var(--ink);font-size:15px;font-weight:500;padding:15px 30px;cursor:pointer" style-hover="background:rgba(255,255,255,.88)">Criar conta</button>
+      <button type="button" onClick="{{ abrirDemo }}" style="border:1px solid rgba(255,255,255,.5);border-radius:6px;background:rgba(255,255,255,.14);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;font-size:15px;font-weight:500;padding:15px 30px;cursor:pointer" style-hover="background:rgba(255,255,255,.26)">Quero uma demonstração</button>
     </div>
   </div>
 </section>
@@ -601,14 +638,14 @@
 <footer style="max-width:1240px;margin:0 auto;padding:56px clamp(18px,4vw,52px) 0">
   <div style="display:grid;grid-template-columns:minmax(0,1.4fr) repeat(2,minmax(0,1fr));gap:32px;padding-bottom:40px">
     <div>
-      <span style="display:flex;align-items:center;gap:10px;font-size:17px;font-weight:600;letter-spacing:-0.01em">
+      <span style="display:flex;align-items:center;gap:10px;font-size:17px;font-weight:500;letter-spacing:-0.01em">
         <img src="./assets/logo.png" alt="" style="width:22px;height:22px;display:block">
         ponto · seven
       </span>
       <p style="font-size:13.5px;line-height:1.7;color:var(--dim);margin:14px 0 0;max-width:32ch">Ponto eletrônico digital com geofence, biometria facial e log de auditoria. REP‑P e LGPD desde a primeira batida.</p>
     </div>
     <div>
-      <p style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint,var(--dim));margin:0 0 14px">Produto</p>
+      <p style="font-family:var(--font-mono);font-size:11px;letter-spacing:.071em;text-transform:uppercase;color:var(--muted);margin:0 0 14px">Produto</p>
       <ul style="list-style:none;margin:0;padding:0;display:grid;gap:10px;font-size:13.5px">
         <li><a href="#plataforma" style="color:var(--dim)" style-hover="color:var(--ink)">Como funciona</a></li>
         <li><a href="#detalhes" style="color:var(--dim)" style-hover="color:var(--ink)">Dashboard e relatórios</a></li>
@@ -617,7 +654,7 @@
       </ul>
     </div>
     <div>
-      <p style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint,var(--dim));margin:0 0 14px">Empresa</p>
+      <p style="font-family:var(--font-mono);font-size:11px;letter-spacing:.071em;text-transform:uppercase;color:var(--muted);margin:0 0 14px">Empresa</p>
       <ul style="list-style:none;margin:0;padding:0;display:grid;gap:10px;font-size:13.5px">
         <li><a href="{{ termosUrl }}" target="_blank" rel="noopener noreferrer" style="color:var(--dim)" style-hover="color:var(--ink)">Termos de Uso</a></li>
         <li><a href="{{ privacidadeUrl }}" target="_blank" rel="noopener noreferrer" style="color:var(--dim)" style-hover="color:var(--ink)">Política de Privacidade</a></li>
@@ -625,7 +662,7 @@
       </ul>
     </div>
   </div>
-  <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;padding:22px 0 32px;border-top:1px solid rgba(20,17,16,.1);font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--dim)">
+  <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;padding:22px 0 32px;border-top:1px solid rgba(20,17,16,.1);font-family:var(--font-mono);font-size:12px;color:var(--dim)">
     <span>© {{ anoAtual }} ponto · seven</span>
     <span>REP‑P · Portaria 671 · LGPD · Brasil</span>
   </div>
@@ -640,15 +677,15 @@
      (Stripe Checkout nos planos pagos). Ver stripe/README.md. -->
 <sc-if value="{{ signupOpen }}" hint-placeholder-val="{{ false }}">
 <div onClick="{{ onBackdropClick }}" style="position:fixed;inset:0;z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:clamp(14px,4vh,56px) 16px;overflow-y:auto;background:rgba(20,17,16,.44);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:ps-backdrop-in .26s ease-out both">
-  <div ref="{{ sheetRef }}" role="dialog" aria-modal="true" aria-labelledby="ps-signup-title" class="ps-sheet" style="position:relative;width:100%;max-width:568px;margin:auto;padding:34px clamp(22px,4vw,38px);border-radius:26px;background:rgba(255,255,255,.9);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:0 40px 90px rgba(20,17,16,.3), inset 0 1px 0 rgba(255,255,255,.92);animation:ps-sheet-in .38s cubic-bezier(.22,.75,.2,1) both">
+  <div ref="{{ sheetRef }}" role="dialog" aria-modal="true" aria-labelledby="ps-signup-title" class="ps-sheet" style="position:relative;width:100%;max-width:568px;margin:auto;padding:34px clamp(22px,4vw,38px);border-radius:6px;background:var(--surface);border:1px solid var(--line);animation:ps-sheet-in .38s cubic-bezier(.22,.75,.2,1) both">
 
-    <button type="button" onClick="{{ closeSignup }}" aria-label="Fechar" style="position:absolute;top:16px;right:16px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border:0;border-radius:999px;background:transparent;color:var(--dim);cursor:pointer" style-hover="background:rgba(20,17,16,.07);color:var(--ink)">
+    <button type="button" onClick="{{ closeSignup }}" aria-label="Fechar" style="position:absolute;top:16px;right:16px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border:0;border-radius:6px;background:transparent;color:var(--dim);cursor:pointer" style-hover="background:rgba(20,17,16,.07);color:var(--ink)">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
     </button>
 
-    <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Criar conta</p>
-    <h2 id="ps-signup-title" style="font-size:clamp(24px,3vw,32px);font-weight:700;line-height:1.06;letter-spacing:-0.03em;margin:14px 0 0">Comece a registrar jornada hoje.</h2>
-    <p style="font-size:14px;color:var(--dim);margin:10px 0 0">Já tem conta? <a href="{{ loginUrl }}" style="color:var(--red);font-weight:600">Entrar na plataforma</a>.</p>
+    <p style="display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:.071em;text-transform:uppercase;color:var(--ink);margin:0"><span style="width:14px;height:1px;background:var(--ink);display:block"></span>Criar conta</p>
+    <h2 id="ps-signup-title" style="font-size:clamp(24px,3vw,32px);font-weight:500;line-height:1.06;letter-spacing:-0.045em;margin:14px 0 0">Comece a registrar jornada hoje.</h2>
+    <p style="font-size:14px;color:var(--dim);margin:10px 0 0">Já tem conta? <a href="{{ loginUrl }}" style="color:var(--ink);font-weight:500">Entrar na plataforma</a>.</p>
 
     <form onSubmit="{{ onSubmit }}" noValidate style="margin-top:26px">
 
@@ -670,7 +707,7 @@
           <label class="ps-label" for="ps-senha">Senha</label>
           <div style="position:relative">
             <input id="ps-senha" class="ps-input" type="{{ senhaType }}" name="new-password" autoComplete="new-password" placeholder="Mínimo de 8 caracteres" value="{{ senha }}" onInput="{{ onSenha }}" onBlur="{{ onBlurSenha }}" aria-invalid="{{ senhaInvalida }}" aria-describedby="ps-senha-err" style="padding-right:52px">
-            <button type="button" onClick="{{ toggleSenha }}" aria-label="{{ senhaToggleLabel }}" style="position:absolute;top:50%;right:6px;transform:translateY(-50%);width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:0;border-radius:999px;background:transparent;color:var(--dim);cursor:pointer" style-hover="background:rgba(20,17,16,.07);color:var(--ink)">
+            <button type="button" onClick="{{ toggleSenha }}" aria-label="{{ senhaToggleLabel }}" style="position:absolute;top:50%;right:6px;transform:translateY(-50%);width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:0;border-radius:6px;background:transparent;color:var(--dim);cursor:pointer" style-hover="background:rgba(20,17,16,.07);color:var(--ink)">
               <sc-if value="{{ senhaVisivel }}" hint-placeholder-val="{{ false }}">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.7 6.2A9.8 9.8 0 0 1 12 6c5 0 9 4.5 10 6a15.6 15.6 0 0 1-3.1 3.7"/><path d="M6.6 6.8C3.9 8.4 2.3 10.9 2 12c1 1.5 5 6 10 6a10 10 0 0 0 4.5-1.1"/><path d="m2 2 20 20"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
               </sc-if>
@@ -692,8 +729,8 @@
             <label class="ps-plan" style="{{ p.style }}">
               <input type="radio" name="ps-plano" value="{{ p.id }}" checked="{{ p.checked }}" onChange="{{ p.select }}">
               <span class="ps-plan-box" style="display:block">
-                <span style="display:block;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:{{ p.corNome }}">{{ p.nome }}</span>
-                <span style="display:block;font-size:{{ p.tamPreco }};font-weight:800;letter-spacing:-0.03em;margin:7px 0 0;white-space:nowrap">{{ p.preco }}</span>
+                <span style="display:block;font-family:var(--font-mono);font-size:11px;letter-spacing:.071em;text-transform:uppercase;color:{{ p.corNome }}">{{ p.nome }}</span>
+                <span style="display:block;font-size:{{ p.tamPreco }};font-weight:450;letter-spacing:-0.045em;margin:7px 0 0;white-space:nowrap">{{ p.preco }}</span>
                 <span style="display:block;font-size:11.5px;line-height:1.4;color:var(--dim);margin:5px 0 0">{{ p.limite }}</span>
               </span>
             </label>
@@ -702,15 +739,15 @@
       </fieldset>
 
       <label style="display:flex;gap:11px;align-items:flex-start;cursor:pointer;margin:22px 0 0">
-        <input type="checkbox" checked="{{ aceite }}" onChange="{{ onAceite }}" aria-invalid="{{ aceiteInvalido }}" aria-describedby="ps-aceite-err" style="margin-top:2px;width:17px;height:17px;flex:none;accent-color:#ec3013;cursor:pointer">
-        <span style="font-size:13px;line-height:1.55;color:var(--dim)">Li e aceito os <a href="{{ termosUrl }}" target="_blank" rel="noopener noreferrer" style="color:var(--red);font-weight:600">Termos de Uso</a> e a <a href="{{ privacidadeUrl }}" target="_blank" rel="noopener noreferrer" style="color:var(--red);font-weight:600">Política de Privacidade</a>, incluindo o tratamento de dados pessoais conforme a LGPD.</span>
+        <input type="checkbox" checked="{{ aceite }}" onChange="{{ onAceite }}" aria-invalid="{{ aceiteInvalido }}" aria-describedby="ps-aceite-err" style="margin-top:2px;width:17px;height:17px;flex:none;accent-color:#171717;cursor:pointer">
+        <span style="font-size:13px;line-height:1.55;color:var(--dim)">Li e aceito os <a href="{{ termosUrl }}" target="_blank" rel="noopener noreferrer" style="color:var(--ink);font-weight:500">Termos de Uso</a> e a <a href="{{ privacidadeUrl }}" target="_blank" rel="noopener noreferrer" style="color:var(--ink);font-weight:500">Política de Privacidade</a>, incluindo o tratamento de dados pessoais conforme a LGPD.</span>
       </label>
       <span class="ps-err" id="ps-aceite-err" style="{{ erroAceiteStyle }}">{{ erroAceite }}</span>
 
       <div role="alert" style="{{ erroFormStyle }}">
-        <div style="display:flex;gap:10px;align-items:flex-start;margin-top:20px;padding:13px 15px;border-radius:14px;background:rgba(236,48,19,.07);border:1px solid rgba(236,48,19,.25)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a51d08" stroke-width="2" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
-          <span style="font-size:13.5px;line-height:1.5;color:#a51d08">{{ erroForm }}</span>
+        <div style="display:flex;gap:10px;align-items:flex-start;margin-top:20px;padding:13px 15px;border-radius:6px;background:#fafafa;border:1px solid #171717">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#171717" stroke-width="2" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+          <span style="font-size:13.5px;line-height:1.5;color:#171717">{{ erroForm }}</span>
         </div>
       </div>
 
@@ -732,26 +769,26 @@
      DEMO_ENDPOINT (api/leads/demo.js) — sem Stripe, sem senha. -->
 <sc-if value="{{ demoOpen }}" hint-placeholder-val="{{ false }}">
 <div onClick="{{ onDemoBackdropClick }}" style="position:fixed;inset:0;z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:clamp(14px,4vh,56px) 16px;overflow-y:auto;background:rgba(20,17,16,.44);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:ps-backdrop-in .26s ease-out both">
-  <div ref="{{ demoSheetRef }}" role="dialog" aria-modal="true" aria-labelledby="ps-demo-title" class="ps-sheet" style="position:relative;width:100%;max-width:480px;margin:auto;padding:34px clamp(22px,4vw,38px);border-radius:26px;background:rgba(255,255,255,.9);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:0 40px 90px rgba(20,17,16,.3), inset 0 1px 0 rgba(255,255,255,.92);animation:ps-sheet-in .38s cubic-bezier(.22,.75,.2,1) both">
+  <div ref="{{ demoSheetRef }}" role="dialog" aria-modal="true" aria-labelledby="ps-demo-title" class="ps-sheet" style="position:relative;width:100%;max-width:480px;margin:auto;padding:34px clamp(22px,4vw,38px);border-radius:6px;background:var(--surface);border:1px solid var(--line);animation:ps-sheet-in .38s cubic-bezier(.22,.75,.2,1) both">
 
-    <button type="button" onClick="{{ fecharDemo }}" aria-label="Fechar" style="position:absolute;top:16px;right:16px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border:0;border-radius:999px;background:transparent;color:var(--dim);cursor:pointer" style-hover="background:rgba(20,17,16,.07);color:var(--ink)">
+    <button type="button" onClick="{{ fecharDemo }}" aria-label="Fechar" style="position:absolute;top:16px;right:16px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border:0;border-radius:6px;background:transparent;color:var(--dim);cursor:pointer" style-hover="background:rgba(20,17,16,.07);color:var(--ink)">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
     </button>
 
     <sc-if value="{{ demoEnviado }}" hint-placeholder-val="{{ false }}">
       <div style="padding:12px 0 6px">
-        <div style="width:44px;height:44px;border-radius:999px;background:rgba(236,48,19,.1);color:var(--red);display:flex;align-items:center;justify-content:center">
+        <div style="width:44px;height:44px;border-radius:6px;background:rgba(41,122,58,.1);color:#297a3a;display:flex;align-items:center;justify-content:center">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
         </div>
-        <h2 id="ps-demo-title" style="font-size:24px;font-weight:700;letter-spacing:-0.02em;margin:18px 0 0">Pedido recebido.</h2>
+        <h2 id="ps-demo-title" style="font-size:24px;font-weight:500;letter-spacing:-0.02em;margin:18px 0 0">Pedido recebido.</h2>
         <p style="font-size:14.5px;line-height:1.65;color:var(--dim);margin:10px 0 0">Nosso time entra em contato no e‑mail que você deixou para combinar a demonstração.</p>
-        <button type="button" onClick="{{ fecharDemo }}" style="margin-top:24px;width:100%;border:0;border-radius:999px;background:var(--red);color:#fff;font-size:15px;font-weight:600;padding:14px 20px;cursor:pointer" style-hover="background:#c9260d">Fechar</button>
+        <button type="button" onClick="{{ fecharDemo }}" style="margin-top:24px;width:100%;border:0;border-radius:6px;background:var(--ink);color:#fff;font-size:15px;font-weight:500;padding:14px 20px;cursor:pointer" style-hover="background:#000000">Fechar</button>
       </div>
     </sc-if>
 
     <sc-if value="{{ demoForm }}" hint-placeholder-val="{{ true }}">
-      <p style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0"><span style="width:18px;height:2px;background:var(--red);display:block"></span>Demonstração</p>
-      <h2 id="ps-demo-title" style="font-size:clamp(22px,3vw,28px);font-weight:700;line-height:1.1;letter-spacing:-0.02em;margin:14px 0 0">Quer ver funcionando antes de decidir?</h2>
+      <p style="display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:.071em;text-transform:uppercase;color:var(--ink);margin:0"><span style="width:14px;height:1px;background:var(--ink);display:block"></span>Demonstração</p>
+      <h2 id="ps-demo-title" style="font-size:clamp(22px,3vw,28px);font-weight:500;line-height:1.1;letter-spacing:-0.02em;margin:14px 0 0">Quer ver funcionando antes de decidir?</h2>
       <p style="font-size:14px;color:var(--dim);margin:10px 0 0">Conte um pouco sobre sua empresa e a gente te mostra.</p>
 
       <form onSubmit="{{ onDemoSubmit }}" noValidate style="margin-top:24px">
@@ -773,9 +810,9 @@
         </div>
 
         <div role="alert" style="{{ erroDemoFormStyle }}">
-          <div style="display:flex;gap:10px;align-items:flex-start;margin-top:20px;padding:13px 15px;border-radius:14px;background:rgba(236,48,19,.07);border:1px solid rgba(236,48,19,.25)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a51d08" stroke-width="2" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
-            <span style="font-size:13.5px;line-height:1.5;color:#a51d08">{{ erroDemoForm }}</span>
+          <div style="display:flex;gap:10px;align-items:flex-start;margin-top:20px;padding:13px 15px;border-radius:6px;background:#fafafa;border:1px solid #171717">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#171717" stroke-width="2" stroke-linecap="round" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+            <span style="font-size:13.5px;line-height:1.5;color:#171717">{{ erroDemoForm }}</span>
           </div>
         </div>
 
@@ -797,11 +834,11 @@
      aviso. Aparece uma vez; "Entendi" grava a escolha no localStorage. -->
 <sc-if value="{{ cookiesVisivel }}" hint-placeholder-val="{{ false }}">
 <div role="region" aria-label="Aviso de cookies" style="position:fixed;left:0;right:0;bottom:0;z-index:90;display:flex;justify-content:center;padding:16px;pointer-events:none">
-  <div style="pointer-events:auto;max-width:720px;width:100%;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;padding:16px 22px;border-radius:20px;background:rgba(255,255,255,.92);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:0 20px 50px rgba(20,17,16,.22)">
+  <div style="pointer-events:auto;max-width:720px;width:100%;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;padding:16px 22px;border-radius:6px;background:rgba(255,255,255,.92);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line)">
     <p style="margin:0;font-size:13.5px;line-height:1.55;color:var(--dim);flex:1;min-width:220px">
-      Usamos um cookie essencial só para manter você conectado depois do login — nada de rastreamento ou publicidade. Detalhes na <a href="{{ privacidadeUrl }}" target="_blank" rel="noopener noreferrer" style="color:var(--red);font-weight:600">Política de Privacidade</a>.
+      Usamos um cookie essencial só para manter você conectado depois do login — nada de rastreamento ou publicidade. Detalhes na <a href="{{ privacidadeUrl }}" target="_blank" rel="noopener noreferrer" style="color:var(--ink);font-weight:500">Política de Privacidade</a>.
     </p>
-    <button type="button" onClick="{{ fecharCookies }}" style="flex:none;border:0;border-radius:999px;background:var(--red);color:#fff;font-size:13.5px;font-weight:600;padding:10px 20px;cursor:pointer;white-space:nowrap" style-hover="background:#c9260d">Entendi</button>
+    <button type="button" onClick="{{ fecharCookies }}" style="flex:none;border:0;border-radius:6px;background:var(--ink);color:#fff;font-size:13.5px;font-weight:500;padding:10px 20px;cursor:pointer;white-space:nowrap" style-hover="background:#000000">Entendi</button>
   </div>
 </div>
 </sc-if>
@@ -936,13 +973,10 @@ class Component extends DCLogic {
     cookiesVisivel: false,
   };
 
-  waveHost = React.createRef();
-  waveCanvas = React.createRef();
   sheetRef = React.createRef();
   nomeRef = React.createRef();
   demoSheetRef = React.createRef();
   demoNomeRef = React.createRef();
-  pointer = { x: -2000, y: -2000, targetX: -2000, targetY: -2000 };
 
   componentDidMount() {
     // Aviso de cookies: mostra uma vez, "Entendi" grava a escolha no
@@ -953,43 +987,6 @@ class Component extends DCLogic {
     try { jaAceitouCookies = localStorage.getItem('ps_cookies_ok') === '1'; } catch { /* sem storage */ }
     if (!jaAceitouCookies) this.setState({ cookiesVisivel: true });
 
-    const container = this.waveHost.current;
-    const canvas = this.waveCanvas.current;
-    if (!container || !canvas) return;
-    const ctx = canvas.getContext('2d', { alpha: false });
-    if (!ctx) return;
-
-    let time = 0;
-
-    this.ro = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const rect = entry.contentRect;
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        canvas.width = Math.floor(rect.width * dpr);
-        canvas.height = Math.floor(rect.height * dpr);
-        canvas.style.width = rect.width + 'px';
-        canvas.style.height = rect.height + 'px';
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.scale(dpr, dpr);
-      }
-    });
-    this.ro.observe(container);
-
-    this.onMove = (e) => {
-      const rect = container.getBoundingClientRect();
-      this.pointer.targetX = e.clientX - rect.left;
-      this.pointer.targetY = e.clientY - rect.top;
-    };
-    this.onLeave = () => {
-      this.pointer.targetX = -2000;
-      this.pointer.targetY = -2000;
-    };
-    window.addEventListener('mousemove', this.onMove);
-    window.addEventListener('mouseleave', this.onLeave);
-
-    // Teclado dos modais: Escape fecha, Tab circula dentro do diálogo
-    // aberto. Os dois modais nunca abrem juntos, então "qual está aberto"
-    // é suficiente pra saber qual fechar/prender.
     this.onKeyDown = (e) => {
       if (this.state.signupOpen) {
         if (e.key === 'Escape') { e.preventDefault(); this.fechar(); return; }
@@ -1002,52 +999,6 @@ class Component extends DCLogic {
       }
     };
     window.addEventListener('keydown', this.onKeyDown);
-
-    const render = () => {
-      time += 0.015;
-
-      const width = container.clientWidth;
-      const height = container.clientHeight;
-      const pointer = this.pointer;
-
-      pointer.x += (pointer.targetX - pointer.x) * 0.1;
-      pointer.y += (pointer.targetY - pointer.y) * 0.1;
-
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, width, height);
-
-      const lines = 32;
-      const stepY = height / (lines + 1);
-
-      for (let i = 0; i < lines; i++) {
-        const yBase = stepY * (i + 1);
-        ctx.beginPath();
-        const points = 100;
-        const stepX = width / points;
-
-        for (let p = 0; p <= points; p++) {
-          const x = p * stepX;
-          const dx = x - pointer.x;
-          const dy = yBase - pointer.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          const influence = dist < 250 ? (1 - dist / 250) * 35 : 0;
-
-          const wave = Math.sin(p * 0.1 + time + i * 0.2) * 18 + Math.cos(p * 0.05 - time * 0.8) * 12;
-          const y = yBase + wave - influence;
-
-          if (p === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
-        }
-
-        const alpha = 0.12 + (i / lines) * 0.35;
-        ctx.strokeStyle = 'rgba(0, 0, 0, ' + alpha + ')';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
-
-      this.animId = requestAnimationFrame(render);
-    };
-    this.animId = requestAnimationFrame(render);
 
     // Autoplay da galeria "Como funciona". Some com prefers-reduced-motion:
     // quem pediu menos movimento continua trocando de etapa clicando ou
@@ -1066,11 +1017,6 @@ class Component extends DCLogic {
   }
 
   componentWillUnmount() {
-    cancelAnimationFrame(this.animId);
-    if (this.ro) this.ro.disconnect();
-    if (this.io) this.io.disconnect();
-    window.removeEventListener('mousemove', this.onMove);
-    window.removeEventListener('mouseleave', this.onLeave);
     window.removeEventListener('keydown', this.onKeyDown);
     document.body.style.overflow = '';
     clearInterval(this._stepTimer);
@@ -1369,12 +1315,12 @@ class Component extends DCLogic {
         // remontar o nó, e não há garantia de que o diff deste framework
         // remonte em vez de reaproveitar o elemento.
         railStyle: 'position:absolute;left:0;top:20px;bottom:20px;width:2px;background:var(--line);overflow:hidden;border-radius:2px',
-        railFillStyle: 'position:absolute;left:0;right:0;top:0;background:var(--red);' +
+        railFillStyle: 'position:absolute;left:0;right:0;top:0;background:var(--ink);' +
           'height:' + (active ? Math.round(this.state.stepProgress * 100) : 0) + '%;' +
           'transition:height ' + TICK_MS + 'ms linear',
-        numStyle: 'font-family:ui-monospace,Menlo,monospace;font-size:12px;margin-top:3px;flex:none;' +
-          'color:' + (active ? 'var(--red)' : 'inherit'),
-        titleStyle: 'display:block;font-size:19px;font-weight:600;letter-spacing:-.01em;transition:color .3s ease',
+        numStyle: 'font-family:var(--font-mono);font-size:12px;margin-top:3px;flex:none;' +
+          'color:' + (active ? 'var(--ink)' : 'inherit'),
+        titleStyle: 'display:block;font-size:19px;font-weight:500;letter-spacing:-.01em;transition:color .3s ease',
         select: () => this.irParaEtapa(i),
       };
     });
@@ -1382,8 +1328,8 @@ class Component extends DCLogic {
 
   renderVals() {
     const highlighted = this.props.highlightedPlan ?? 'essencial';
-    const glass = 'border-radius:26px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);';
-    const hot = glass + 'background:linear-gradient(150deg, rgba(255,255,255,.66), rgba(236,48,19,.1));border-color:rgba(236,48,19,.34);';
+    const glass = 'border-radius:6px;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);';
+    const hot = glass + 'background:#ffffff;border-color:#171717;';
 
     const features = [
       { num: '01', title: 'Geofence múltiplo', body: 'Várias cercas virtuais por unidade, obra ou cliente. A batida só é aceita dentro do perímetro autorizado.' },
@@ -1397,11 +1343,11 @@ class Component extends DCLogic {
       { num: '09', title: 'Configurações da empresa', body: 'Unidades, jornadas, escalas, feriados e permissões por perfil em um painel administrativo único.' },
     ].map((f, i) => ({
       ...f,
-      cellStyle: 'padding:26px;border-radius:22px;background:var(--glass);' +
+      cellStyle: 'padding:26px;border-radius:6px;background:var(--glass);' +
         'backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);' +
         'border:1px solid var(--glass-line);box-shadow:var(--glass-shadow);' +
-        'transition:transform .35s cubic-bezier(.22,.75,.2,1), box-shadow .35s ease;',
-      cellHover: 'transform:translateY(-4px);box-shadow:0 26px 60px rgba(20,17,16,.14), inset 0 1px 0 rgba(255,255,255,.9);',
+        'transition:border-color .15s ease;',
+      cellHover: 'border-color:var(--ash);',
     }));
 
     /* ── Modal de criar conta ──────────────────────────────────────
@@ -1428,11 +1374,11 @@ class Component extends DCLogic {
         preco: p.preco,
         limite: p.limite,
         checked: sel,
-        corNome: sel ? 'var(--red)' : 'var(--dim)',
+        corNome: sel ? 'var(--ink)' : 'var(--dim)',
         tamPreco: p.cobranca === 'vendas' ? '14.5px' : '20px',
         style: sel
-          ? 'border:1px solid rgba(236,48,19,.5);background:rgba(236,48,19,.06);box-shadow:0 6px 18px rgba(236,48,19,.12)'
-          : 'border:1px solid rgba(20,17,16,.14);background:rgba(255,255,255,.6)',
+          ? 'border:1px solid #171717;background:#fafafa'
+          : 'border:1px solid var(--line);background:var(--surface)',
         select: () => this.setState({ plano: p.id, erroForm: '' }),
       };
     });
@@ -1441,12 +1387,12 @@ class Component extends DCLogic {
     // o que falta são as mensagens de erro, não um botão morto sem motivo.
     const botaoBase =
       'width:100%;display:flex;align-items:center;justify-content:center;gap:9px;' +
-      'margin-top:24px;border:0;border-radius:999px;font-family:inherit;font-size:15px;' +
-      'font-weight:600;padding:15px 22px;color:#fff;background:var(--red);' +
+      'margin-top:24px;border:0;border-radius:6px;font-family:inherit;font-size:14px;' +
+      'font-weight:400;padding:14px 22px;color:#fff;background:var(--ink);' +
       'transition:background .2s ease, opacity .2s ease;';
     const submitStyle = botaoBase + (st.submitting
       ? 'opacity:.72;cursor:progress;'
-      : 'cursor:pointer;box-shadow:0 10px 28px rgba(236,48,19,.3);');
+      : 'cursor:pointer;');
 
     let submitLabel;
     if (st.submitting) submitLabel = porVendas ? 'Enviando…' : 'Abrindo pagamento seguro…';
@@ -1465,12 +1411,12 @@ class Component extends DCLogic {
 
     const demoBotaoBase =
       'width:100%;display:flex;align-items:center;justify-content:center;gap:9px;' +
-      'margin-top:22px;border:0;border-radius:999px;font-family:inherit;font-size:15px;' +
-      'font-weight:600;padding:15px 22px;color:#fff;background:var(--red);' +
+      'margin-top:22px;border:0;border-radius:6px;font-family:inherit;font-size:14px;' +
+      'font-weight:400;padding:14px 22px;color:#fff;background:var(--ink);' +
       'transition:background .2s ease, opacity .2s ease;';
     const demoSubmitStyle = demoBotaoBase + (st.demoSubmitting
       ? 'opacity:.72;cursor:progress;'
-      : 'cursor:pointer;box-shadow:0 10px 28px rgba(236,48,19,.3);');
+      : 'cursor:pointer;');
 
     /* ── Pilares, segmentos, features em detalhe e demais listas ────────
        Conteúdo novo desta reestruturação. Tudo ancorado no que o produto
@@ -1563,20 +1509,18 @@ class Component extends DCLogic {
           ? 'Tudo dos demais planos, mais integrações dedicadas de folha e RH e atendimento com SLA dedicado.'
           : 'Todas as funcionalidades incluídas, sem limite de recursos.',
         cardStyle: destaque ? hot : glass,
-        corNome: destaque ? 'var(--red)' : 'var(--dim)',
+        corNome: destaque ? 'var(--ink)' : 'var(--dim)',
         tamPreco: p.vendas ? '22px' : '23px',
         botaoStyle: destaque
-          ? 'width:100%;border:0;border-radius:999px;background:var(--red);color:#fff;font-size:15px;font-weight:600;padding:14px 20px;cursor:pointer;box-shadow:0 10px 28px rgba(236,48,19,.3)'
-          : 'width:100%;border-radius:999px;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);color:var(--ink);font-size:15px;font-weight:600;padding:13px 20px;cursor:pointer',
-        botaoHover: destaque ? 'background:#c9260d' : 'background:#fff',
+          ? 'width:100%;border:0;border-radius:6px;background:var(--ink);color:#fff;font-size:15px;font-weight:500;padding:14px 20px;cursor:pointer'
+          : 'width:100%;border-radius:6px;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);color:var(--ink);font-size:15px;font-weight:500;padding:13px 20px;cursor:pointer',
+        botaoHover: destaque ? 'background:#000000' : 'background:#fff',
         botaoLabel: p.vendas ? 'Falar com vendas' : 'Criar conta',
         select: () => this.abrir(p.id),
       };
     });
 
     return {
-      waveHost: this.waveHost,
-      waveCanvas: this.waveCanvas,
 
       // — links e ações —
       loginUrl: PLATFORM_LOGIN_URL,
@@ -1629,7 +1573,7 @@ class Component extends DCLogic {
       demoSubmitting: st.demoSubmitting,
       demoSubmitDisabled: !!st.demoSubmitting,
       demoSubmitStyle,
-      demoSubmitHover: st.demoSubmitting ? 'background:var(--red)' : 'background:#c9260d',
+      demoSubmitHover: st.demoSubmitting ? 'background:var(--ink)' : 'background:#000000',
       demoSubmitLabel: st.demoSubmitting ? 'Enviando…' : 'Pedir demonstração',
 
       // — estado do formulário —
@@ -1666,7 +1610,7 @@ class Component extends DCLogic {
       submitting: st.submitting,
       submitDisabled: !!st.submitting,
       submitStyle,
-      submitHover: st.submitting ? 'background:var(--red)' : 'background:#c9260d',
+      submitHover: st.submitting ? 'background:var(--ink)' : 'background:#000000',
       submitLabel,
       submitNota,
       steps: this.buildSteps(),
@@ -1674,7 +1618,7 @@ class Component extends DCLogic {
       passoAnterior: this.passoAnterior,
       pausarAutoplay: this.pausarAutoplay,
       retomarAutoplay: this.retomarAutoplay,
-      setaStyle: 'width:40px;height:40px;border-radius:999px;display:flex;align-items:center;justify-content:center;' +
+      setaStyle: 'width:40px;height:40px;border-radius:6px;display:flex;align-items:center;justify-content:center;' +
         'border:1px solid var(--glass-line);background:var(--glass-strong);backdrop-filter:var(--glass-blur);' +
         '-webkit-backdrop-filter:var(--glass-blur);color:var(--ink);cursor:pointer;box-shadow:var(--glass-shadow);' +
         'transition:transform .2s ease',
