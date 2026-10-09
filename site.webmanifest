@@ -1,11 +1,11 @@
 {
-  "name": "PontoSeven — Ponto Eletrônico Digital",
+  "name": "PontoSeven — Ponto Eletrônico e Ponto Digital",
   "short_name": "PontoSeven",
-  "description": "Ponto eletrônico digital para franquias, em conformidade com a Portaria 671/2021 (REP-P) e a LGPD.",
+  "description": "Ponto eletrônico e ponto digital para empresas, em conformidade com a Portaria 671/2021 (REP-P) e a LGPD.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ec3013",
+  "background_color": "#fafafa",
+  "theme_color": "#fafafa",
   "lang": "pt-BR",
   "icons": [
     { "src": "/assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
