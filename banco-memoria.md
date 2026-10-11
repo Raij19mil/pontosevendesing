@@ -6,6 +6,7 @@
 > **Atualizado em 08/10/2026** — a v4 trocou de sistema visual (§12).
 > **Atualizado em 09/10/2026** — SEO reforçado para "ponto eletrônico" e "ponto digital" (§13).
 > **Atualizado em 11/10/2026** — Enterprise passa a falar com vendas pelo chat (§14).
+> **Atualizado em 11/10/2026** — revisão de segurança do código todo (§15).
 
 ---
 
@@ -1048,6 +1049,118 @@ da viewport.
 - [ ] O Chatwoot é um terceiro carregando script e iframe: quando a CSP
       sair do papel (§8.7), `chat.flowseven.online` precisa entrar em
       `script-src`, `connect-src` e `frame-src`.
+
+---
+
+## 15. Revisão de segurança
+
+> 11/10/2026. Pedido: instalar o Strix e varrer o código.
+
+### 15.1 O Strix não rodou — e por quê
+
+| Etapa | Resultado |
+|---|---|
+| `curl -sSL https://strix.ai/install \| bash` | **bloqueado** — `strix.ai` não passa pela política de egress |
+| `uv tool install strix-agent` (PyPI) | **instalado**, v1.7.0 |
+| `strix --target .` | **negado pelo harness** — o Strix cria agentes autônomos, e o classificador de modo automático barra isso |
+| Provedor de LLM | `openrouter.ai` também bloqueado, e não há chave de API no ambiente |
+
+São três bloqueios independentes. O primeiro tem contorno (PyPI), os
+outros dois não — e **nenhum** deles se contorna de dentro desta sessão.
+Nunca canalizamos `curl | bash` às cegas: o script seria lido antes, mas
+nem chegou a baixar.
+
+A varredura foi feita à mão, no lugar.
+
+### 15.2 Corrigido
+
+| # | Gravidade | Achado |
+|---|---|---|
+| 1 | 🟠 Média | **Sem Content-Security-Policy** — e um script de terceiro (Chatwoot) acabara de entrar |
+| 2 | 🟠 Média | **Limite de tentativas falhava ABERTO** sempre, inclusive no login |
+| 3 | 🟡 Baixa‑Média | **`baseDoPedido` confiava em `x-forwarded-host`** sem validar |
+| 4 | 🔵 Baixa | **Segredo do cron comparado com `!==`** (tempo não constante) |
+
+**1. CSP.** A página é um documento de design com scripts de bootstrap
+inline e 302 atributos `style`, mais o widget do Chatwoot. A política
+permite `self`, `chat.flowseven.online` (script, connect, frame, img,
+media), `fonts.googleapis.com` (estilo) e `fonts.gstatic.com` (fonte).
+Entraram junto HSTS, `Permissions-Policy` e `Cross-Origin-Opener-Policy`.
+
+**2. Limite.** O argumento original para falhar aberto — "não impedir
+ninguém de assinar quando o banco cai" — **não se sustenta no login**: o
+login lê `contas` no mesmo banco, então nesse cenário a requisição falha
+de qualquer jeito. Liberar só removia a proteção contra força bruta sem
+salvar acesso legítimo nenhum. Agora cada chamador escolhe
+(`aoFalhar: 'abrir' | 'fechar'`) e o login escolhe fechado.
+
+**3. `x-forwarded-host`.** Alimenta as `success_url` / `cancel_url` /
+`return_url` da Stripe. Um host forjado montaria um checkout cujo retorno
+aponta para o domínio de outra pessoa — e quem acabou de pagar cairia
+numa página que pode pedir a senha de novo. A documentação da Vercel
+confirma que ela **sobrescreve `x-forwarded-for`** para impedir spoofing,
+mas não achamos promessa equivalente para o host. A lista de hosts
+aceitos custa nada, tira a dúvida e continua valendo fora da Vercel.
+
+### 15.3 O que a CSP quase quebrou
+
+Primeira versão da política, sem `'unsafe-eval'`:
+
+```
+[dc-runtime] logic class eval FAILED for Root — the template renders with props only.
+EvalError: Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source
+```
+
+O runtime do Claude Design avalia a classe de lógica da página com
+`new Function` (ver `evalDcLogic` em `support.js`). Com a CSP estrita a
+página **renderizava**, mas morria toda a interatividade: modal de
+cadastro, painel de vendas, abas, aviso de cookies. Falha silenciosa —
+nenhum erro visível para quem só olhasse a tela.
+
+Por isso `'unsafe-eval'` entrou. **Consequência honesta:** com
+`'unsafe-inline'` e `'unsafe-eval'` juntos, o `script-src` protege pouco
+contra XSS. O valor da política passa a estar nas outras diretivas, e ele
+não é pequeno para uma página com campo de senha:
+
+- `form-action 'self'` — barra exfiltração do formulário para outro domínio
+- `base-uri 'self'` — barra injeção de `<base>`, que sequestra todo link relativo
+- `connect-src` — limita para onde `fetch`/XHR podem mandar dados
+- `object-src 'none'`, `frame-ancestors 'self'`, `upgrade-insecure-requests`
+
+E o `script-src`, mesmo fraco, ainda barra `<script src="https://atacante/">`.
+
+**Saída de verdade, a prazo:** compilar a landing para HTML + JS estáticos
+em vez de avaliar a lógica em tempo de execução. Aí dá para ter CSP forte.
+
+### 15.4 Revisado sem achado
+
+Vale registrar o que foi olhado e está **correto** — é a maior parte:
+
+| Área | Veredito |
+|---|---|
+| Injeção de SQL | Nenhuma. O único `UPDATE` dinâmico (`lib/contas.js:120`) passa as colunas por um mapa `COLUNAS` fixo e descarta chave fora dele; valores sempre parametrizados |
+| XSS | Nenhum. `innerHTML` só recebe literais; dado de usuário vai por `textContent`, com comentário explicando |
+| Sessões | Token de 256 bits, **SHA‑256 no banco**, revogação, expiração de 12 h, faxina periódica |
+| Senhas | scrypt com `maxmem` correto, `timingSafeEqual`, e `queimarTempo()` contra enumeração de e‑mail |
+| JWT de SSO | Checa `alg` (barra o ataque "none"), compara em tempo constante, valida `exp`/`nbf`/`iss`, segredo mínimo de 32 bytes |
+| Webhook da Stripe | Assinatura conferida sobre o corpo cru, com dedupe por `event.id` |
+| Autorização | `billing/*` e `auth/sessao` exigem sessão; nenhum endpoint aceita `id` de conta vindo do corpo — sem IDOR |
+| CORS | Origem ecoada só se estiver na lista; nunca `*` junto de `credentials` |
+| `x-forwarded-for` | **Confiável**: a documentação da Vercel diz que ela sobrescreve o header para impedir spoofing |
+| Dependências | `npm audit`: 0 vulnerabilidades |
+| Segredos | Nenhum versionado |
+| `contaPublica` | Lista de campos explícita em vez de espalhamento — `senha_hash` não vaza no dia em que alguém mexer no schema |
+
+### 15.5 Em aberto
+
+- [ ] **O token de SSO é reusável dentro dos 120 s.** O `jti` é gerado mas
+      ninguém o registra, e o token viaja na query string (histórico do
+      browser, `Referer`). A correção é consumo único do lado da
+      plataforma — **fora deste repositório**.
+- [ ] `script-src` fraco por necessidade (§15.3)
+- [ ] Rodar o Strix de verdade num ambiente com chave de API e sem o
+      bloqueio de agentes — a revisão manual não substitui fuzzing nem
+      teste dinâmico
 
 ---
 
