@@ -63,9 +63,12 @@ export async function POST(request) {
   // força bruta contra UMA conta; por IP barra a varredura de senhas
   // comuns contra MUITAS contas, que passaria folgado só com o primeiro.
   const limitado = await bloquear([
-    { chave: `login:email:${email}`, limite: 8, janelaSegundos: 900,
+    // aoFalhar 'fechar': se o contador não responder, o login para. O
+    // login lê `contas` no mesmo banco, então nesse cenário ele falharia
+    // adiante de qualquer forma — liberar só abriria a força bruta.
+    { chave: `login:email:${email}`, limite: 8, janelaSegundos: 900, aoFalhar: 'fechar',
       mensagem: 'Muitas tentativas para este e‑mail. Tente de novo em alguns minutos.' },
-    { chave: `login:ip:${ip}`, limite: 30, janelaSegundos: 900 },
+    { chave: `login:ip:${ip}`, limite: 30, janelaSegundos: 900, aoFalhar: 'fechar' },
   ], cors);
   if (limitado) return limitado;
 

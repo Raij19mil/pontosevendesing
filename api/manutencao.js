@@ -16,10 +16,20 @@
  * rota de manutenção que não roda.
  */
 
+import crypto from 'node:crypto';
+
 import { limparSessoesVencidas } from '../lib/contas.js';
 import { limparVencidos } from '../lib/limite.js';
 import { bancoConfigurado } from '../lib/db.js';
 import { json } from '../lib/http.js';
+
+function igualEmTempoConstante(a, b) {
+  const x = Buffer.from(String(a));
+  const y = Buffer.from(String(b));
+  // timingSafeEqual LANÇA com comprimentos diferentes; comparar o
+  // comprimento antes vaza só o tamanho, que não é o segredo.
+  return x.length === y.length && crypto.timingSafeEqual(x, y);
+}
 
 export async function GET(request) {
   const segredo = process.env.CRON_SECRET;
@@ -28,8 +38,11 @@ export async function GET(request) {
     return json({ mensagem: 'Indisponível.' }, 503);
   }
 
+  // Comparação em tempo constante: `!==` em string sai no primeiro byte
+  // diferente, e a diferença de tempo vaza o prefixo correto do segredo.
+  // Difícil de explorar pela rede, barato de eliminar.
   const autorizacao = request.headers.get('authorization') || '';
-  if (autorizacao !== `Bearer ${segredo}`) {
+  if (!igualEmTempoConstante(autorizacao, `Bearer ${segredo}`)) {
     return json({ mensagem: 'Não autorizado.' }, 401);
   }
 
