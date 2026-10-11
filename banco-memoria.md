@@ -4,6 +4,8 @@
 > Gerado em 09/09/2026 · branch `claude/affectionate-dirac-j07u33` · commit base `8f59882`
 > **Atualizado em 09/09/2026** — inclui o fluxo de Entrar / Criar conta, a integração Stripe e o deploy na Vercel (§11).
 > **Atualizado em 08/10/2026** — a v4 trocou de sistema visual (§12).
+> **Atualizado em 09/10/2026** — SEO reforçado para "ponto eletrônico" e "ponto digital" (§13).
+> **Atualizado em 11/10/2026** — Enterprise passa a falar com vendas pelo chat (§14).
 
 ---
 
@@ -865,6 +867,187 @@ superfície escura da página, usada como pontuação visual.
 - [ ] Sem CSP ainda (§8.7) — agora com uma origem a menos, já que o
       `_ds/` saiu e a fonte vem do Google Fonts
 - [ ] As versões v1–v3 seguem no sistema antigo; só a v4 é publicada
+
+---
+
+## 13. SEO — cobertura de "ponto eletrônico" e "ponto digital"
+
+> 09/10/2026.
+
+### 13.1 O diagnóstico
+
+| Termo | Antes (texto visível) | Depois |
+|---|---:|---:|
+| ponto eletrônico | 11 no arquivo, **0 em H1/H2** | 3 no texto + 2 H2 |
+| **ponto digital** | **0 em todo o arquivo** | 3 no texto + 1 H2 |
+| controle de ponto | 0 | 1 |
+
+O buraco não era a meta `keywords` — era que **nenhum cabeçalho carregava
+as expressões-alvo**. Depois da troca de mensagem principal (§12.1), o H1
+virou "Seu ponto funcionando hoje", que é boa frase de venda mas não tem
+palavra-chave nenhuma. Como o H1 é escolha do cliente, o reforço foi para
+onde não custa a voz da página: subtítulo, dois H2, `alt` e metadados.
+
+### 13.2 O que mudou
+
+| Onde | Antes | Depois |
+|---|---|---|
+| `<title>` | "PontoSeven — Ponto Eletrônico Digital para Franquias \| Conforme Portaria 671/2021" (79 chars, cortava no Google) | "Ponto Eletrônico e Ponto Digital para Empresas — PontoSeven" (59) |
+| `description` | 148 chars, só "ponto eletrônico digital" | 153 chars, as duas expressões exatas |
+| H2 dos pilares | "…trocar a planilha pelo sistema." | "…trocar a planilha pelo **ponto eletrônico**." |
+| H2 do app | "Todo funcionário pode bater o ponto pelo próprio celular." | "**Ponto digital** no celular de cada funcionário." |
+| Subtítulo do hero | "Biometria facial, geofence e log de auditoria imutável em um só registro de ponto…" | "**Ponto eletrônico e ponto digital** no mesmo sistema: biometria facial…" |
+| Rodapé | "Ponto eletrônico digital com geofence…" | "Sistema de ponto eletrônico e **controle de ponto digital** com geofence…" |
+| `alt` das imagens | 4 genéricos | 10 descritivos, com o termo que a imagem mostra |
+| Open Graph / Twitter | "para Franquias" | "para Empresas", com as duas expressões |
+
+### 13.3 Rich result de FAQ
+
+A seção de FAQ já tinha **11 perguntas visíveis** e nenhuma marcação. Foi
+adicionado um nó `FAQPage` ao `@graph` do JSON-LD, gerado a partir do mesmo
+array que renderiza a seção — as perguntas e respostas do schema são
+literalmente as que aparecem na tela, que é o que o Google exige para
+conceder o rich result. Verificado: as 11 perguntas do schema existem no
+texto renderizado.
+
+Também entraram no JSON-LD: `alternateName` (Ponto Seven, Sete Ponto),
+`keywords` no `SoftwareApplication` e uma `description` na `Organization`.
+
+### 13.4 Sobre a meta `keywords`
+
+Foi ampliada de 8 para 12 termos, mas **o Google não a usa para ranquear
+desde ~2009** — o próprio arquivo já trazia um comentário dizendo isso.
+Ela fica porque alguns buscadores menores ainda leem e não custa nada.
+**Nenhum ganho no Google vem dela**; vem do título, da description, dos
+cabeçalhos, do texto visível, dos `alt` e do schema.
+
+### 13.5 Correção de arrasto
+
+O `site.webmanifest` ainda trazia `theme_color: #ec3013` e
+`background_color: #ffffff` — resquícios do visual anterior (§12), que
+teriam pintado a barra do navegador de vermelho num site agora
+monocromático. Alinhados para `#fafafa`.
+
+### 13.6 O que foi medido
+
+Build servido localmente e lido no DOM renderizado:
+
+| Verificação | Resultado |
+|---|---|
+| `<title>` | 59 caracteres, dentro do que o Google exibe ✅ |
+| `description` | 153 caracteres ✅ |
+| H1 preservado | "Seu ponto funcionando hoje" ✅ |
+| H2 com palavra-chave | 2 de 10 ✅ |
+| FAQPage | 11 perguntas, **todas presentes no texto visível** ✅ |
+| `alt` com termo | 10 imagens ✅ |
+| JSON-LD | parseia; `@graph` com SoftwareApplication, Organization, FAQPage e 3 SiteNavigationElement ✅ |
+
+### 13.7 O que não foi feito (e por quê)
+
+- **O H1 não foi tocado.** É escolha do cliente e a frase funciona como
+  venda. Enfiar palavra-chave nele contra a vontade seria trocar conversão
+  por ranking.
+- **Nada de empilhar termo.** 3 ocorrências de cada expressão num texto
+  longo é cobertura saudável; repetir mais prejudica a leitura sem ajudar
+  o ranking.
+- **`/termos` e `/privacidade`** ganharam contexto na description, mas
+  continuam páginas jurídicas — não vale otimizá-las para venda.
+
+### 13.8 Pendências de SEO
+
+- [ ] Sem conteúdo editorial: um blog ou páginas de comparação são o que
+      realmente disputa "ponto eletrônico" contra concorrentes estabelecidos
+- [ ] Sem páginas por segmento (ex.: `/ponto-eletronico-para-clinicas`),
+      que é como se captura cauda longa
+- [ ] `sitemap.xml` lista 3 URLs; cresce junto com o conteúdo acima
+- [ ] Nenhuma medição real de posição — só dá para avaliar com o Search
+      Console ligado ao domínio
+
+---
+
+## 14. Falar com vendas pelo chat (Chatwoot)
+
+> 11/10/2026.
+
+### 14.1 O que mudou
+
+| | Antes | Agora |
+|---|---|---|
+| Botão do card Enterprise | abria o **modal de cadastro** com o plano pré-selecionado; a pessoa preenchia nome, e-mail e senha e o backend devolvia uma página de obrigado | abre o **chat do Chatwoot** — o mesmo widget do ícone flutuante — junto com um painel de contexto |
+
+O widget entra pelo snippet do próprio Chatwoot (`chat.flowseven.online`,
+token `Nh3QVB6hJoUxTtGyssPip8hk`), colocado no **`<head>` estático** e não
+dentro do `<helmet>`: aquele bloco só é aplicado pelo runtime do canvas, e
+o atendimento precisa subir mesmo se o `support.js` falhar.
+
+### 14.2 O painel
+
+Cartão compacto no canto **inferior esquerdo** — o widget do Chatwoot mora
+no direito. Segue o sistema visual: superfície branca, anel de 1px, raio de
+6px, eyebrow monoespaçado.
+
+**Não é modal de propósito:** não prende o foco nem trava a rolagem, para a
+pessoa poder continuar lendo os planos enquanto conversa. Por isso é
+`role="region"` com `aria-live` na linha de status, e não `role="dialog"` —
+declarar diálogo sem o comportamento de diálogo mente para o leitor de tela.
+
+### 14.3 Os três estados
+
+O script do Chatwoot é `defer async`, então num clique logo depois do load o
+`window.$chatwoot` ainda pode não existir. O painel trata essa espera:
+
+| Estado | Quando | O que mostra |
+|---|---|---|
+| `abrindo` | SDK ainda não respondeu | spinner + "Abrindo o chat…" |
+| `aberto` | `toggle('open')` deu certo | ✓ "Chat aberto no canto da tela." |
+| `indisponivel` | 6s sem SDK | e-mail de `comercial@seteponto.cloud` com assunto pronto |
+
+A espera escuta o evento `chatwoot:ready` e desiste em `CHAT_ESPERA_MS`
+(6s). Sem isso, um bloqueador de script deixaria o botão mudo — o pior
+desfecho possível para um CTA comercial.
+
+Ao abrir, o painel também manda contexto para o atendente via
+`setCustomAttributes({ interesse: 'Plano Enterprise', origem: 'landing' })`,
+para a conversa não começar do zero.
+
+### 14.4 Colisão com o aviso de cookies
+
+Os dois são fixos no rodapé. O recuo do painel **não foi chutado**: a altura
+do aviso foi medida no navegador em cinco larguras — 200px a 390px, 129px a
+640px, 108px a partir de 900px — e virou três faixas em CSS
+(`124px` / `148px` / `220px`). A primeira tentativa usava
+`clamp(104px,22vh,136px)` e **ainda sobrepunha no celular**, porque 136px
+não cobre 200px.
+
+Verificado em 360, 390, 640, 900 e 1360px: sem sobreposição e sempre dentro
+da viewport.
+
+### 14.5 O que foi verificado
+
+| Verificação | Resultado |
+|---|---|
+| Snippet no HTML, com token e baseUrl corretos | ✅ |
+| Com SDK: painel abre, `setCustomAttributes` + `toggle('open')` chamados | ✅ |
+| Com SDK: o modal de cadastro **não** abre mais nesse caminho | ✅ |
+| Sem SDK (domínio bloqueado — caso real no ambiente): "Abrindo o chat…" → e-mail após 6s | ✅ |
+| `mailto` com assunto codificado | ✅ |
+| Botão de fechar | ✅ |
+| Nenhum `{{ }}` sem resolver, nenhum erro de JS | ✅ |
+| Colisão com cookies em 5 larguras | ✅ |
+
+### 14.6 Pendências
+
+- [ ] **O modal de cadastro ainda tem Enterprise na lista de planos**, e lá
+      o botão "Falar com vendas" continua enviando o formulário para o
+      backend. São dois caminhos com o mesmo rótulo e comportamentos
+      diferentes — vale unificar, mas o formulário captura nome e e-mail,
+      que é lead melhor que uma conversa anônima. Decisão de produto.
+- [ ] O widget está **só na landing**. Estender para `/termos`,
+      `/privacidade` e as páginas de fluxo é uma linha, se quiserem
+      atendimento em todo o site.
+- [ ] O Chatwoot é um terceiro carregando script e iframe: quando a CSP
+      sair do papel (§8.7), `chat.flowseven.online` precisa entrar em
+      `script-src`, `connect-src` e `frame-src`.
 
 ---
 
