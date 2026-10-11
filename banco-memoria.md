@@ -5,6 +5,7 @@
 > **Atualizado em 09/09/2026** — inclui o fluxo de Entrar / Criar conta, a integração Stripe e o deploy na Vercel (§11).
 > **Atualizado em 08/10/2026** — a v4 trocou de sistema visual (§12).
 > **Atualizado em 09/10/2026** — SEO reforçado para "ponto eletrônico" e "ponto digital" (§13).
+> **Atualizado em 11/10/2026** — Enterprise passa a falar com vendas pelo chat (§14).
 
 ---
 
@@ -961,6 +962,92 @@ Build servido localmente e lido no DOM renderizado:
 - [ ] `sitemap.xml` lista 3 URLs; cresce junto com o conteúdo acima
 - [ ] Nenhuma medição real de posição — só dá para avaliar com o Search
       Console ligado ao domínio
+
+---
+
+## 14. Falar com vendas pelo chat (Chatwoot)
+
+> 11/10/2026.
+
+### 14.1 O que mudou
+
+| | Antes | Agora |
+|---|---|---|
+| Botão do card Enterprise | abria o **modal de cadastro** com o plano pré-selecionado; a pessoa preenchia nome, e-mail e senha e o backend devolvia uma página de obrigado | abre o **chat do Chatwoot** — o mesmo widget do ícone flutuante — junto com um painel de contexto |
+
+O widget entra pelo snippet do próprio Chatwoot (`chat.flowseven.online`,
+token `Nh3QVB6hJoUxTtGyssPip8hk`), colocado no **`<head>` estático** e não
+dentro do `<helmet>`: aquele bloco só é aplicado pelo runtime do canvas, e
+o atendimento precisa subir mesmo se o `support.js` falhar.
+
+### 14.2 O painel
+
+Cartão compacto no canto **inferior esquerdo** — o widget do Chatwoot mora
+no direito. Segue o sistema visual: superfície branca, anel de 1px, raio de
+6px, eyebrow monoespaçado.
+
+**Não é modal de propósito:** não prende o foco nem trava a rolagem, para a
+pessoa poder continuar lendo os planos enquanto conversa. Por isso é
+`role="region"` com `aria-live` na linha de status, e não `role="dialog"` —
+declarar diálogo sem o comportamento de diálogo mente para o leitor de tela.
+
+### 14.3 Os três estados
+
+O script do Chatwoot é `defer async`, então num clique logo depois do load o
+`window.$chatwoot` ainda pode não existir. O painel trata essa espera:
+
+| Estado | Quando | O que mostra |
+|---|---|---|
+| `abrindo` | SDK ainda não respondeu | spinner + "Abrindo o chat…" |
+| `aberto` | `toggle('open')` deu certo | ✓ "Chat aberto no canto da tela." |
+| `indisponivel` | 6s sem SDK | e-mail de `comercial@seteponto.cloud` com assunto pronto |
+
+A espera escuta o evento `chatwoot:ready` e desiste em `CHAT_ESPERA_MS`
+(6s). Sem isso, um bloqueador de script deixaria o botão mudo — o pior
+desfecho possível para um CTA comercial.
+
+Ao abrir, o painel também manda contexto para o atendente via
+`setCustomAttributes({ interesse: 'Plano Enterprise', origem: 'landing' })`,
+para a conversa não começar do zero.
+
+### 14.4 Colisão com o aviso de cookies
+
+Os dois são fixos no rodapé. O recuo do painel **não foi chutado**: a altura
+do aviso foi medida no navegador em cinco larguras — 200px a 390px, 129px a
+640px, 108px a partir de 900px — e virou três faixas em CSS
+(`124px` / `148px` / `220px`). A primeira tentativa usava
+`clamp(104px,22vh,136px)` e **ainda sobrepunha no celular**, porque 136px
+não cobre 200px.
+
+Verificado em 360, 390, 640, 900 e 1360px: sem sobreposição e sempre dentro
+da viewport.
+
+### 14.5 O que foi verificado
+
+| Verificação | Resultado |
+|---|---|
+| Snippet no HTML, com token e baseUrl corretos | ✅ |
+| Com SDK: painel abre, `setCustomAttributes` + `toggle('open')` chamados | ✅ |
+| Com SDK: o modal de cadastro **não** abre mais nesse caminho | ✅ |
+| Sem SDK (domínio bloqueado — caso real no ambiente): "Abrindo o chat…" → e-mail após 6s | ✅ |
+| `mailto` com assunto codificado | ✅ |
+| Botão de fechar | ✅ |
+| Nenhum `{{ }}` sem resolver, nenhum erro de JS | ✅ |
+| Colisão com cookies em 5 larguras | ✅ |
+
+### 14.6 Pendências
+
+- [ ] **O modal de cadastro ainda tem Enterprise na lista de planos**, e lá
+      o botão "Falar com vendas" continua enviando o formulário para o
+      backend. São dois caminhos com o mesmo rótulo e comportamentos
+      diferentes — vale unificar, mas o formulário captura nome e e-mail,
+      que é lead melhor que uma conversa anônima. Decisão de produto.
+- [ ] O widget está **só na landing**. Estender para `/termos`,
+      `/privacidade` e as páginas de fluxo é uma linha, se quiserem
+      atendimento em todo o site.
+- [ ] O Chatwoot é um terceiro carregando script e iframe: quando a CSP
+      sair do papel (§8.7), `chat.flowseven.online` precisa entrar em
+      `script-src`, `connect-src` e `frame-src`.
 
 ---
 

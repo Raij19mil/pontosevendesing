@@ -130,6 +130,29 @@
 </script>
 
 <script src="./support.js"></script>
+
+<!-- ═══ Chatwoot — atendimento ════════════════════════════════════════
+     Fora do <helmet> de propósito: aquele bloco só é aplicado pelo
+     runtime do canvas, e o widget precisa subir mesmo se o support.js
+     falhar. defer+async: não bloqueia a renderização, e por isso o
+     $chatwoot pode ainda não existir num clique logo após o load — quem
+     abre o chat trata essa espera (ver pedirChat no script da página). -->
+<script>
+  (function(d,t) {
+    var BASE_URL="https://chat.flowseven.online";
+    var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+    g.src=BASE_URL+"/packs/js/sdk.js";
+    g.defer = true;
+    g.async = true;
+    s.parentNode.insertBefore(g,s);
+    g.onload=function(){
+      window.chatwootSDK.run({
+        websiteToken: 'Nh3QVB6hJoUxTtGyssPip8hk',
+        baseUrl: BASE_URL
+      })
+    }
+  })(document,"script");
+</script>
 </head>
 <body>
 <x-dc>
@@ -262,6 +285,24 @@
     .ps-plan:hover { border-color: var(--ash) !important; }
     .ps-plan input { position: absolute; opacity: 0; width: 0; height: 0; }
     .ps-plan input:focus-visible + .ps-plan-box { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+    /* Painel de "falar com vendas": fica à esquerda porque o widget do
+       Chatwoot mora no canto direito. */
+    .ps-vendas {
+      position: fixed; left: clamp(12px,3vw,24px); bottom: clamp(12px,3vw,24px);
+      z-index: 80; width: min(328px, calc(100vw - 24px));
+      padding: 16px; border-radius: 6px;
+      background: var(--surface); box-shadow: var(--ring);
+      transition: bottom .2s ease;
+      animation: ps-sheet-in .25s cubic-bezier(.22,.75,.2,1) both;
+    }
+    /* Enquanto o aviso de cookies está na tela, o painel sobe acima dele.
+       O aviso muda de altura conforme o texto quebra — 108px no desktop,
+       200px no celular —, então cada faixa tem o seu recuo, medido no
+       navegador e não chutado. */
+    .ps-vendas[data-cookies="1"] { bottom: 124px; }
+    @media (max-width: 900px) { .ps-vendas[data-cookies="1"] { bottom: 148px; } }
+    @media (max-width: 640px) { .ps-vendas[data-cookies="1"] { bottom: 220px; } }
 
     .ps-spinner {
       width: 13px; height: 13px; border-radius: 50%; flex: none;
@@ -873,6 +914,44 @@
 </div>
 </sc-if>
 
+<!-- ══════════ Painel: falar com vendas ══════════
+     Abre junto com o chat do Chatwoot pelo botão do plano Enterprise.
+     Não é modal de propósito: não prende o foco nem trava a rolagem, para
+     a pessoa poder continuar lendo os planos enquanto conversa. Fica à
+     esquerda porque o widget do Chatwoot mora no canto direito. -->
+<sc-if value="{{ vendasOpen }}" hint-placeholder-val="{{ false }}">
+<div role="region" aria-label="Falar com vendas" class="ps-vendas" data-cookies="{{ cookiesAtivos }}">
+
+  <button type="button" onClick="{{ fecharVendas }}" aria-label="Fechar" style="position:absolute;top:10px;right:10px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:0;border-radius:6px;background:transparent;color:var(--muted);cursor:pointer" style-hover="background:var(--paper);color:var(--ink)">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+  </button>
+
+  <p class="ps-mono" style="font-size:11px;font-weight:400;line-height:1.5;letter-spacing:.071em;text-transform:uppercase;color:var(--ink);margin:0">Falar com vendas</p>
+  <p style="font-size:20px;font-weight:450;line-height:1.2;letter-spacing:-.03em;margin:8px 0 0">Plano Enterprise</p>
+  <p style="font-size:13px;line-height:1.5;color:var(--dim);margin:8px 0 0">Acima de 60 pessoas, integrações dedicadas de folha e RH e atendimento com SLA. Conte quantos funcionários e quantas unidades você tem — a gente monta a proposta.</p>
+
+  <div aria-live="polite" style="margin:14px 0 0;padding-top:14px;border-top:1px solid var(--line)">
+    <sc-if value="{{ chatAbrindo }}" hint-placeholder-val="{{ true }}">
+      <p class="ps-mono" style="display:flex;align-items:center;gap:8px;font-size:12px;line-height:1.5;color:var(--muted);margin:0">
+        <span style="width:11px;height:11px;flex:none;border-radius:50%;border:1.5px solid var(--line);border-top-color:var(--ink);animation:ps-spin .7s linear infinite"></span>
+        Abrindo o chat…
+      </p>
+    </sc-if>
+    <sc-if value="{{ chatAberto }}" hint-placeholder-val="{{ false }}">
+      <p class="ps-mono" style="display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.5;color:var(--muted);margin:0">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:3px"><path d="M20 6 9 17l-5-5"/></svg>
+        Chat aberto no canto da tela. É só escrever.
+      </p>
+    </sc-if>
+    <sc-if value="{{ chatIndisponivel }}" hint-placeholder-val="{{ false }}">
+      <p class="ps-mono" style="font-size:12px;line-height:1.5;color:var(--muted);margin:0">
+        O chat não carregou — pode ser bloqueador de script. Escreva para <a href="{{ vendasMailto }}" style="color:var(--ink);font-weight:500">{{ vendasEmail }}</a> que respondemos em até 1 dia útil.
+      </p>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{
   &quot;highlightedPlan&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;essencial&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;basico&quot;, &quot;essencial&quot;, &quot;profissional&quot;, &quot;avancado&quot;, &quot;enterprise&quot;], &quot;section&quot;: &quot;Planos&quot;}
@@ -930,6 +1009,12 @@ function erroAmigavel(msg) {
   e.amigavel = true;
   return e;
 }
+
+// Atendimento comercial pelo Chatwoot — o mesmo widget do ícone
+// flutuante. O e-mail é a saída quando o chat não carrega (bloqueador de
+// script, rede capada, domínio fora do ar): o botão nunca fica sem resposta.
+const VENDAS_EMAIL = 'comercial@seteponto.cloud';
+const CHAT_ESPERA_MS = 6000;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -993,6 +1078,10 @@ class Component extends DCLogic {
     // — modal de solicitar demonstração —
     demoOpen: false,
     demoEnviado: false,
+    // — painel de vendas (Enterprise) —
+    vendasOpen: false,
+    vendasEstado: 'abrindo',   // 'abrindo' | 'aberto' | 'indisponivel'
+
     demoNome: '',
     demoEmail: '',
     demoTelefone: '',
@@ -1050,6 +1139,7 @@ class Component extends DCLogic {
     window.removeEventListener('keydown', this.onKeyDown);
     document.body.style.overflow = '';
     clearInterval(this._stepTimer);
+    this.pararEsperaDoChat();
   }
 
   /* ─────────────────────────────────────────────────────────────────
@@ -1207,6 +1297,63 @@ class Component extends DCLogic {
      aqui ainda não decidiu assinar, então pedir senha ou plano seria
      atrito demais para o que é, no fundo, "me liga depois".
      ───────────────────────────────────────────────────────────────── */
+
+  /* ─────────────────────────────────────────────────────────────────
+     Falar com vendas — abre o chat e mostra o painel de contexto
+     ───────────────────────────────────────────────────────────────── */
+
+  abrirVendas = () => {
+    this.setState({ vendasOpen: true, vendasEstado: 'abrindo' });
+    this.pedirChat();
+  };
+
+  fecharVendas = () => {
+    this.pararEsperaDoChat();
+    this.setState({ vendasOpen: false });
+  };
+
+  pararEsperaDoChat() {
+    clearTimeout(this._chatTimer);
+    if (this._chatPronto) {
+      window.removeEventListener('chatwoot:ready', this._chatPronto);
+      this._chatPronto = null;
+    }
+  }
+
+  // Abre o widget assim que o SDK estiver de pé. O script é defer+async,
+  // então num clique logo depois do load o $chatwoot ainda pode não
+  // existir: esperamos o evento chatwoot:ready e desistimos depois de
+  // CHAT_ESPERA_MS, caindo para o e-mail em vez de deixar o botão mudo.
+  pedirChat() {
+    const abrir = () => {
+      if (!window.$chatwoot) return false;
+      try {
+        // Contexto para o atendente já na primeira mensagem.
+        window.$chatwoot.setCustomAttributes({ interesse: 'Plano Enterprise', origem: 'landing' });
+      } catch (_) { /* atributo é extra: não impede abrir o chat */ }
+      try {
+        window.$chatwoot.toggle('open');
+      } catch (_) {
+        return false;
+      }
+      this.setState({ vendasEstado: 'aberto' });
+      return true;
+    };
+
+    if (abrir()) return;
+
+    this._chatPronto = () => {
+      clearTimeout(this._chatTimer);
+      this._chatPronto = null;
+      if (!abrir()) this.setState({ vendasEstado: 'indisponivel' });
+    };
+    window.addEventListener('chatwoot:ready', this._chatPronto, { once: true });
+
+    this._chatTimer = setTimeout(() => {
+      this.pararEsperaDoChat();
+      if (!abrir()) this.setState({ vendasEstado: 'indisponivel' });
+    }, CHAT_ESPERA_MS);
+  }
 
   abrirDemo = () => {
     this.voltarFoco = document.activeElement;
@@ -1546,7 +1693,9 @@ class Component extends DCLogic {
           : 'width:100%;border-radius:6px;background:var(--glass-strong);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-line);color:var(--ink);font-size:15px;font-weight:500;padding:13px 20px;cursor:pointer',
         botaoHover: destaque ? 'background:#000000' : 'background:#fff',
         botaoLabel: p.vendas ? 'Falar com vendas' : 'Criar conta',
-        select: () => this.abrir(p.id),
+        // Enterprise não tem autoatendimento: em vez do formulário de
+        // cadastro, vai direto para a conversa com o time comercial.
+        select: p.vendas ? this.abrirVendas : () => this.abrir(p.id),
       };
     });
 
@@ -1576,6 +1725,15 @@ class Component extends DCLogic {
 
       // — modal de solicitar demonstração —
       abrirDemo: this.abrirDemo,
+      abrirVendas: this.abrirVendas,
+      fecharVendas: this.fecharVendas,
+      vendasOpen: st.vendasOpen,
+      cookiesAtivos: st.cookiesVisivel ? '1' : '0',
+      chatAbrindo: st.vendasEstado === 'abrindo',
+      chatAberto: st.vendasEstado === 'aberto',
+      chatIndisponivel: st.vendasEstado === 'indisponivel',
+      vendasEmail: VENDAS_EMAIL,
+      vendasMailto: 'mailto:' + VENDAS_EMAIL + '?subject=' + encodeURIComponent('Plano Enterprise — PontoSeven'),
       fecharDemo: this.fecharDemo,
       onDemoBackdropClick: this.onDemoBackdropClick,
       onDemoSubmit: this.onDemoSubmit,
